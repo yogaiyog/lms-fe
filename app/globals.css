@@ -1,26 +1,65 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:where(.dark, .dark *));
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@theme {
+  --color-tea-green-50: #eafde8;
+  --color-tea-green-100: #d5fbd0;
+  --color-tea-green-200: #abf7a1;
+  --color-tea-green-300: #81f372;
+  --color-tea-green-400: #57ef43;
+  --color-tea-green-500: #2deb14;
+  --color-tea-green-600: #24bc10;
+  --color-tea-green-700: #1b8d0c;
+  --color-tea-green-800: #125e08;
+  --color-tea-green-900: #092f04;
+  --color-tea-green-950: #062103;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+  --color-frosted-blue-50: #edf7f7;
+  --color-frosted-blue-100: #dbeff0;
+  --color-frosted-blue-200: #b8dee0;
+  --color-frosted-blue-300: #94ced1;
+  --color-frosted-blue-400: #70bec2;
+  --color-frosted-blue-500: #4dadb3;
+  --color-frosted-blue-600: #3d8b8f;
+  --color-frosted-blue-700: #2e686b;
+  --color-frosted-blue-800: #1f4547;
+  --color-frosted-blue-900: #0f2324;
+  --color-frosted-blue-950: #0b1819;
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  --color-emerald-50: #edf8ee;
+  --color-emerald-100: #daf1dd;
+  --color-emerald-200: #b5e3bc;
+  --color-emerald-300: #90d59a;
+  --color-emerald-400: #6bc779;
+  --color-emerald-500: #46b957;
+  --color-emerald-600: #389446;
+  --color-emerald-700: #2a6f34;
+  --color-emerald-800: #1c4a23;
+  --color-emerald-900: #0e2511;
+  --color-emerald-950: #0a1a0c;
+
+  --color-berry-lipstick-50: #faebef;
+  --color-berry-lipstick-100: #f5d6e0;
+  --color-berry-lipstick-200: #ebadc1;
+  --color-berry-lipstick-300: #e085a2;
+  --color-berry-lipstick-400: #d65c83;
+  --color-berry-lipstick-500: #cc3363;
+  --color-berry-lipstick-600: #a32950;
+  --color-berry-lipstick-700: #7a1f3c;
+  --color-berry-lipstick-800: #521428;
+  --color-berry-lipstick-900: #290a14;
+  --color-berry-lipstick-950: #1d070e;
+
+  --color-dark-amethyst-50: #f2e8fd;
+  --color-dark-amethyst-100: #e5d1fa;
+  --color-dark-amethyst-200: #cba2f6;
+  --color-dark-amethyst-300: #b074f1;
+  --color-dark-amethyst-400: #9645ed;
+  --color-dark-amethyst-500: #7c17e8;
+  --color-dark-amethyst-600: #6312ba;
+  --color-dark-amethyst-700: #4a0e8b;
+  --color-dark-amethyst-800: #32095d;
+  --color-dark-amethyst-900: #19052e;
+  --color-dark-amethyst-950: #110320;
 }

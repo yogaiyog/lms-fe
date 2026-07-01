@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">lms-coding</string>
+    <string name="title_activity_main">lms-coding</string>
+    <string name="package_name">com.lms.coding</string>
+    <string name="custom_url_scheme">com.lms.coding</string>
+</resources>
