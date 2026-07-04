@@ -35,56 +35,56 @@ export default function AddTutorForm({ registering, registerError, onSubmit }: P
   }
 
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-md">
-      <h2 className="mb-4 text-lg font-bold text-gray-800">Tambah Tutor Baru</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="mb-1 block text-sm font-medium text-gray-700">Nama Lengkap <span className="text-berry-lipstick-500">*</span></label>
+    <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-6 sm:p-7">
+      <h2 className="mb-6 text-lg font-extrabold tracking-tight text-slate-900">Tambah Tutor Baru</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Nama Lengkap <span className="text-red-500">*</span></label>
           <input value={fullName} onChange={(e) => setFullName(e.target.value)} required
-            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-dark-amethyst-400" />
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
         </div>
-        <div className="mb-3">
-          <label className="mb-1 block text-sm font-medium text-gray-700">Email <span className="text-berry-lipstick-500">*</span></label>
+        <div>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Email <span className="text-red-500">*</span></label>
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
-            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-dark-amethyst-400" />
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
         </div>
-        <div className="mb-3">
-          <label className="mb-1 block text-sm font-medium text-gray-700">Password <span className="text-berry-lipstick-500">*</span></label>
+        <div>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Password <span className="text-red-500">*</span></label>
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8}
-            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-dark-amethyst-400" />
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
         </div>
-        <div className="mb-3">
-          <label className="mb-1 block text-sm font-medium text-gray-700">No. HP <span className="text-berry-lipstick-500">*</span></label>
+        <div>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">No. HP <span className="text-red-500">*</span></label>
           <input value={phone} onChange={(e) => setPhone(e.target.value)} required
-            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-dark-amethyst-400" />
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
         </div>
-        <div className="mb-3">
-          <label className="mb-1 block text-sm font-medium text-gray-700">Hari Libur 1</label>
+        <div>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Hari Libur 1</label>
           <select value={dayoff1} onChange={(e) => setDayoff1(e.target.value)}
-            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-dark-amethyst-400"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
           >
             <option value="">-- Tidak ada --</option>
             {DAY_LABELS.map((label, i) => <option key={i} value={i}>{label}</option>)}
           </select>
         </div>
-        <div className="mb-4">
-          <label className="mb-1 block text-sm font-medium text-gray-700">Hari Libur 2</label>
+        <div>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Hari Libur 2</label>
           <select value={dayoff2} onChange={(e) => setDayoff2(e.target.value)}
-            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-dark-amethyst-400"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
           >
             <option value="">-- Tidak ada --</option>
             {DAY_LABELS.map((label, i) => <option key={i} value={i}>{label}</option>)}
           </select>
         </div>
-        <div className="mb-4">
-          <label className="mb-1 block text-sm font-medium text-gray-700">Bio</label>
+        <div>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Bio</label>
           <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3}
-            className="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-dark-amethyst-400" />
+            className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
         </div>
-        {registerError && <div className="mb-4 rounded-lg bg-berry-lipstick-50 p-3 text-sm text-berry-lipstick-600">{registerError}</div>}
+        {registerError && <div className="rounded-2xl bg-red-50 p-3 text-sm font-semibold text-red-700">{registerError}</div>}
         <button type="submit" disabled={registering}
-          className="w-full rounded-xl bg-dark-amethyst-500 px-4 py-3 text-sm font-semibold text-white shadow-md hover:bg-dark-amethyst-600 disabled:opacity-50">
-          {registering ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Tambah Tutor"}
+          className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 disabled:opacity-50 transition-colors">
+          {registering ? <span className="inline-flex items-center gap-2"><span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> Mendaftarkan...</span> : "Tambah Tutor"}
         </button>
       </form>
     </div>

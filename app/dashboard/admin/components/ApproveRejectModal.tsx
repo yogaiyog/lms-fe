@@ -1,7 +1,7 @@
 "use client";
 
 import { type Class, type RequestClass } from "@/lib/api";
-import { STATUS_LABELS } from "../constants";
+import { X } from "lucide-react";
 
 type Props = {
   request: RequestClass;
@@ -28,38 +28,36 @@ export default function ApproveRejectModal({
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
       <div className="fixed inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative w-full max-w-md rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
+      <div className="relative w-full max-w-md rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl border border-slate-200">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-gray-800">
+          <h2 className="text-lg font-extrabold tracking-tight text-slate-900">
             {approveAction === "APPROVED" ? "Setujui Request" : "Tolak Request"}
           </h2>
-          <button onClick={onClose} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100">
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+          <button onClick={onClose} className="rounded-xl p-1.5 text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+            <X size={20} />
           </button>
         </div>
 
-        <p className="mb-3 text-sm text-gray-600">
+        <p className="mb-4 text-sm text-slate-600 font-semibold">
           {request.student?.fullName} — {request.curriculum}
         </p>
 
         <div className="mb-4 flex gap-2">
           <button onClick={() => onApproveActionChange("APPROVED")}
-            className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${approveAction === "APPROVED" ? "bg-tea-green-500 text-white" : "bg-gray-100 text-gray-600"}`}>
+            className={`flex-1 rounded-2xl px-4 py-2.5 text-sm font-bold transition-colors ${approveAction === "APPROVED" ? "bg-emerald-500 text-white shadow-sm" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>
             Setujui
           </button>
           <button onClick={() => onApproveActionChange("REJECTED")}
-            className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${approveAction === "REJECTED" ? "bg-berry-lipstick-500 text-white" : "bg-gray-100 text-gray-600"}`}>
+            className={`flex-1 rounded-2xl px-4 py-2.5 text-sm font-bold transition-colors ${approveAction === "REJECTED" ? "bg-red-500 text-white shadow-sm" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>
             Tolak
           </button>
         </div>
 
         {approveAction === "APPROVED" && (
           <div className="mb-3">
-            <label className="mb-1 block text-sm font-medium text-gray-700">Assign ke Kelas</label>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700">Assign ke Kelas</label>
             <select value={approveClassId} onChange={(e) => onApproveClassIdChange(e.target.value)}
-              className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-dark-amethyst-400" required
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" required
             >
               <option value="">-- Pilih kelas --</option>
               {classes.filter((c) => c.category === request.category && c.isActive).map((c) => (
@@ -70,17 +68,17 @@ export default function ApproveRejectModal({
         )}
 
         <div className="mb-4">
-          <label className="mb-1 block text-sm font-medium text-gray-700">Catatan Admin</label>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Catatan Admin</label>
           <textarea value={adminNotes} onChange={(e) => onAdminNotesChange(e.target.value)} rows={3}
-            className="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-dark-amethyst-400"
+            className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
           />
         </div>
 
-        {approveError && <div className="mb-4 rounded-lg bg-berry-lipstick-50 p-3 text-sm text-berry-lipstick-600">{approveError}</div>}
+        {approveError && <div className="mb-4 rounded-2xl bg-red-50 p-3 text-sm font-semibold text-red-700">{approveError}</div>}
         <button onClick={onSubmit} disabled={approving || (approveAction === "APPROVED" && !approveClassId)}
-          className="w-full rounded-xl bg-dark-amethyst-500 px-4 py-3 text-sm font-semibold text-white shadow-md hover:bg-dark-amethyst-600 disabled:opacity-50"
+          className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 disabled:opacity-50 transition-colors"
         >
-          {approving ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Simpan"}
+          {approving ? <span className="inline-flex items-center gap-2"><span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> Memproses...</span> : "Simpan"}
         </button>
       </div>
     </div>

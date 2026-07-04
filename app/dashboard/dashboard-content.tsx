@@ -14,7 +14,7 @@ import {
 } from "@/lib/api";
 
 type StudentWithDetails = StudentProfile & {
-  enrollments: (Enrollment & { class: any })[];
+  enrollments: Enrollment[];
   schedules: Schedule[];
   attendances: Attendance[];
 };
@@ -55,6 +55,39 @@ export default function DashboardContent() {
     category: "JUNIOR_I" as "JUNIOR_I" | "JUNIOR_II" | "JUNIOR_III",
   });
 
+  async function loadData() {
+    try {
+      const me = await api.auth.me();
+      setUser(me);
+
+      const studentList = await api.studentProfiles.list();
+      const studentsWithDetails = await Promise.all(
+        studentList.map(async (student) => {
+          const [enrollments, attendances] = await Promise.all([
+            api.enrollments.listByStudent(student.id),
+            api.attendances.listByStudent(student.id),
+          ]);
+
+          const schedules: Schedule[] = [];
+          for (const enrollment of enrollments) {
+            if (!enrollment.classId) continue;
+            const classSchedules = await api.schedules.listByClass(enrollment.classId);
+            schedules.push(...classSchedules);
+          }
+
+          return { ...student, enrollments, schedules, attendances };
+        })
+      );
+
+      setStudents(studentsWithDetails);
+    } catch {
+      clearSession();
+      router.replace("/login");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     const session = getStoredSession();
     if (!session) {
@@ -75,38 +108,6 @@ export default function DashboardContent() {
     }
     loadData();
   }, [router]);
-
-  async function loadData() {
-    try {
-      const me = await api.auth.me();
-      setUser(me);
-
-      const studentList = await api.studentProfiles.list();
-      const studentsWithDetails = await Promise.all(
-        studentList.map(async (student) => {
-          const [enrollments, attendances] = await Promise.all([
-            api.enrollments.listByStudent(student.id),
-            api.attendances.listByStudent(student.id),
-          ]);
-
-          const schedules: Schedule[] = [];
-          for (const enrollment of enrollments) {
-            const classSchedules = await api.schedules.listByClass(enrollment.classId);
-            schedules.push(...classSchedules);
-          }
-
-          return { ...student, enrollments, schedules, attendances };
-        })
-      );
-
-      setStudents(studentsWithDetails);
-    } catch (err) {
-      clearSession();
-      router.replace("/login");
-    } finally {
-      setLoading(false);
-    }
-  }
 
   async function onAddStudent(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -269,7 +270,7 @@ export default function DashboardContent() {
                       <div className="mt-3">
                         <p className="mb-2 text-sm font-medium text-gray-600">Kelas:</p>
                         <div className="flex flex-wrap gap-2">
-                          {student.enrollments.map((enrollment) => (
+                          {student.enrollments.filter((e) => e.class).map((enrollment) => (
                             <span
                               key={enrollment.id}
                               className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700"
@@ -277,7 +278,7 @@ export default function DashboardContent() {
                               <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
                               </svg>
-                              {enrollment.class.name}
+                              {enrollment.class!.name}
                             </span>
                           ))}
                         </div>

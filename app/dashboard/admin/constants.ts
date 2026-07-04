@@ -14,6 +14,12 @@ export const DAY_LABELS: Record<string, string> = {
   SUNDAY: "Minggu",
 };
 
+export const CLASS_TYPE_LABELS: Record<string, string> = {
+  BATCH: "Batch",
+  PRIVATE: "Private",
+  MAKEUP: "Make Up",
+};
+
 export const STATUS_LABELS: Record<string, string> = {
   PENDING: "Menunggu",
   APPROVED: "Disetujui",

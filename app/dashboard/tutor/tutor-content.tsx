@@ -3,6 +3,10 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import {
+  Home, BookOpen, Clock, Moon, Sun,
+  LogOut, X, Menu, FileText, User,
+} from "lucide-react";
+import {
   api,
   clearSession,
   getStoredSession,
@@ -11,24 +15,23 @@ import {
   type Schedule,
   type Announcement,
   type Topic,
+  type StudentProfile,
+  type Attendance,
+  type AssessmentAspect,
 } from "@/lib/api";
 import Link from "next/link";
+import TutorHomeSegment from "./tutor-home-segment";
+import TutorClassesSegment from "./tutor-classes-segment";
+import TutorStudentsSegment from "./tutor-students-segment";
+import TutorScheduleDetailModal from "./tutor-schedule-detail-modal";
 
-const DAY_LABELS: Record<string, string> = {
-  MONDAY: "Senin",
-  TUESDAY: "Selasa",
-  WEDNESDAY: "Rabu",
-  THURSDAY: "Kamis",
-  FRIDAY: "Jumat",
-  SATURDAY: "Sabtu",
-  SUNDAY: "Minggu",
-};
+const NAV_ITEMS = [
+  { key: "home", label: "Beranda", icon: Home },
+  { key: "classes", label: "Kelas", icon: BookOpen },
+  { key: "students", label: "Siswa", icon: User },
+] as const;
 
-const CATEGORY_LABELS: Record<string, string> = {
-  KIDS: "Kelas 1-3 SD",
-  JUNIOR_I: "Kelas 4-6 SD",
-  JUNIOR_II: "Kelas 7-9 SMP",
-};
+const MOBILE_NAV = ["home", "classes", "students"] as const;
 
 type ClassWithDetails = Class & {
   schedules: Schedule[];
@@ -39,17 +42,35 @@ export default function TutorDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [classes, setClasses] = useState<ClassWithDetails[]>([]);
+  const [students, setStudents] = useState<StudentProfile[]>([]);
   const [loading, setLoading] = useState(true);
-  const [segment, setSegment] = useState<"classes" | "schedule">("classes");
+  const [segment, setSegment] = useState<"home" | "classes" | "students">("home");
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [dark, setDark] = useState(false);
+  const [countdowns, setCountdowns] = useState<Record<string, { days: number; hours: number; minutes: number; seconds: number }>>({});
+  const [attendanceForm, setAttendanceForm] = useState<{ scheduleId: string; studentId: string; status: string }[]>([]);
+  const [submittingAttendance, setSubmittingAttendance] = useState(false);
+
+  const theme = {
+    dark,
+    bg: dark ? "bg-slate-950" : "bg-slate-50",
+    card: dark ? "bg-slate-900" : "bg-white",
+    border: dark ? "border-slate-800" : "border-slate-200",
+    text: dark ? "text-slate-50" : "text-slate-900",
+    textMuted: dark ? "text-slate-400" : "text-slate-500",
+  };
+
+  const go = (p: "home" | "classes" | "students") => { setSegment(p); setDrawerOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
 
   // Schedule edit
   const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null);
   const [editScheduleClassId, setEditScheduleClassId] = useState<string>("");
   const [editTopicId, setEditTopicId] = useState<string>("");
-  const [editCustomTopic, setEditCustomTopic] = useState("");
   const [editMeetLink, setEditMeetLink] = useState("");
+  const [forceOngoing, setForceOngoing] = useState(false);
   const [savingSchedule, setSavingSchedule] = useState(false);
   const [scheduleError, setScheduleError] = useState("");
+  const [forceOngoingIds, setForceOngoingIds] = useState<Set<string>>(new Set());
 
   // Announcement
   const [announceClass, setAnnounceClass] = useState<string | null>(null);
@@ -58,45 +79,50 @@ export default function TutorDashboard() {
   const [announceSaving, setAnnounceSaving] = useState(false);
   const [announceError, setAnnounceError] = useState("");
 
+  // Schedule detail
+  const [detailSchedule, setDetailSchedule] = useState<Schedule | null>(null);
+  const [detailAttendances, setDetailAttendances] = useState<Attendance[]>([]);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+  const [expandedStudent, setExpandedStudent] = useState<string | null>(null);
 
-
-  async function loadData() {
-    try {
-      const me = await api.auth.me();
-      setUser(me);
-
-      if (me.role !== "TUTOR" || !me.tutorProfile) {
-        router.replace("/dashboard");
-        return;
-      }
-
-      const classList = await api.classes.listByTutor(me.tutorProfile.id);
-      const classesWithDetails = await Promise.all(
-        classList.map(async (cls) => {
-          const [schedules, announcements] = await Promise.all([
-            api.schedules.listByClass(cls.id),
-            api.announcements.listByClass(cls.id),
-          ]);
-          return { ...cls, schedules, announcements };
-        })
-      );
-
-      setClasses(classesWithDetails);
-    } catch {
-      clearSession();
-      router.replace("/login");
-    } finally {
-      setLoading(false);
-    }
-  }
+  // Assessment form
+  const [assessingAttendance, setAssessingAttendance] = useState<string | null>(null);
+  const [assessmentScores, setAssessmentScores] = useState<Record<string, number>>({});
+  const [mentorComment, setMentorComment] = useState("");
+  const [savingAssessment, setSavingAssessment] = useState(false);
+  const [formAspects, setFormAspects] = useState<AssessmentAspect[]>([]);
 
   useEffect(() => {
     const session = getStoredSession();
-    if (!session) {
-      router.replace("/login");
-      return;
-    }
-    loadData();
+    if (!session) { router.replace("/login"); return; }
+    (async () => {
+      try {
+        const me = await api.auth.me();
+        setUser(me);
+        if (me.role !== "TUTOR" || !me.tutorProfile) {
+          router.replace("/dashboard");
+          return;
+        }
+        const classList = await api.classes.listByTutor(me.tutorProfile.id);
+        const classesWithDetails = await Promise.all(
+          classList.map(async (cls) => {
+            const [schedules, announcements] = await Promise.all([
+              api.schedules.listByClass(cls.id),
+              api.announcements.listByClass(cls.id),
+            ]);
+            return { ...cls, schedules, announcements };
+          })
+        );
+        setClasses(classesWithDetails);
+        const studentList = await api.studentProfiles.list();
+        setStudents(studentList);
+      } catch {
+        clearSession();
+        router.replace("/login");
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [router]);
 
   async function logout() {
@@ -104,14 +130,123 @@ export default function TutorDashboard() {
     router.push("/login");
   }
 
-  // Schedule handlers
   function startEditSchedule(schedule: Schedule, classId: string) {
     setEditingSchedule(schedule);
     setEditScheduleClassId(classId);
     setEditTopicId(schedule.topicId ?? "");
-    setEditCustomTopic(schedule.topic ?? "");
     setEditMeetLink(schedule.meetLink);
+    setForceOngoing(forceOngoingIds.has(schedule.id));
     setScheduleError("");
+  }
+
+  async function markScheduleDone(schedule: Schedule) {
+    try {
+      const updated = await api.schedules.update(schedule.id, { isDone: true });
+      setClasses((prev) =>
+        prev.map((cls) => ({
+          ...cls,
+          schedules: cls.schedules.map((s) => (s.id === updated.id ? updated : s)),
+        }))
+      );
+    } catch (e) {
+      console.error("Failed to mark schedule done", e);
+    }
+  }
+
+  async function openScheduleDetail(schedule: Schedule) {
+    setDetailSchedule(schedule);
+    setLoadingDetail(true);
+    setDetailAttendances([]);
+    setExpandedStudent(null);
+    setAssessingAttendance(null);
+    setFormAspects([]);
+    try {
+      const attendances = await api.attendances.listBySchedule(schedule.id);
+      setDetailAttendances(attendances);
+    } catch (e) {
+      console.error("Failed to load attendances", e);
+    } finally {
+      setLoadingDetail(false);
+    }
+  }
+
+  async function loadScheduleAspects(schedule: Schedule): Promise<AssessmentAspect[]> {
+    const fromState = classes.find((c) => c.id === schedule.classId)?.curriculum?.assessmentSet?.aspects;
+    if (fromState && fromState.length > 0) return fromState;
+    try {
+      const cls = await api.classes.get(schedule.classId);
+      return cls?.curriculum?.assessmentSet?.aspects ?? [];
+    } catch {
+      return [];
+    }
+  }
+
+  async function startAssessment(attendanceId: string, _schedule: Schedule) {
+    const att = detailAttendances.find((a) => a.id === attendanceId);
+    const aspects = await loadScheduleAspects(_schedule);
+    setFormAspects(aspects);
+    if (att?.assessment) {
+      const scores: Record<string, number> = {};
+      for (const sc of att.assessment.scores ?? []) {
+        scores[sc.aspectId] = sc.score;
+      }
+      for (const asp of aspects) {
+        if (!(asp.id in scores)) scores[asp.id] = asp.minScore;
+      }
+      setAssessmentScores(scores);
+      setMentorComment(att.assessment.mentorComment ?? "");
+    } else {
+      const defaults: Record<string, number> = {};
+      for (const asp of aspects) defaults[asp.id] = asp.minScore;
+      setAssessmentScores(defaults);
+      setMentorComment("");
+    }
+    setAssessingAttendance(attendanceId);
+    setExpandedStudent(null);
+  }
+
+  async function saveAssessment(attendanceId: string) {
+    const aspects = formAspects;
+    if (aspects.length === 0) return;
+    setSavingAssessment(true);
+    try {
+      const totalPossible = aspects.reduce((s, a) => s + a.maxScore, 0);
+      const totalObtained = Object.entries(assessmentScores).reduce((sum, [, score]) => sum + score, 0);
+      const percentage = Math.round((totalObtained / totalPossible) * 100);
+      const att = detailAttendances.find((a) => a.id === attendanceId);
+      if (att?.assessment) {
+        const existingScores = att.assessment.scores ?? [];
+        await api.attendanceAssessments.update(att.assessment.id, {
+          totalScore: totalObtained, percentage, mentorComment: mentorComment || null,
+        });
+        await Promise.all(
+          Object.entries(assessmentScores).map(([aspectId, score]) => {
+            const existing = existingScores.find((s) => s.aspectId === aspectId);
+            if (existing) {
+              return api.attendanceAssessmentScores.update(existing.id, { score });
+            }
+            return api.attendanceAssessmentScores.create({ assessmentId: att.assessment!.id, aspectId, score });
+          }),
+        );
+      } else {
+        const assessment = await api.attendanceAssessments.create({
+          attendanceId, totalScore: totalObtained, percentage, mentorComment: mentorComment || null,
+        });
+        await Promise.all(
+          Object.entries(assessmentScores).map(([aspectId, score]) =>
+            api.attendanceAssessmentScores.create({ assessmentId: assessment.id, aspectId, score })
+          ),
+        );
+      }
+      setAssessingAttendance(null);
+      setFormAspects([]);
+      const attendances = await api.attendances.listBySchedule(detailSchedule!.id);
+      setDetailAttendances(attendances);
+    } catch (e) {
+      console.error("Failed to save assessment", e);
+    } finally {
+      setSavingAssessment(false);
+    }
   }
 
   async function saveSchedule(event: FormEvent<HTMLFormElement>) {
@@ -119,7 +254,6 @@ export default function TutorDashboard() {
     if (!editingSchedule) return;
     setSavingSchedule(true);
     setScheduleError("");
-
     try {
       const payload: Record<string, string | null> = {};
       const selectedTopicId = editTopicId || null;
@@ -129,7 +263,6 @@ export default function TutorDashboard() {
         payload.topic = topic ? topic.title : null;
       }
       if (editMeetLink !== editingSchedule.meetLink) payload.meetLink = editMeetLink;
-
       if (Object.keys(payload).length > 0) {
         const updated = await api.schedules.update(editingSchedule.id, payload);
         setClasses((prev) =>
@@ -139,6 +272,12 @@ export default function TutorDashboard() {
           }))
         );
       }
+      setForceOngoingIds((prev) => {
+        const next = new Set(prev);
+        if (forceOngoing) next.add(editingSchedule.id);
+        else next.delete(editingSchedule.id);
+        return next;
+      });
       setEditingSchedule(null);
     } catch (err) {
       setScheduleError(err instanceof Error ? err.message : "Gagal menyimpan");
@@ -147,29 +286,20 @@ export default function TutorDashboard() {
     }
   }
 
-  // Announcement handlers
   async function createAnnouncement(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!announceClass || !user?.tutorProfile) return;
     setAnnounceSaving(true);
     setAnnounceError("");
-
     try {
       const created = await api.announcements.create({
-        classId: announceClass,
-        tutorId: user.tutorProfile.id,
-        title: announceTitle,
-        content: announceContent,
+        classId: announceClass, tutorId: user.tutorProfile.id, title: announceTitle, content: announceContent,
       });
-
       setClasses((prev) =>
         prev.map((cls) =>
-          cls.id === announceClass
-            ? { ...cls, announcements: [...cls.announcements, created] }
-            : cls
+          cls.id === announceClass ? { ...cls, announcements: [...cls.announcements, created] } : cls
         )
       );
-
       setAnnounceClass(null);
       setAnnounceTitle("");
       setAnnounceContent("");
@@ -181,345 +311,284 @@ export default function TutorDashboard() {
   }
 
   function getClassTopics(classId: string): Topic[] {
+    return classes.find((c) => c.id === classId)?.curriculum?.topics ?? [];
+  }
+
+  function getScheduleStart(schedule: Schedule) {
+    const d = new Date(schedule.date);
+    const [h, m] = schedule.startTime.split(":").map(Number);
+    d.setHours(h, m, 0, 0);
+    return d;
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newCountdowns: Record<string, { days: number; hours: number; minutes: number; seconds: number }> = {};
+      for (const cls of classes) {
+        for (const s of cls.schedules) {
+          if (s.isDone) continue;
+          const start = getScheduleStart(s);
+          const diff = start.getTime() - Date.now();
+          newCountdowns[s.id] = !isFinite(diff) || diff <= 0
+            ? { days: 0, hours: 0, minutes: 0, seconds: 0 }
+            : {
+                days: Math.floor(diff / 86400000),
+                hours: Math.floor((diff % 86400000) / 3600000),
+                minutes: Math.floor((diff % 3600000) / 60000),
+                seconds: Math.floor((diff % 60000) / 1000),
+              };
+        }
+      }
+      setCountdowns(newCountdowns);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [classes]);
+
+  function initAttendanceForm(scheduleId: string, classId: string) {
     const cls = classes.find((c) => c.id === classId);
-    return cls?.curriculum?.topics ?? [];
+    if (!cls) return;
+    setAttendanceForm((cls.enrollments ?? []).map((e) => ({ scheduleId, studentId: e.studentId, status: "PRESENT" })));
+  }
+
+  function setAttendanceStatus(studentId: string, status: string) {
+    setAttendanceForm((prev) => prev.map((a) => (a.studentId === studentId ? { ...a, status } : a)));
+  }
+
+  async function submitAttendanceForm() {
+    setSubmittingAttendance(true);
+    try {
+      const scheduleIds = new Set<string>();
+      for (const item of attendanceForm) {
+        const cls = classes.find((c) => c.schedules.some((s) => s.id === item.scheduleId));
+        if (!cls) continue;
+        const schedule = cls.schedules.find((s) => s.id === item.scheduleId);
+        if (!schedule) continue;
+        await api.attendances.create({ scheduleId: item.scheduleId, studentId: item.studentId, date: schedule.date, status: item.status });
+        scheduleIds.add(item.scheduleId);
+      }
+      setAttendanceForm([]);
+      for (const sid of scheduleIds) {
+        const cls = classes.find((c) => c.schedules.some((s) => s.id === sid));
+        if (!cls) continue;
+        const schedule = cls.schedules.find((s) => s.id === sid);
+        if (!schedule) continue;
+        await markScheduleDone(schedule);
+        openScheduleDetail(schedule);
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Gagal menyimpan absensi");
+    } finally {
+      setSubmittingAttendance(false);
+    }
   }
 
   if (loading) {
     return (
-      <div
-        className="flex min-h-screen items-center justify-center"
-        style={{
-          background: "linear-gradient(135deg, #32095d 0%, #4a0e8b 50%, #6312ba 100%)",
-        }}
-      >
-        <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-white border-t-transparent" />
+      <div className={`flex min-h-screen items-center justify-center ${theme.bg}`}>
+        <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
       </div>
     );
   }
 
-  const allSchedules = classes.flatMap((cls) =>
-    cls.schedules.map((s) => ({ ...s, className: cls.name }))
-  );
-
   return (
-    <div
-      className="min-h-screen"
-      style={{
-        background: "linear-gradient(135deg, #32095d 0%, #4a0e8b 50%, #6312ba 100%)",
-      }}
-    >
-      <div className="mx-auto max-w-4xl px-4 py-6">
-        {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Dashboard Tutor</h1>
-            <p className="text-sm text-white/80">
-              {user?.tutorProfile?.fullName ?? user?.email}
-            </p>
+    <div className={`min-h-screen w-full ${theme.bg} font-sans`}>
+      <div className="flex">
+        {/* Sidebar (desktop) */}
+        <aside className={`hidden md:flex md:w-64 md:flex-col fixed inset-y-0 left-0 border-r ${theme.border} ${theme.card} px-4 py-6`}>
+          <div className="flex items-center gap-2 px-2 mb-8">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-600 text-white font-extrabold">T</div>
+            <div>
+              <p className={`font-extrabold leading-tight ${theme.text}`}>Tutor</p>
+              <p className={`text-xs leading-tight ${theme.textMuted}`}>Dashboard</p>
+            </div>
           </div>
-          <button
-            onClick={logout}
-            className="rounded-lg p-2 text-white/80 transition hover:bg-white/10 hover:text-white"
-          >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Segment */}
-        <div className="rounded-2xl bg-white p-2 shadow-md">
-          <div className="flex gap-1 rounded-xl bg-gray-100 p-1">
-            <button
-              onClick={() => setSegment("classes")}
-              className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition ${
-                segment === "classes"
-                  ? "bg-white text-dark-amethyst-600 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              Kelas Saya
-            </button>
-            <button
-              onClick={() => setSegment("schedule")}
-              className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition ${
-                segment === "schedule"
-                  ? "bg-white text-dark-amethyst-600 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              Jadwal
-            </button>
-            <Link
-              href="/dashboard/tutor/jadwal-slot"
-              className="flex-1 rounded-lg px-4 py-2.5 text-center text-sm font-medium text-gray-500 transition hover:text-gray-700"
-            >
-              Slot
+          <nav className="flex-1 space-y-1">
+            {NAV_ITEMS.map((item) => {
+              const Icon = item.icon;
+              const active = segment === item.key;
+              return (
+                <button key={item.key} onClick={() => go(item.key)}
+                  className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition-colors ${active ? "bg-blue-600 text-white shadow-sm shadow-blue-600/30" : `${theme.text} hover:bg-blue-50 hover:text-blue-700`}`}>
+                  <Icon size={18} /> {item.label}
+                </button>
+              );
+            })}
+          </nav>
+          <div className="space-y-1 mt-2">
+            <Link href="/dashboard/tutor/jadwal-slot"
+              className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold ${theme.text} hover:bg-blue-50 hover:text-blue-700 transition-colors`}>
+              <Clock size={18} /> Slot
             </Link>
-            <Link
-              href="/dashboard/tutor/kurikulum"
-              className="flex-1 rounded-lg px-4 py-2.5 text-center text-sm font-medium text-gray-500 transition hover:text-gray-700"
-            >
-              Kurikulum
+            <Link href="/dashboard/tutor/kurikulum"
+              className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold ${theme.text} hover:bg-blue-50 hover:text-blue-700 transition-colors`}>
+              <FileText size={18} /> Kurikulum
             </Link>
           </div>
-        </div>
+          <div className={`mt-6 rounded-2xl p-4 ${dark ? "bg-slate-800" : "bg-blue-50"}`}>
+            <p className={`text-xs font-bold ${theme.text}`}>{user?.tutorProfile?.fullName ?? user?.email}</p>
+            <p className={`text-xs mt-1 ${theme.textMuted}`}>Tutor Dashboard</p>
+          </div>
+        </aside>
 
-        {/* Classes Tab */}
-        {segment === "classes" && (
-          <div className="mt-4 space-y-4">
-            {classes.length === 0 ? (
-              <div className="rounded-2xl bg-white p-6 text-center shadow-md">
-                <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-                  <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342" />
-                  </svg>
+        {/* Mobile drawer */}
+        {drawerOpen && (
+          <div className="fixed inset-0 z-40 md:hidden">
+            <div className="absolute inset-0 bg-black/40" onClick={() => setDrawerOpen(false)} />
+            <div className={`absolute left-0 top-0 bottom-0 w-72 ${theme.card} p-5`}>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white font-extrabold text-sm">T</div>
+                  <p className={`font-extrabold ${theme.text}`}>Tutor</p>
                 </div>
-                <h3 className="text-lg font-bold text-gray-800">Belum ada kelas</h3>
-                <p className="mt-1 text-sm text-gray-500">Kamu belum mengajar kelas apapun</p>
+                <button onClick={() => setDrawerOpen(false)} className={theme.textMuted}><X size={20} /></button>
               </div>
-            ) : (
-              classes.map((cls) => (
-                <div key={cls.id} className="rounded-2xl bg-white p-5 shadow-md">
-                  {/* Class Header */}
-                  <div className="mb-4 flex items-start justify-between">
-                    <div>
-                      <h3 className="text-[1.1rem] font-bold text-gray-800">{cls.name}</h3>
-                      <span className="mt-1 inline-block rounded-full bg-frosted-blue-50 px-3 py-1 text-xs font-medium text-frosted-blue-600">
-                        {CATEGORY_LABELS[cls.category] ?? cls.category}
-                      </span>
-                    </div>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-tea-green-50 px-3 py-1 text-xs font-medium text-tea-green-700">
-                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-                      </svg>
-                      {cls.enrollments?.length ?? 0} siswa
-                    </span>
-                  </div>
-
-                  {/* Schedules */}
-                  {cls.schedules.length > 0 && (
-                    <div className="mb-4">
-                      <p className="mb-2 text-sm font-medium text-gray-600">Jadwal:</p>
-                      <div className="space-y-2">
-                        {cls.schedules.map((schedule) => (
-                          <div
-                            key={schedule.id}
-                            className="flex items-center justify-between rounded-xl bg-frosted-blue-50 p-3"
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-frosted-blue-100">
-                                <svg className="h-5 w-5 text-frosted-blue-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-                                </svg>
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-gray-800">
-                                  {DAY_LABELS[schedule.dayOfWeek] ?? schedule.dayOfWeek}
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                  {schedule.startTime} - {schedule.endTime}
-                                </p>
-                                {schedule.topic && (
-                                  <p className="text-xs font-medium text-frosted-blue-700">
-                                    {schedule.topic}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {schedule.meetLink && (
-                                <a
-                                  href={schedule.meetLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="rounded-lg bg-frosted-blue-100 p-2 text-frosted-blue-600 transition hover:bg-frosted-blue-200"
-                                >
-                                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                                  </svg>
-                                </a>
-                              )}
-                              <button
-                                onClick={() => startEditSchedule(schedule, cls.id)}
-                                className="rounded-lg bg-dark-amethyst-100 p-2 text-dark-amethyst-600 transition hover:bg-dark-amethyst-200"
-                              >
-                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                </svg>
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {cls.schedules.length === 0 && (
-                    <p className="mb-4 text-sm text-gray-400">Belum ada jadwal untuk kelas ini</p>
-                  )}
-
-                  {/* Announcements */}
-                  <div className="border-t border-gray-100 pt-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <p className="text-sm font-medium text-gray-600">Pengumuman:</p>
-                      <button
-                        onClick={() => {
-                          setAnnounceClass(cls.id);
-                          setAnnounceTitle("");
-                          setAnnounceContent("");
-                          setAnnounceError("");
-                        }}
-                        className="rounded-lg bg-dark-amethyst-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-dark-amethyst-600"
-                      >
-                        + Pengumuman
-                      </button>
-                    </div>
-
-                    {cls.announcements.length > 0 ? (
-                      <div className="space-y-2">
-                        {cls.announcements.map((ann) => (
-                          <div key={ann.id} className="rounded-xl bg-gray-50 p-3">
-                            <p className="text-sm font-semibold text-gray-800">{ann.title}</p>
-                            <p className="mt-0.5 text-xs text-gray-500">{ann.content}</p>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-400">Belum ada pengumuman</p>
-                    )}
-                  </div>
-
-                  {/* Curriculum Section */}
-                  <div className="mt-4 border-t border-gray-100 pt-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <p className="text-sm font-medium text-gray-600">Kurikulum:</p>
-                      {cls.curriculum && (
-                        <Link
-                          href={`/dashboard/tutor/kurikulum/${cls.curriculum.id}`}
-                          className="rounded-lg bg-dark-amethyst-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-dark-amethyst-600"
-                        >
-                          Lihat Kurikulum
-                        </Link>
-                      )}
-                    </div>
-
-                    {cls.curriculum ? (
-                      <div className="mb-2 flex items-center gap-2">
-                        <p className="text-sm font-semibold text-gray-700">{cls.curriculum.name}</p>
-                        <span className="rounded-full bg-frosted-blue-50 px-2 py-0.5 text-[10px] font-medium text-frosted-blue-600">
-                          {cls.curriculum.topics.length} topic
-                        </span>
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-400">Belum ada kurikulum</p>
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
+              <nav className="space-y-1">
+                {[{ key: "home", label: "Beranda", icon: Home }, { key: "classes", label: "Kelas", icon: BookOpen }, { key: "students", label: "Siswa", icon: User }, ...[{ key: "slot", label: "Slot", icon: Clock, href: "/dashboard/tutor/jadwal-slot" as const }, { key: "kurikulum", label: "Kurikulum", icon: FileText, href: "/dashboard/tutor/kurikulum" as const }]].map((item) => {
+                  const Icon = item.icon;
+                  const active = segment === item.key;
+                  if (item.href) {
+                    return (
+                      <Link key={item.key} href={item.href}
+                        className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold ${theme.text} hover:bg-blue-50 hover:text-blue-700`}>
+                        <Icon size={18} /> {item.label}
+                      </Link>
+                    );
+                  }
+                  return (
+                    <button key={item.key} onClick={() => go(item.key as "home" | "classes" | "students")}
+                      className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold ${active ? "bg-blue-600 text-white" : `${theme.text} hover:bg-blue-50 hover:text-blue-700`}`}>
+                      <Icon size={18} /> {item.label}
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
           </div>
         )}
 
-        {/* Schedule Tab */}
-        {segment === "schedule" && (
-          <div className="mt-4 space-y-4">
-            {allSchedules.length === 0 ? (
-              <div className="rounded-2xl bg-white p-6 text-center shadow-md">
-                <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-                  <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-bold text-gray-800">Belum ada jadwal</h3>
-                <p className="mt-1 text-sm text-gray-500">Kamu belum memiliki jadwal mengajar</p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {allSchedules.map((schedule) => (
-                  <div key={schedule.id} className="rounded-2xl bg-white p-4 shadow-md">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100">
-                          <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342" />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-gray-800">{schedule.className}</p>
-                          <p className="text-xs text-gray-500">
-                            {DAY_LABELS[schedule.dayOfWeek] ?? schedule.dayOfWeek},{" "}
-                            {schedule.startTime} - {schedule.endTime}
-                          </p>
-                          {schedule.topic && (
-                            <p className="text-xs font-medium text-frosted-blue-700">
-                              {schedule.topic}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      {schedule.meetLink && (
-                        <a
-                          href={schedule.meetLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="rounded-lg bg-frosted-blue-50 px-3 py-1.5 text-xs font-medium text-frosted-blue-600 transition hover:bg-frosted-blue-100"
-                        >
-                          Buka Link
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
+        {/* Main column */}
+        <div className="flex-1 md:ml-64 min-w-0">
+          <header className={`sticky top-0 z-30 flex items-center justify-between gap-3 border-b ${theme.border} ${theme.card}/90 backdrop-blur px-4 sm:px-8 py-3.5`}>
+            <div className="flex items-center gap-3">
+              <button onClick={() => setDrawerOpen(true)} className={`md:hidden ${theme.text}`}>
+                <Menu size={22} />
+              </button>
+              <p className={`font-extrabold hidden sm:block ${theme.text}`}>
+                {NAV_ITEMS.find((n) => n.key === segment)?.label || "Dashboard"}
+              </p>
+            </div>
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <button onClick={() => setDark((v) => !v)}
+                className={`flex h-9 w-9 items-center justify-center rounded-full ${theme.textMuted} hover:bg-blue-50 hover:text-blue-600 transition-colors`}>
+                {dark ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+              <button onClick={logout} className={`flex h-9 w-9 items-center justify-center rounded-full ${theme.textMuted} hover:bg-red-50 hover:text-red-600 transition-colors`} title="Logout">
+                <LogOut size={18} />
+              </button>
+            </div>
+          </header>
+
+          <main className="px-4 sm:px-8 py-6 pb-24 md:pb-10 max-w-6xl">
+            {segment === "classes" && (
+              <TutorClassesSegment
+                theme={theme}
+                classes={classes}
+                onOpenScheduleDetail={openScheduleDetail}
+                onStartEditSchedule={startEditSchedule}
+                onOpenAnnounceForm={(classId) => { setAnnounceClass(classId); setAnnounceTitle(""); setAnnounceContent(""); setAnnounceError(""); }}
+              />
             )}
-          </div>
-        )}
+            {segment === "students" && (
+              <TutorStudentsSegment
+                theme={theme}
+                classes={classes}
+                students={students}
+              />
+            )}
+            {segment === "home" && (
+              <TutorHomeSegment
+                theme={theme}
+                classes={classes}
+                students={students}
+                countdowns={countdowns}
+                forceOngoingIds={forceOngoingIds}
+                attendanceForm={attendanceForm}
+                submittingAttendance={submittingAttendance}
+                onInitAttendanceForm={initAttendanceForm}
+                onSubmitAttendance={submitAttendanceForm}
+                onSetAttendanceStatus={setAttendanceStatus}
+                onCancelAttendance={() => setAttendanceForm([])}
+                onEditSchedule={startEditSchedule}
+                onOpenScheduleDetail={openScheduleDetail}
+              />
+            )}
+          </main>
+        </div>
       </div>
+
+      {/* Mobile bottom nav */}
+      <nav className={`md:hidden fixed bottom-0 inset-x-0 z-30 border-t ${theme.border} ${theme.card} px-2 py-2 flex items-center justify-between`}>
+        {MOBILE_NAV.map((key) => {
+          const item = NAV_ITEMS.find((n) => n.key === key);
+          if (!item) return null;
+          const Icon = item.icon;
+          const active = segment === key;
+          return (
+            <button key={key} onClick={() => go(key)}
+              className={`flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-semibold ${active ? "text-blue-600" : theme.textMuted}`}>
+              <Icon size={19} />
+              {item.label.split(" ")[0]}
+            </button>
+          );
+        })}
+        <Link href="/dashboard/tutor/jadwal-slot"
+          className={`flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-semibold ${theme.textMuted}`}>
+          <Clock size={19} /> Slot
+        </Link>
+        <Link href="/dashboard/tutor/kurikulum"
+          className={`flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-semibold ${theme.textMuted}`}>
+          <FileText size={19} /> Kurikulum
+        </Link>
+      </nav>
 
       {/* Modal Edit Schedule */}
       {editingSchedule && (
         <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
           <div className="fixed inset-0 bg-black/40" onClick={() => setEditingSchedule(null)} />
-          <div className="relative w-full max-w-md rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
+          <div className={`relative w-full max-w-md rounded-t-3xl ${theme.card} p-6 shadow-2xl sm:rounded-3xl`}>
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-800">Edit Jadwal</h2>
-              <button onClick={() => setEditingSchedule(null)} className="rounded-lg p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600">
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+              <h2 className={`text-lg font-extrabold ${theme.text}`}>Edit Jadwal</h2>
+              <button onClick={() => setEditingSchedule(null)} className={`rounded-xl p-1.5 ${theme.textMuted} hover:bg-blue-50 hover:text-blue-600 transition-colors`}>
+                <X size={20} />
               </button>
             </div>
             <form onSubmit={saveSchedule}>
               <div className="mb-3">
-                <label className="mb-1 block text-sm font-medium text-gray-700">Topic (dari Kurikulum)</label>
-                <select
-                  value={editTopicId}
-                  onChange={(e) => {
-                    setEditTopicId(e.target.value);
-                    if (e.target.value) {
-                      const topic = getClassTopics(editScheduleClassId).find((t) => t.id === e.target.value);
-                      setEditCustomTopic(topic?.title ?? "");
-                    }
-                  }}
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-dark-amethyst-400 focus:ring-2 focus:ring-dark-amethyst-100"
-                >
+                <label className="mb-1.5 block text-sm font-semibold text-slate-700">Topic (dari Kurikulum)</label>
+                <select value={editTopicId} onChange={(e) => { setEditTopicId(e.target.value); }}
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
                   <option value="">-- Pilih topic --</option>
                   {getClassTopics(editScheduleClassId).map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.title}
-                    </option>
+                    <option key={t.id} value={t.id}>{t.title}</option>
                   ))}
                 </select>
               </div>
               <div className="mb-4">
-                <label className="mb-1 block text-sm font-medium text-gray-700">Meet Link</label>
-                <input value={editMeetLink} onChange={(e) => setEditMeetLink(e.target.value)} placeholder="https://meet.google.com/xxx" className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-dark-amethyst-400 focus:ring-2 focus:ring-dark-amethyst-100" />
+                <label className="mb-1.5 block text-sm font-semibold text-slate-700">Meet Link</label>
+                <input value={editMeetLink} onChange={(e) => setEditMeetLink(e.target.value)} placeholder="https://meet.google.com/xxx"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
               </div>
-              {scheduleError && <div className="mb-4 rounded-lg bg-berry-lipstick-50 p-3 text-sm text-berry-lipstick-600">{scheduleError}</div>}
-              <button type="submit" disabled={savingSchedule} className="w-full rounded-xl bg-dark-amethyst-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-dark-amethyst-600 disabled:opacity-50">
-                {savingSchedule ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Simpan"}
+              <label className="mb-4 flex items-center gap-3 cursor-pointer">
+                <div onClick={(e) => { e.preventDefault(); setForceOngoing((v) => !v); }}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${forceOngoing ? "bg-emerald-500" : "bg-slate-300"}`}>
+                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${forceOngoing ? "translate-x-6" : "translate-x-1"}`} />
+                </div>
+                <span className="text-sm font-semibold text-slate-700">Force Ongoing (aktifkan absensi)</span>
+              </label>
+              {scheduleError && <div className="mb-4 rounded-2xl bg-red-50 p-3 text-sm font-semibold text-red-700">{scheduleError}</div>}
+              <button type="submit" disabled={savingSchedule}
+                className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 disabled:opacity-50 transition-colors">
+                {savingSchedule ? <span className="inline-flex items-center gap-2"><span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> Menyimpan...</span> : "Simpan"}
               </button>
             </form>
           </div>
@@ -530,33 +599,59 @@ export default function TutorDashboard() {
       {announceClass && (
         <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
           <div className="fixed inset-0 bg-black/40" onClick={() => setAnnounceClass(null)} />
-          <div className="relative w-full max-w-md rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
+          <div className={`relative w-full max-w-md rounded-t-3xl ${theme.card} p-6 shadow-2xl sm:rounded-3xl`}>
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-800">Buat Pengumuman</h2>
-              <button onClick={() => setAnnounceClass(null)} className="rounded-lg p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600">
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+              <h2 className={`text-lg font-extrabold ${theme.text}`}>Buat Pengumuman</h2>
+              <button onClick={() => setAnnounceClass(null)} className={`rounded-xl p-1.5 ${theme.textMuted} hover:bg-blue-50 hover:text-blue-600 transition-colors`}>
+                <X size={20} />
               </button>
             </div>
             <form onSubmit={createAnnouncement}>
               <div className="mb-3">
-                <label className="mb-1 block text-sm font-medium text-gray-700">Judul</label>
-                <input value={announceTitle} onChange={(e) => setAnnounceTitle(e.target.value)} placeholder="Judul pengumuman" className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-dark-amethyst-400 focus:ring-2 focus:ring-dark-amethyst-100" required />
+                <label className="mb-1.5 block text-sm font-semibold text-slate-700">Judul</label>
+                <input value={announceTitle} onChange={(e) => setAnnounceTitle(e.target.value)} placeholder="Judul pengumuman"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" required />
               </div>
               <div className="mb-4">
-                <label className="mb-1 block text-sm font-medium text-gray-700">Isi Pengumuman</label>
-                <textarea value={announceContent} onChange={(e) => setAnnounceContent(e.target.value)} placeholder="Tulis isi pengumuman..." rows={4} className="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-dark-amethyst-400 focus:ring-2 focus:ring-dark-amethyst-100" required />
+                <label className="mb-1.5 block text-sm font-semibold text-slate-700">Isi Pengumuman</label>
+                <textarea value={announceContent} onChange={(e) => setAnnounceContent(e.target.value)} placeholder="Tulis isi pengumuman..." rows={4}
+                  className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" required />
               </div>
-              {announceError && <div className="mb-4 rounded-lg bg-berry-lipstick-50 p-3 text-sm text-berry-lipstick-600">{announceError}</div>}
-              <button type="submit" disabled={announceSaving} className="w-full rounded-xl bg-tea-green-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-tea-green-600 disabled:opacity-50">
-                {announceSaving ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Kirim Pengumuman"}
+              {announceError && <div className="mb-4 rounded-2xl bg-red-50 p-3 text-sm font-semibold text-red-700">{announceError}</div>}
+              <button type="submit" disabled={announceSaving}
+                className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 disabled:opacity-50 transition-colors">
+                {announceSaving ? <span className="inline-flex items-center gap-2"><span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> Mengirim...</span> : "Kirim Pengumuman"}
               </button>
             </form>
           </div>
         </div>
       )}
 
+      {/* Schedule Detail Modal */}
+      {detailSchedule && (
+        <TutorScheduleDetailModal
+          theme={theme}
+          detailSchedule={detailSchedule}
+          detailAttendances={detailAttendances}
+          loadingDetail={loadingDetail}
+          expandedStudent={expandedStudent}
+          assessingAttendance={assessingAttendance}
+          formAspects={formAspects}
+          assessmentScores={assessmentScores}
+          mentorComment={mentorComment}
+          savingAssessment={savingAssessment}
+          onClose={() => setDetailSchedule(null)}
+          onToggleExpand={(studentId) => setExpandedStudent((prev) => prev === studentId ? null : studentId)}
+          onStartAssessment={(attendanceId) => {
+            const schedule = detailSchedule;
+            startAssessment(attendanceId, schedule);
+          }}
+          onCancelAssessment={() => setAssessingAttendance(null)}
+          onScoreChange={(aspectId, value) => setAssessmentScores((prev) => ({ ...prev, [aspectId]: value }))}
+          onMentorCommentChange={setMentorComment}
+          onSaveAssessment={saveAssessment}
+        />
+      )}
     </div>
   );
 }

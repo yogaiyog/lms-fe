@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeft, LogOut } from "lucide-react";
 import {
   api,
   clearSession,
@@ -12,18 +13,13 @@ import {
 } from "@/lib/api";
 
 const DAY_LABELS: Record<string, string> = {
-  MONDAY: "Senin",
-  TUESDAY: "Selasa",
-  WEDNESDAY: "Rabu",
-  THURSDAY: "Kamis",
-  FRIDAY: "Jumat",
-  SATURDAY: "Sabtu",
-  SUNDAY: "Minggu",
+  MONDAY: "Senin", TUESDAY: "Selasa", WEDNESDAY: "Rabu",
+  THURSDAY: "Kamis", FRIDAY: "Jumat", SATURDAY: "Sabtu", SUNDAY: "Minggu",
 };
 
 const DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
 
-const HOURS = Array.from({ length: 13 }, (_, i) => i + 9); // 09:00 - 21:00
+const HOURS = Array.from({ length: 13 }, (_, i) => i + 9);
 
 function fmt(h: number) {
   return `${String(h).padStart(2, "0")}:00`;
@@ -51,29 +47,27 @@ export default function SlotGrid() {
       router.replace("/login");
       return;
     }
-    loadData();
-  }, [router]);
+    (async () => {
+      try {
+        const me = await api.auth.me();
+        setUser(me);
 
-  async function loadData() {
-    try {
-      const me = await api.auth.me();
-      setUser(me);
+        if (me.role !== "TUTOR" || !me.tutorProfile) {
+          router.replace("/dashboard");
+          return;
+        }
 
-      if (me.role !== "TUTOR" || !me.tutorProfile) {
-        router.replace("/dashboard");
-        return;
+        const res = await api.tutorSlots.list(me.tutorProfile.id);
+        setSlots(res.slots);
+        setDayoffs(res.dayoffs);
+      } catch {
+        clearSession();
+        router.replace("/login");
+      } finally {
+        setLoading(false);
       }
-
-      const res = await api.tutorSlots.list(me.tutorProfile.id);
-      setSlots(res.slots);
-      setDayoffs(res.dayoffs);
-    } catch {
-      clearSession();
-      router.replace("/login");
-    } finally {
-      setLoading(false);
-    }
-  }
+    })();
+  }, [router]);
 
   function isDayoff(day: string) {
     return dayoffs.includes(DAYS.indexOf(day));
@@ -112,37 +106,36 @@ export default function SlotGrid() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center" style={{ background: "linear-gradient(135deg, #32095d 0%, #4a0e8b 50%, #6312ba 100%)" }}>
-        <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-white border-t-transparent" />
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen" style={{ background: "linear-gradient(135deg, #32095d 0%, #4a0e8b 50%, #6312ba 100%)" }}>
+    <div className="min-h-screen bg-slate-50">
       <div className="mx-auto max-w-6xl px-4 py-6">
         <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Atur Jadwal Slot</h1>
-            <p className="text-sm text-white/80">Klik cell untuk mengaktifkan / menonaktifkan slot</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link href="/dashboard/tutor" className="rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/20">
-              Kembali
+          <div className="flex items-center gap-3">
+            <Link href="/dashboard/tutor"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+              <ArrowLeft size={18} />
             </Link>
-            <button onClick={logout} className="rounded-lg p-2 text-white/80 transition hover:bg-white/10 hover:text-white">
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
-              </svg>
-            </button>
+            <div>
+              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Atur Jadwal Slot</h1>
+              <p className="mt-1 text-sm text-slate-500">Klik cell untuk mengaktifkan/menonaktifkan slot</p>
+            </div>
           </div>
+          <button onClick={logout}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors">
+            <LogOut size={18} />
+          </button>
         </div>
 
-        {/* Dayoff info */}
-        <div className="mb-4 rounded-2xl bg-white p-4 shadow-md">
-          <p className="text-sm text-gray-600">
+        <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-4 mb-4">
+          <p className="text-sm text-slate-600">
             Day Off:{" "}
-            <span className="font-semibold text-gray-800">
+            <span className="font-bold text-slate-900">
               {dayoffs.length > 0
                 ? dayoffs.map((d) => DAY_LABELS[DAYS[d]]).join(" & ")
                 : "-"}
@@ -151,22 +144,22 @@ export default function SlotGrid() {
         </div>
 
         {error && (
-          <div className="mb-4 rounded-xl bg-berry-lipstick-50 p-3 text-sm text-berry-lipstick-700">
+          <div className="mb-4 rounded-2xl bg-red-50 p-3 text-sm font-semibold text-red-700">
             {error}
           </div>
         )}
 
-        <div className="overflow-x-auto rounded-2xl bg-white shadow-md">
+        <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm">
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr>
-                <th className="sticky left-0 z-10 border-r border-b border-gray-200 bg-gray-50 px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                <th className="sticky left-0 z-10 border-r border-b border-slate-200 bg-slate-50 px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   Jam
                 </th>
                 {DAYS.map((day) => (
-                  <th key={day} className="border-b border-gray-200 bg-gray-50 px-2 py-3 text-center text-xs font-semibold text-gray-500">
+                  <th key={day} className="border-b border-slate-200 bg-slate-50 px-2 py-3 text-center text-xs font-semibold text-slate-500">
                     {DAY_LABELS[day]}
-                    {isDayoff(day) && <span className="ml-1 text-berry-lipstick-500">(off)</span>}
+                    {isDayoff(day) && <span className="ml-1 text-red-500">(off)</span>}
                   </th>
                 ))}
               </tr>
@@ -174,7 +167,7 @@ export default function SlotGrid() {
             <tbody>
               {HOURS.map((hour) => (
                 <tr key={hour}>
-                  <td className="sticky left-0 z-10 border-r border-b border-gray-200 bg-white px-3 py-3 text-xs font-medium text-gray-600">
+                  <td className="sticky left-0 z-10 border-r border-b border-slate-200 bg-white px-3 py-3 text-xs font-medium text-slate-600">
                     {fmt(hour)}-{fmt(hour + 1)}
                   </td>
                   {DAYS.map((day) => {
@@ -184,49 +177,48 @@ export default function SlotGrid() {
                     const key = `${day}-${hour}`;
                     const isToggling = toggling === key;
 
-                    let bg = "bg-gray-50";
-                    let text = "text-gray-300";
+                    let bg = "bg-slate-50";
+                    let text = "text-slate-300";
                     let label = "\u2014";
                     let cursor = "cursor-default";
 
                     if (!inRange) {
-                      bg = "bg-gray-100";
-                      text = "text-gray-300";
+                      bg = "bg-slate-100";
+                      text = "text-slate-300";
                       label = "\u2014";
                     } else if (dayOff) {
-                      bg = "bg-berry-lipstick-50";
-                      text = "text-berry-lipstick-400";
+                      bg = "bg-red-50";
+                      text = "text-red-400";
                       label = "Day Off";
                     } else if (slot) {
                       if (slot.isFilled) {
-                        bg = "bg-dark-amethyst-100";
-                        text = "text-dark-amethyst-700 font-semibold";
+                        bg = "bg-blue-100";
+                        text = "text-blue-700 font-semibold";
                         label = "Terisi";
                         cursor = "cursor-not-allowed";
                       } else {
-                        bg = "bg-tea-green-100";
-                        text = "text-tea-green-700";
+                        bg = "bg-emerald-100";
+                        text = "text-emerald-700";
                         label = "Aktif";
-                        cursor = "cursor-pointer hover:bg-tea-green-200";
+                        cursor = "cursor-pointer hover:bg-emerald-200";
                       }
                     } else {
-                      bg = "bg-white border border-dashed border-gray-200";
-                      text = "text-gray-400";
+                      bg = "bg-white border border-dashed border-slate-200";
+                      text = "text-slate-400";
                       label = "+";
-                      cursor = "cursor-pointer hover:bg-gray-100";
+                      cursor = "cursor-pointer hover:bg-slate-100";
                     }
 
                     return (
-                      <td
-                        key={day}
-                        className={`border-b border-gray-200 px-2 py-3 text-center text-xs transition ${bg} ${cursor}`}
+                      <td key={day}
+                        className={`border-b border-slate-200 px-2 py-3 text-center text-xs transition ${bg} ${cursor}`}
                         onClick={() => {
                           if (!inRange || dayOff || slot?.isFilled || isToggling) return;
                           toggle(day, hour);
                         }}
                       >
                         {isToggling ? (
-                          <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-gray-400 border-t-transparent" />
+                          <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-slate-400 border-t-transparent" />
                         ) : (
                           <span className={`inline-block rounded-md px-2 py-1 ${text}`}>{label}</span>
                         )}
@@ -239,28 +231,28 @@ export default function SlotGrid() {
           </table>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-white/80">
-          <div className="flex items-center gap-1">
-            <span className="inline-block h-3 w-3 rounded bg-tea-green-100" />
-            <span>Aktif</span>
+        <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-slate-500">
+          <div className="flex items-center gap-1.5">
+            <span className="inline-block h-3 w-3 rounded bg-emerald-100" />
+            <span className="font-semibold">Aktif</span>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="inline-block h-3 w-3 rounded bg-dark-amethyst-100" />
-            <span>Terisi Kelas</span>
+          <div className="flex items-center gap-1.5">
+            <span className="inline-block h-3 w-3 rounded bg-blue-100" />
+            <span className="font-semibold">Terisi Kelas</span>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="inline-block h-3 w-3 rounded border border-dashed border-gray-300 bg-white" />
-            <span>Nonaktif (klik untuk aktifkan)</span>
+          <div className="flex items-center gap-1.5">
+            <span className="inline-block h-3 w-3 rounded border border-dashed border-slate-300 bg-white" />
+            <span className="font-semibold">Nonaktif</span>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="inline-block h-3 w-3 rounded bg-berry-lipstick-50" />
-            <span>Day Off</span>
+          <div className="flex items-center gap-1.5">
+            <span className="inline-block h-3 w-3 rounded bg-red-50" />
+            <span className="font-semibold">Day Off</span>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="inline-block h-3 w-3 rounded bg-gray-100" />
-            <span>Di luar jam kerja</span>
+          <div className="flex items-center gap-1.5">
+            <span className="inline-block h-3 w-3 rounded bg-slate-100" />
+            <span className="font-semibold">Luar jam kerja</span>
           </div>
-          <div className={`ml-auto font-medium ${activeCount < 21 ? "text-berry-lipstick-300" : "text-white"}`}>
+          <div className={`ml-auto font-bold ${activeCount < 21 ? "text-red-500" : "text-emerald-600"}`}>
             {activeCount} slot aktif {activeCount < 21 ? "(minimal 21!)" : `(${filledCount} terisi)`}
           </div>
         </div>

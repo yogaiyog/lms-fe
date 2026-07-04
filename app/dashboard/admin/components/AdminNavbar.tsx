@@ -1,5 +1,7 @@
 "use client";
 
+import { LogOut } from "lucide-react";
+
 type Props = {
   mainMenu: "classes" | "tutors" | "curriculums" | "students";
   onChange: (m: Props["mainMenu"]) => void;
@@ -16,14 +18,14 @@ const items: { key: Props["mainMenu"]; label: string }[] = [
 
 export default function AdminNavbar({ mainMenu, onChange, email, onLogout }: Props) {
   return (
-    <nav className="flex items-center justify-between border-b border-white/10 bg-white/5 px-6 py-3 backdrop-blur-sm">
+    <nav className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-slate-200 bg-white/90 backdrop-blur px-6 py-3">
       <div className="flex items-center gap-8">
-        <span className="text-lg font-bold text-white">JTCourse Admin</span>
+        <span className="text-lg font-extrabold tracking-tight text-slate-900">JTCourse Admin</span>
         <div className="flex gap-1">
           {items.map((item) => (
             <button key={item.key} onClick={() => onChange(item.key)}
-              className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
-                mainMenu === item.key ? "bg-white text-dark-amethyst-700 shadow-sm" : "text-white/70 hover:text-white"
+              className={`rounded-2xl px-4 py-2 text-sm font-semibold transition-colors ${
+                mainMenu === item.key ? "bg-blue-600 text-white shadow-sm shadow-blue-600/30" : "text-slate-500 hover:bg-blue-50 hover:text-blue-700"
               }`}
             >
               {item.label}
@@ -32,11 +34,10 @@ export default function AdminNavbar({ mainMenu, onChange, email, onLogout }: Pro
         </div>
       </div>
       <div className="flex items-center gap-3">
-        <span className="text-sm text-white/60">{email}</span>
-        <button onClick={onLogout} className="rounded-lg p-2 text-white/60 transition hover:bg-white/10 hover:text-white">
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
-          </svg>
+        <span className="text-sm font-semibold text-slate-500">{email}</span>
+        <button onClick={onLogout}
+          className="flex h-9 w-9 items-center justify-center rounded-full text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors">
+          <LogOut size={18} />
         </button>
       </div>
     </nav>

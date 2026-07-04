@@ -11,20 +11,21 @@ import ApproveRejectModal from "./components/ApproveRejectModal";
 import TutorList from "./components/tutor/TutorList";
 import AddTutorForm from "./components/tutor/AddTutorForm";
 import StudentList from "./components/student/StudentList";
+import StudentDetailModal from "./components/student/StudentDetailModal";
 
 export default function AdminDashboard() {
   const h = useAdminDashboard();
 
   if (h.loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center" style={{ background: "linear-gradient(135deg, #32095d 0%, #4a0e8b 50%, #6312ba 100%)" }}>
-        <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-white border-t-transparent" />
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen" style={{ background: "linear-gradient(135deg, #32095d 0%, #4a0e8b 50%, #6312ba 100%)" }}>
+    <div className="min-h-screen bg-slate-50">
       <AdminNavbar mainMenu={h.mainMenu} onChange={(m) => { h.setMainMenu(m); h.setSegment("classes"); h.setTutorSegment("list"); }}
         email={h.user?.email} onLogout={h.logout} />
 
@@ -46,6 +47,7 @@ export default function AdminDashboard() {
 
           {h.mainMenu === "classes" && h.segment === "create" && (
             <CreateClassForm
+              createType={h.createType} onCreateTypeChange={h.setCreateType}
               createCategory={h.createCategory} onCreateCategoryChange={h.setCreateCategory}
               createCurriculumId={h.createCurriculumId} onCreateCurriculumIdChange={h.setCreateCurriculumId}
               createTutorId={h.createTutorId} onCreateTutorIdChange={h.setCreateTutorId}
@@ -58,7 +60,11 @@ export default function AdminDashboard() {
               onSelectedSlotsChange={h.setSelectedSlots}
               SLOT_DAYS={h.SLOT_DAYS} SLOT_DAY_LABELS={h.SLOT_DAY_LABELS}
               SLOT_HOURS={h.SLOT_HOURS} fmt={h.fmt} isInRange={h.isInRange}
-              onSubmit={h.createClass} />
+              onSubmit={h.createClass}
+              createAvailableStudents={h.createAvailableStudents}
+              createSelectedStudentIds={h.createSelectedStudentIds}
+              onSelectedStudentIdsChange={h.setCreateSelectedStudentIds}
+              getSlotsConflictReason={h.getSlotsConflictReason} />
           )}
 
           {h.mainMenu === "tutors" && h.tutorSegment === "list" && (
@@ -69,12 +75,12 @@ export default function AdminDashboard() {
               onSubmit={h.handleRegisterTutor} />
           )}
           {h.mainMenu === "curriculums" && (
-            <div className="rounded-2xl bg-white p-12 text-center shadow-md">
-              <p className="text-gray-400">Halaman Kurikulum — dalam pengembangan</p>
+            <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm">
+              <p className="text-slate-400">Halaman Kurikulum — dalam pengembangan</p>
             </div>
           )}
           {h.mainMenu === "students" && (
-            <StudentList students={h.studentsFull} onImpersonate={h.handleImpersonate} />
+            <StudentList students={h.studentsFull} onSelect={h.handleSelectStudent} />
           )}
         </main>
       </div>
@@ -102,9 +108,19 @@ export default function AdminDashboard() {
           onAddStudent={h.handleAddStudent} onReschedule={h.handleReschedule} />
       )}
 
+      {h.selectedStudent && (
+        <StudentDetailModal
+          student={h.selectedStudent}
+          enrollments={h.selectedStudentEnrollments}
+          loading={h.studentDetailLoading}
+          onImpersonate={() => h.handleImpersonate(h.selectedStudent!.id)}
+          onClose={() => { h.setSelectedStudent(null); h.setSelectedStudentEnrollments([]); }}
+        />
+      )}
+
       {h.toast && (
-        <div className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl px-5 py-3 text-sm font-semibold text-white shadow-lg transition-all ${
-          h.toast.type === "success" ? "bg-tea-green-600" : "bg-berry-lipstick-600"
+        <div className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-2xl px-5 py-3 text-sm font-bold text-white shadow-lg transition-all ${
+          h.toast.type === "success" ? "bg-emerald-600" : "bg-red-600"
         }`}>
           {h.toast.message}
         </div>

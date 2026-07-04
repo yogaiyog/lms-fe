@@ -18,6 +18,7 @@ import {
   type AuthUser,
   type Class,
   type Curriculum,
+  type Enrollment,
   type RequestClass,
   type StudentProfile,
   type TutorSlot,
@@ -25,6 +26,16 @@ import {
 import { CATEGORY_LABELS } from "../constants";
 
 type TutorOption = { id: string; fullName: string };
+
+export type StudentItem = {
+  id: string;
+  userId: string;
+  fullName: string;
+  nickname: string;
+  email?: string;
+  category: string;
+  parentName?: string;
+};
 
 export function useAdminDashboard() {
   const router = useRouter();
@@ -37,6 +48,7 @@ export function useAdminDashboard() {
   const [curriculums, setCurriculums] = useState<Curriculum[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [createType, setCreateType] = useState<"BATCH" | "PRIVATE" | "MAKEUP">("BATCH");
   const [createCurriculumId, setCreateCurriculumId] = useState("");
   const [createCategory, setCreateCategory] = useState("JUNIOR_I");
   const [createTutorId, setCreateTutorId] = useState("");
@@ -108,7 +120,41 @@ export function useAdminDashboard() {
   useEffect(() => {
     const session = getStoredSession();
     if (!session) { router.replace("/login"); return; }
-    loadData();
+    (async () => {
+      try {
+        const me = await api.auth.me();
+        setUser(me);
+        if (me.role !== "ADMIN") { router.replace("/dashboard"); return; }
+
+        const [cls, reqs, tuts, currics, fullTutors, studentProfiles] = await Promise.all([
+          api.classes.listByTutor("") as Promise<Class[]>,
+          api.requestClass.list(),
+          api.tutorProfiles.list() as Promise<TutorOption[]>,
+          api.curriculums.list(),
+          api.tutorProfiles.list() as Promise<{ id: string; fullName: string; phone: string; user?: { email: string }; bio?: string | null }[]>,
+          api.studentProfiles.list() as Promise<
+            { id: string; fullName: string; nickname: string; category: string; user?: { email: string }; parent?: { fullName: string } }[]
+          >,
+        ]);
+        setClasses(cls);
+        setRequests(reqs);
+        setTutors(tuts);
+        setCurriculums(currics);
+        setTutorsFull(fullTutors.map((t) => ({ id: t.id, fullName: t.fullName, phone: t.phone, email: t.user?.email, bio: t.bio })));
+        setStudentsFull(
+          (studentProfiles as { id: string; fullName: string; nickname: string; category: string; user?: { id: string; email: string }; parent?: { fullName: string } }[]).map((s) => ({
+            id: s.id, userId: s.user?.id ?? s.id, fullName: s.fullName, nickname: s.nickname,
+            email: s.user?.email, category: s.category,
+            parentName: s.parent?.fullName,
+          })),
+        );
+      } catch {
+        clearSession();
+        router.replace("/login");
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [router]);
 
   const filteredCurriculums = useMemo(
@@ -129,6 +175,36 @@ export function useAdminDashboard() {
     () => filteredCurriculums.find((c) => c.id === createCurriculumId),
     [filteredCurriculums, createCurriculumId],
   );
+
+  const curriculumEnrolledStudentIds = useMemo(() => {
+    const set = new Set<string>();
+    for (const cls of classes) {
+      if (cls.curriculumId !== createCurriculumId) continue;
+      for (const e of cls.enrollments ?? []) {
+        set.add(e.studentId);
+      }
+    }
+    return set;
+  }, [classes, createCurriculumId]);
+
+  const [unassignedEnrollments, setUnassignedEnrollments] = useState<
+    { id: string; studentId: string; curriculumId: string; student: { id: string; fullName: string; category: string; nickname: string; user?: { email: string } } }[]
+  >([]);
+
+  useEffect(() => {
+    if (!createCurriculumId) { setUnassignedEnrollments([]); return; }
+    api.enrollments.listUnassignedByCurriculum(createCurriculumId).then((list) => {
+      if (Array.isArray(list)) setUnassignedEnrollments(list as any);
+    }).catch(() => setUnassignedEnrollments([]));
+  }, [createCurriculumId]);
+
+  const unassignedEnrollmentMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const e of unassignedEnrollments) {
+      map.set(e.studentId, e.id);
+    }
+    return map;
+  }, [unassignedEnrollments]);
 
   const createBatchPreview = useMemo(() => {
     if (!selectedCurriculum) return null;
@@ -152,7 +228,7 @@ export function useAdminDashboard() {
       cell: (info) => info.getValue() ? "Aktif" : "Nonaktif",
       enableColumnFilter: false,
     }),
-  ], []);
+  ], [classColumnHelper]);
 
   const classTable = useReactTable({
     data: classes,
@@ -175,7 +251,7 @@ export function useAdminDashboard() {
       enableColumnFilter: false,
     }),
     reqColumnHelper.accessor("curriculum", { header: "Kurikulum", enableColumnFilter: false }),
-  ], []);
+  ], [reqColumnHelper]);
 
   const reqTable = useReactTable({
     data: requests,
@@ -188,47 +264,12 @@ export function useAdminDashboard() {
     getFilteredRowModel: getFilteredRowModel(),
   });
 
-  async function loadData() {
-    try {
-      const me = await api.auth.me();
-      setUser(me);
-      if (me.role !== "ADMIN") { router.replace("/dashboard"); return; }
-
-      const [cls, reqs, tuts, currics, fullTutors, studentProfiles] = await Promise.all([
-        api.classes.listByTutor("") as Promise<Class[]>,
-        api.requestClass.list(),
-        api.tutorProfiles.list() as Promise<TutorOption[]>,
-        api.curriculums.list(),
-        api.tutorProfiles.list() as Promise<{ id: string; fullName: string; phone: string; user?: { email: string }; bio?: string | null }[]>,
-        api.studentProfiles.list() as Promise<
-          { id: string; fullName: string; nickname: string; category: string; user?: { email: string }; parent?: { fullName: string } }[]
-        >,
-      ]);
-      setClasses(cls);
-      setRequests(reqs);
-      setTutors(tuts);
-      setCurriculums(currics);
-      setTutorsFull(fullTutors.map((t) => ({ id: t.id, fullName: t.fullName, phone: t.phone, email: t.user?.email, bio: t.bio })));
-      setStudentsFull(
-        (studentProfiles as { id: string; fullName: string; nickname: string; category: string; user?: { id: string; email: string }; parent?: { fullName: string } }[]).map((s) => ({
-          id: s.id, userId: s.user?.id ?? s.id, fullName: s.fullName, nickname: s.nickname,
-          email: s.user?.email, category: s.category,
-          parentName: s.parent?.fullName,
-        })),
-      );
-    } catch {
-      clearSession();
-      router.replace("/login");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function generateScheduleSlots(topics: { id: string; title: string }[], slots: { dayOfWeek: string; startTime: string; endTime: string }[], startDate: string) {
+  function generateScheduleSlots(topics: { id: string; title: string }[], slots: { dayOfWeek: string; startTime: string; endTime: string }[], startDate: string, classType: string = "BATCH") {
     const sorted = [...topics].sort((a, b) => a.title.localeCompare(b.title));
+    const topicsToUse = classType === "MAKEUP" ? [sorted[0]] : sorted;
     const start = new Date(startDate);
     const DAY_ORDER = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
-    return sorted.map((topic, i) => {
+    return topicsToUse.map((topic, i) => {
       const slot = slots[i % slots.length];
       const weekOffset = Math.floor(i / slots.length);
       const dayIdx = DAY_ORDER.indexOf(slot.dayOfWeek);
@@ -250,17 +291,76 @@ export function useAdminDashboard() {
     });
   }
 
+  function timesOverlap(aStart: string, aEnd: string, bStart: string, bEnd: string) {
+    return aStart < bEnd && aEnd > bStart;
+  }
+
+  const studentConflicts = useMemo(() => {
+    const map = new Map<string, { dayOfWeek: string; startTime: string; endTime: string }[]>();
+    for (const cls of classes) {
+      if (!cls.schedules || !cls.enrollments) continue;
+      for (const enrollment of cls.enrollments) {
+        const existing = map.get(enrollment.studentId) ?? [];
+        for (const s of cls.schedules) {
+          existing.push({ dayOfWeek: s.dayOfWeek, startTime: s.startTime, endTime: s.endTime });
+        }
+        map.set(enrollment.studentId, existing);
+      }
+    }
+    return map;
+  }, [classes]);
+
+  const [createSelectedStudentIds, setCreateSelectedStudentIds] = useState<string[]>([]);
+
+  const createAvailableStudents = useMemo(() => {
+    if (selectedSlots.length === 0) return [];
+    return unassignedEnrollments
+      .map((e) => ({
+        id: e.studentId,
+        enrollmentId: e.id,
+        fullName: e.student.fullName,
+        nickname: e.student.nickname,
+        email: e.student.user?.email,
+      }))
+      .filter((s) => {
+        if (curriculumEnrolledStudentIds.has(s.id)) return false;
+        return !selectedSlots.some((slot) =>
+          (studentConflicts.get(s.id) ?? []).some((c) =>
+            c.dayOfWeek === slot.dayOfWeek && timesOverlap(slot.startTime, slot.endTime, c.startTime, c.endTime)
+          )
+        );
+      });
+  }, [unassignedEnrollments, selectedSlots, studentConflicts, curriculumEnrolledStudentIds]);
+
+  function getSlotsConflictReason(studentId: string, slots: { dayOfWeek: string; startTime: string; endTime: string }[]) {
+    const conflicts = studentConflicts.get(studentId);
+    if (!conflicts) return null;
+    for (const slot of slots) {
+      for (const c of conflicts) {
+        if (c.dayOfWeek === slot.dayOfWeek && timesOverlap(slot.startTime, slot.endTime, c.startTime, c.endTime)) {
+          return `${SLOT_DAY_LABELS[c.dayOfWeek]} ${c.startTime}-${c.endTime}`;
+        }
+      }
+    }
+    return null;
+  }
+
   async function createClass(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setCreating(true);
     setCreateError("");
     try {
-      const autoName = `${selectedCurriculum!.name} - Batch ${createBatchPreview}`;
+      const autoName = createType === "MAKEUP"
+        ? `Make Up - ${selectedCurriculum!.name}`
+        : createType === "PRIVATE"
+          ? `${selectedCurriculum!.name} - Private`
+          : `${selectedCurriculum!.name} - Batch ${createBatchPreview}`;
       const topics = selectedCurriculum!.topics;
-      const scheduleData = generateScheduleSlots(topics, selectedSlots, createStartDate);
+      const scheduleData = generateScheduleSlots(topics, selectedSlots, createStartDate, createType);
       const startDateISO = new Date(createStartDate).toISOString();
       const newClass = await api.classes.create({
         name: autoName,
+        type: createType,
         category: createCategory,
         tutorId: createTutorId,
         curriculumId: createCurriculumId,
@@ -269,11 +369,21 @@ export function useAdminDashboard() {
       await Promise.all(scheduleData.map((s) =>
         api.schedules.create({ ...s, classId: newClass.id }),
       ));
+      if (createSelectedStudentIds.length > 0) {
+        await Promise.all(createSelectedStudentIds.map((sid) => {
+          const unassignedId = unassignedEnrollmentMap.get(sid);
+          if (unassignedId) {
+            return api.enrollments.update(unassignedId, { classId: newClass.id });
+          }
+          return api.enrollments.create({ studentId: sid, classId: newClass.id, curriculumId: selectedCurriculum!.id });
+        }));
+      }
       setCreateCurriculumId("");
       setCreateCategory("JUNIOR_I");
       setCreateTutorId("");
       setCreateStartDate("");
       setSelectedSlots([]);
+      setCreateSelectedStudentIds([]);
       setTutorSlots([]);
       const cls = await api.classes.listByTutor("");
       setClasses(cls);
@@ -290,7 +400,7 @@ export function useAdminDashboard() {
     setApproving(true);
     setApproveError("");
     try {
-      const payload: any = {
+      const payload: Record<string, unknown> = {
         status: approveAction,
         adminNotes: adminNotes || null,
         reviewedBy: user!.id,
@@ -312,10 +422,12 @@ export function useAdminDashboard() {
 
   async function openClassDetail(cls: Class) {
     try {
-      const [fullClass, allStudents] = await Promise.all([
+      const [fullClass, allStudents, unassigned] = await Promise.all([
         api.classes.get(cls.id),
         api.studentProfiles.list(),
+        cls.curriculumId ? api.enrollments.listUnassignedByCurriculum(cls.curriculumId) : Promise.resolve([] as Enrollment[]),
       ]);
+      const unassignedList = Array.isArray(unassigned) ? unassigned : [];
       const map: Record<string, StudentProfile> = {};
       for (const s of allStudents) map[s.id] = s;
       setDetailStudentMap(map);
@@ -323,7 +435,22 @@ export function useAdminDashboard() {
       setDetailClassName(fullClass.name);
       setDetailTutorId(fullClass.tutorId);
       const enrolledIds = new Set((fullClass.enrollments ?? []).map((e) => e.studentId));
-      setDetailStudents(allStudents.filter((s) => s.category === fullClass.category && !enrolledIds.has(s.id)));
+      const classSlots = (fullClass.schedules ?? []).map((s) => ({
+        dayOfWeek: s.dayOfWeek, startTime: s.startTime, endTime: s.endTime,
+      }));
+      const unassignedStudents = unassignedList
+        .map((e: any) => map[e.studentId])
+        .filter(Boolean) as StudentProfile[];
+      setDetailStudents(unassignedStudents.filter((s) => {
+        if (s.category !== fullClass.category) return false;
+        if (enrolledIds.has(s.id)) return false;
+        if (classSlots.length === 0) return true;
+        return !classSlots.some((slot) =>
+          (studentConflicts.get(s.id) ?? []).some((c) =>
+            c.dayOfWeek === slot.dayOfWeek && timesOverlap(slot.startTime, slot.endTime, c.startTime, c.endTime)
+          )
+        );
+      }));
       setDetailAddingStudentId("");
       setDetailError("");
       setPendingRemovals(new Set());
@@ -338,9 +465,9 @@ export function useAdminDashboard() {
     setDetailError("");
     try {
       if (pendingRemovals.size > 0) {
-        await Promise.all([...pendingRemovals].map((id) => api.enrollments.delete(id)));
+        await Promise.all([...pendingRemovals].map((id) => api.enrollments.update(id, { classId: null })));
       }
-      const updated = await api.classes.update(detailClass.id, {
+      await api.classes.update(detailClass.id, {
         name: detailClassName,
         tutorId: detailTutorId,
       });
@@ -364,45 +491,50 @@ export function useAdminDashboard() {
     setDetailSaving(true);
     setDetailError("");
     try {
-      await api.enrollments.create({ studentId: detailAddingStudentId, classId: detailClass.id });
-      const updated = await api.classes.get(detailClass.id);
+      // Check if student has unassigned enrollment for this class's curriculum
+      let unassignedId: string | undefined;
+      if (detailClass.curriculumId) {
+        const list = await api.enrollments.listUnassignedByCurriculum(detailClass.curriculumId);
+        const found = Array.isArray(list) ? list.find((e: { studentId: string; id: string }) => e.studentId === detailAddingStudentId) : undefined;
+        if (found) unassignedId = found.id;
+      }
+      if (unassignedId) {
+        await api.enrollments.update(unassignedId, { classId: detailClass.id });
+      } else {
+        await api.enrollments.create({ studentId: detailAddingStudentId, classId: detailClass.id, curriculumId: detailClass.curriculumId! });
+      }
+      const _updated = await api.classes.get(detailClass.id);
       const allStudents = await api.studentProfiles.list();
       const map: Record<string, StudentProfile> = {};
       for (const s of allStudents) map[s.id] = s;
       setDetailStudentMap(map);
-      const enrolledIds = new Set((updated.enrollments ?? []).map((e) => e.studentId));
-      setDetailStudents(allStudents.filter((s) => s.category === updated.category && !enrolledIds.has(s.id)));
-      setDetailClass(updated);
+      const enrolledIds = new Set((_updated.enrollments ?? []).map((e) => e.studentId));
+      const classSlots = (_updated.schedules ?? []).map((s) => ({
+        dayOfWeek: s.dayOfWeek, startTime: s.startTime, endTime: s.endTime,
+      }));
+      const unassignedList = _updated.curriculumId
+        ? await api.enrollments.listUnassignedByCurriculum(_updated.curriculumId)
+        : ([] as Enrollment[]);
+      const unassignedStudents = unassignedList
+        .map((e: { studentId: string }) => map[e.studentId])
+        .filter(Boolean) as StudentProfile[];
+      setDetailStudents(unassignedStudents.filter((s) => {
+        if (s.category !== _updated.category) return false;
+        if (enrolledIds.has(s.id)) return false;
+        if (classSlots.length === 0) return true;
+        return !classSlots.some((slot) =>
+          (studentConflicts.get(s.id) ?? []).some((c) =>
+            c.dayOfWeek === slot.dayOfWeek && timesOverlap(slot.startTime, slot.endTime, c.startTime, c.endTime)
+          )
+        );
+      }));
+      setDetailClass(_updated);
       setDetailAddingStudentId("");
       const cls = await api.classes.listByTutor("");
       setClasses(cls);
       showToast("Siswa berhasil ditambahkan", "success");
     } catch (err) {
       setDetailError(err instanceof Error ? err.message : "Gagal menambahkan siswa");
-    } finally {
-      setDetailSaving(false);
-    }
-  }
-
-  async function handleRemoveStudent(enrollmentId: string) {
-    if (!detailClass) return;
-    setDetailSaving(true);
-    setDetailError("");
-    try {
-      await api.enrollments.delete(enrollmentId);
-      const updated = await api.classes.get(detailClass.id);
-      const allStudents = await api.studentProfiles.list();
-      const map: Record<string, StudentProfile> = {};
-      for (const s of allStudents) map[s.id] = s;
-      setDetailStudentMap(map);
-      const enrolledIds = new Set((updated.enrollments ?? []).map((e) => e.studentId));
-      setDetailStudents(allStudents.filter((s) => s.category === updated.category && !enrolledIds.has(s.id)));
-      setDetailClass(updated);
-      const cls = await api.classes.listByTutor("");
-      setClasses(cls);
-      showToast("Siswa berhasil dihapus", "success");
-    } catch (err) {
-      setDetailError(err instanceof Error ? err.message : "Gagal menghapus siswa");
     } finally {
       setDetailSaving(false);
     }
@@ -455,9 +587,31 @@ export function useAdminDashboard() {
     router.push("/login");
   }
 
+  const [selectedStudent, setSelectedStudent] = useState<StudentProfile | null>(null);
+  const [selectedStudentEnrollments, setSelectedStudentEnrollments] = useState<Enrollment[]>([]);
+  const [studentDetailLoading, setStudentDetailLoading] = useState(false);
+
+  async function handleSelectStudent(student: StudentItem) {
+    setStudentDetailLoading(true);
+    try {
+      const [profile, enrollments] = await Promise.all([
+        api.studentProfiles.get(student.id),
+        api.enrollments.listByStudent(student.id),
+      ]);
+      setSelectedStudent(profile);
+      setSelectedStudentEnrollments(enrollments);
+    } catch {
+      setSelectedStudent(null);
+      setSelectedStudentEnrollments([]);
+    } finally {
+      setStudentDetailLoading(false);
+    }
+  }
+
   function handleImpersonate(studentId: string) {
     api.auth.impersonate(studentId).then((session) => {
       clearSession();
+      window.localStorage.setItem("lms.rememberMe", "true");
       saveSession(session);
       router.replace("/dashboard");
     }).catch(() => showToast("Gagal mengakses akun siswa", "error"));
@@ -467,6 +621,7 @@ export function useAdminDashboard() {
     user, loading, mainMenu, setMainMenu, segment, setSegment,
     tutorSegment, setTutorSegment,
     classes, requests, tutors, tutorsFull, registering, registerError,
+    createType, setCreateType,
     createCategory, setCreateCategory,
     createCurriculumId, setCreateCurriculumId,
     createTutorId, setCreateTutorId,
@@ -492,7 +647,14 @@ export function useAdminDashboard() {
     toast, showToast,
     createClass, handleApproveReject, openClassDetail,
     handleSaveDetail, handleAddStudent, handleReschedule,
-    handleRegisterTutor, logout, handleImpersonate, studentsFull,
+    handleRegisterTutor, logout, handleImpersonate, handleSelectStudent,
+    selectedStudent, setSelectedStudent,
+    selectedStudentEnrollments, setSelectedStudentEnrollments,
+    studentDetailLoading,
+    studentsFull,
+    createSelectedStudentIds, setCreateSelectedStudentIds,
+    createAvailableStudents, getSlotsConflictReason,
+    curriculumEnrolledStudentIds,
   };
 }
 

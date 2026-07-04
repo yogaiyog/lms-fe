@@ -1,9 +1,12 @@
 "use client";
 
 import { type FormEvent } from "react";
-import { type Curriculum, type TutorSlot, type TutorProfile } from "@/lib/api";
+import { type Curriculum, type TutorSlot } from "@/lib/api";
+import { X } from "lucide-react";
 
 type Props = {
+  createType: "BATCH" | "PRIVATE" | "MAKEUP";
+  onCreateTypeChange: (v: "BATCH" | "PRIVATE" | "MAKEUP") => void;
   createCategory: string;
   onCreateCategoryChange: (v: string) => void;
   createCurriculumId: string;
@@ -29,9 +32,14 @@ type Props = {
   fmt: (h: number) => string;
   isInRange: (day: string, hour: number) => boolean;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  createAvailableStudents: { id: string; fullName: string; nickname: string; email?: string }[];
+  createSelectedStudentIds: string[];
+  onSelectedStudentIdsChange: (ids: string[]) => void;
+  getSlotsConflictReason?: (studentId: string, slots: { dayOfWeek: string; startTime: string; endTime: string }[]) => string | null;
 };
 
 export default function CreateClassForm({
+  createType, onCreateTypeChange,
   createCategory, onCreateCategoryChange,
   createCurriculumId, onCreateCurriculumIdChange,
   createTutorId, onCreateTutorIdChange,
@@ -42,25 +50,55 @@ export default function CreateClassForm({
   selectedSlots, onSelectedSlotsChange,
   SLOT_DAYS, SLOT_DAY_LABELS, SLOT_HOURS, fmt, isInRange,
   onSubmit,
+  createAvailableStudents,
+  createSelectedStudentIds, onSelectedStudentIdsChange,
+  getSlotsConflictReason,
 }: Props) {
+  function fmt55(h: number) { return `${String(h).padStart(2, "0")}:55`; }
+
+  const availableToAdd = createAvailableStudents.filter(
+    (s) => !createSelectedStudentIds.includes(s.id),
+  );
+
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-md">
-      <h2 className="mb-4 text-lg font-bold text-gray-800">Buat Kelas Baru</h2>
-      <form onSubmit={onSubmit}>
-        <div className="mb-3">
-          <label className="mb-1 block text-sm font-medium text-gray-700">Kategori <span className="text-berry-lipstick-500">*</span></label>
+    <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-6 sm:p-7">
+      <h2 className="mb-6 text-lg font-extrabold tracking-tight text-slate-900">Buat Kelas Baru</h2>
+      <form onSubmit={onSubmit} className="space-y-4">
+        <div>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Kategori <span className="text-red-500">*</span></label>
           <select value={createCategory} onChange={(e) => { onCreateCategoryChange(e.target.value); onCreateCurriculumIdChange(""); }}
-            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-dark-amethyst-400"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
           >
             <option value="JUNIOR_I">Kelas 1-3 SD (Junior I)</option>
             <option value="JUNIOR_II">Kelas 4-6 SD (Junior II)</option>
             <option value="JUNIOR_III">Kelas 7-9 SMP (Junior III)</option>
           </select>
         </div>
-        <div className="mb-3">
-          <label className="mb-1 block text-sm font-medium text-gray-700">Kurikulum <span className="text-berry-lipstick-500">*</span></label>
+        <div>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Tipe Kelas</label>
+          <div className="flex gap-2">
+            {(["BATCH", "PRIVATE", "MAKEUP"] as const).map((t) => (
+              <button key={t} type="button"
+                onClick={() => {
+                  onCreateTypeChange(t);
+                  onSelectedStudentIdsChange([]);
+                  onSelectedSlotsChange([]);
+                }}
+                className={`flex-1 rounded-xl border-2 px-3 py-2.5 text-sm font-bold transition-colors ${
+                  createType === t
+                    ? "border-blue-500 bg-blue-50 text-blue-700"
+                    : "border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300"
+                }`}
+              >
+                {t === "BATCH" ? "Batch" : t === "PRIVATE" ? "Private" : "Make Up"}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Kurikulum <span className="text-red-500">*</span></label>
           <select value={createCurriculumId} onChange={(e) => onCreateCurriculumIdChange(e.target.value)}
-            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-dark-amethyst-400" required
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" required
           >
             <option value="">-- Pilih kurikulum --</option>
             {filteredCurriculums.map((c) => (
@@ -68,17 +106,21 @@ export default function CreateClassForm({
             ))}
           </select>
         </div>
-        <div className="mb-3">
-          <label className="mb-1 block text-sm font-medium text-gray-700">Batch <span className="text-berry-lipstick-500">*</span></label>
-          <div className="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-sm text-gray-500">
-            {createBatchPreview !== null ? createBatchPreview : "Otomatis setelah isi kurikulum"}
+        <div>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Batch</label>
+          <div className="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500">
+            {createType === "BATCH" ? (createBatchPreview !== null ? createBatchPreview : "Otomatis") : "—"}
           </div>
-          <p className="mt-1 text-[10px] text-gray-400">Nama kelas: <strong>{selectedCurriculum ? `${selectedCurriculum.name} - Batch ${createBatchPreview ?? "?"}` : "—"}</strong></p>
+          <p className="mt-1 text-[10px] text-slate-400">Nama kelas: <strong>{selectedCurriculum ? (
+            createType === "MAKEUP" ? `Make Up - ${selectedCurriculum.name}`
+            : createType === "PRIVATE" ? `${selectedCurriculum.name} - Private`
+            : `${selectedCurriculum.name} - Batch ${createBatchPreview ?? "?"}`
+          ) : "—"}</strong></p>
         </div>
-        <div className="mb-4">
-          <label className="mb-1 block text-sm font-medium text-gray-700">Tutor</label>
+        <div>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Tutor</label>
           <select value={createTutorId} onChange={(e) => onCreateTutorIdChange(e.target.value)}
-            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-dark-amethyst-400" required
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" required
           >
             <option value="">-- Pilih tutor --</option>
             {tutors.map((t) => <option key={t.id} value={t.id}>{t.fullName}</option>)}
@@ -86,29 +128,32 @@ export default function CreateClassForm({
         </div>
 
         {createTutorId && (
-          <div className="mb-4">
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Jadwal Kelas {selectedSlots.length > 0 && <span className="font-normal text-gray-400">({selectedSlots.length}/2 dipilih)</span>}
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-slate-700">
+              Jadwal Kelas {selectedSlots.length > 0 && <span className="font-normal text-slate-400">({selectedSlots.length}/{createType === "MAKEUP" ? 1 : 2} dipilih)</span>}
             </label>
             {selectedCurriculum && selectedSlots.length > 0 && (
-              <p className="mb-2 text-[10px] text-gray-400">
-                Akan membuat {selectedCurriculum.topics.length} jadwal (1 per topik), dimulai dari tgl mulai
+              <p className="mb-2 text-[10px] text-slate-400">
+                {createType === "MAKEUP"
+                  ? "Akan membuat 1 jadwal make up"
+                  : `Akan membuat ${selectedCurriculum.topics.length} jadwal (1 per topik), dimulai dari tgl mulai`
+                }
               </p>
             )}
             {slotsLoading ? (
               <div className="flex items-center justify-center py-8">
-                <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-dark-amethyst-500 border-t-transparent" />
+                <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
               </div>
             ) : (
-              <div className="overflow-x-auto rounded-xl border border-gray-200">
+              <div className="overflow-x-auto rounded-xl border border-slate-200">
                 <table className="w-full border-collapse text-xs">
                   <thead>
                     <tr>
-                      <th className="sticky left-0 border-r border-b border-gray-200 bg-gray-50 px-2 py-2 text-left font-semibold text-gray-500">Jam</th>
+                      <th className="sticky left-0 border-r border-b border-slate-200 bg-slate-50 px-2 py-2 text-left font-semibold text-slate-500">Jam</th>
                       {SLOT_DAYS.map((day) => (
-                        <th key={day} className="border-b border-gray-200 bg-gray-50 px-1 py-2 text-center font-semibold text-gray-500">
+                        <th key={day} className="border-b border-slate-200 bg-slate-50 px-1 py-2 text-center font-semibold text-slate-500">
                           {SLOT_DAY_LABELS[day]}
-                          {tutorDayoffs.includes(SLOT_DAYS.indexOf(day)) && <span className="ml-0.5 text-berry-lipstick-500">(off)</span>}
+                          {tutorDayoffs.includes(SLOT_DAYS.indexOf(day)) && <span className="ml-0.5 text-red-500">(off)</span>}
                         </th>
                       ))}
                     </tr>
@@ -116,7 +161,7 @@ export default function CreateClassForm({
                   <tbody>
                     {SLOT_HOURS.map((hour) => (
                       <tr key={hour}>
-                        <td className="sticky left-0 border-r border-b border-gray-200 bg-white px-2 py-2 text-[10px] font-medium text-gray-500">
+                        <td className="sticky left-0 border-r border-b border-slate-200 bg-white px-2 py-2 text-[10px] font-medium text-slate-500">
                           {fmt(hour)}-{fmt(hour + 1)}
                         </td>
                         {SLOT_DAYS.map((day) => {
@@ -126,21 +171,22 @@ export default function CreateClassForm({
                           const isSelected = selectedSlots.some((s) => s.dayOfWeek === day && s.startTime === fmt(hour));
 
                           if (!rangeOk || dayOff) {
-                            return <td key={day} className="border-b border-gray-200 bg-gray-100 px-1 py-2 text-center text-[10px] text-gray-300">&mdash;</td>;
+                            return <td key={day} className="border-b border-slate-200 bg-slate-100 px-1 py-2 text-center text-[10px] text-slate-300">&mdash;</td>;
                           }
                           if (!slot) {
-                            return <td key={day} className="border-b border-gray-200 bg-gray-50 px-1 py-2 text-center text-[10px] text-gray-300">&mdash;</td>;
+                            return <td key={day} className="border-b border-slate-200 bg-slate-50 px-1 py-2 text-center text-[10px] text-slate-300">&mdash;</td>;
                           }
 
                           return (
                             <td key={day}
-                              className={`border-b border-gray-200 px-1 py-2 text-center text-[10px] transition cursor-pointer
-                                ${isSelected ? "bg-dark-amethyst-200 text-dark-amethyst-800 font-semibold" : "bg-tea-green-50 text-tea-green-700 hover:bg-tea-green-100"}`}
+                              className={`border-b border-slate-200 px-1 py-2 text-center text-[10px] transition cursor-pointer
+                                ${isSelected ? "bg-blue-200 text-blue-800 font-semibold" : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"}`}
                               onClick={() => {
+                                const maxSlots = createType === "MAKEUP" ? 1 : 2;
                                 if (isSelected) {
                                   onSelectedSlotsChange(selectedSlots.filter((s) => !(s.dayOfWeek === day && s.startTime === fmt(hour))));
-                                } else if (selectedSlots.length < 2) {
-                                  onSelectedSlotsChange([...selectedSlots, { dayOfWeek: day, startTime: fmt(hour), endTime: fmt(hour + 1) }]);
+                                } else if (selectedSlots.length < maxSlots) {
+                                  onSelectedSlotsChange([...selectedSlots, { dayOfWeek: day, startTime: fmt(hour), endTime: fmt55(hour) }]);
                                 }
                               }}
                             >
@@ -155,30 +201,77 @@ export default function CreateClassForm({
               </div>
             )}
             {selectedSlots.length === 0 && createTutorId && !slotsLoading && (
-              <p className="mt-1 text-[10px] text-gray-400">Klik slot yang tersedia (maksimal 2)</p>
+              <p className="mt-1 text-[10px] text-slate-400">Klik slot yang tersedia (maksimal {createType === "MAKEUP" ? 1 : 2})</p>
             )}
           </div>
         )}
         {selectedSlots.length > 0 && (
-          <div className="mb-4">
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              Tanggal Mulai Kelas <span className="text-berry-lipstick-500">*</span>
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+              Tanggal Mulai Kelas <span className="text-red-500">*</span>
             </label>
             <input type="date" value={createStartDate} onChange={(e) => onCreateStartDateChange(e.target.value)}
-              className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-dark-amethyst-400" required
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" required
             />
             {selectedCurriculum && (
-              <p className="mt-1 text-[10px] text-gray-400">
-                {selectedCurriculum.topics.length} pertemuan ({Math.ceil(selectedCurriculum.topics.length / selectedSlots.length)} minggu)
+              <p className="mt-1 text-[10px] text-slate-400">
+                {createType === "MAKEUP" ? "1 pertemuan" : `${selectedCurriculum.topics.length} pertemuan (${Math.ceil(selectedCurriculum.topics.length / selectedSlots.length)} minggu)`}
               </p>
             )}
           </div>
         )}
-        {createError && <div className="mb-4 rounded-lg bg-berry-lipstick-50 p-3 text-sm text-berry-lipstick-600">{createError}</div>}
+
+        {selectedSlots.length > 0 && createType !== "MAKEUP" && (
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+              Daftar Siswa {createSelectedStudentIds.length > 0 && <span className="font-normal text-slate-400">({createSelectedStudentIds.length}{createType === "PRIVATE" ? "/1" : ""} dipilih)</span>}
+            </label>
+            {createSelectedStudentIds.length > 0 && (
+              <div className="mb-2 max-h-32 overflow-y-auto rounded-xl border border-slate-200">
+                {createSelectedStudentIds.map((sid) => {
+                  const s = createAvailableStudents.find((st) => st.id === sid);
+                  return (
+                    <div key={sid} className="flex items-center justify-between border-b border-slate-100 px-3 py-2 text-sm last:border-0">
+                      <span className="text-slate-700">{s?.fullName ?? sid}</span>
+                      <button type="button" onClick={() => onSelectedStudentIdsChange(createSelectedStudentIds.filter((x) => x !== sid))}
+                        className="rounded-xl p-1 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors">
+                        <X size={16} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <div className="flex gap-2">
+              <select value="" onChange={(e) => {
+                const id = e.target.value;
+                if (id && !createSelectedStudentIds.includes(id)) {
+                  const max = createType === "PRIVATE" ? 1 : Infinity;
+                  onSelectedStudentIdsChange([...createSelectedStudentIds.slice(-(max - 1)), id].slice(0, max));
+                }
+              }}
+                className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              >
+                <option value="">-- Tambah siswa --</option>
+                {availableToAdd.map((s) => (
+                  <option key={s.id} value={s.id}>{s.fullName} ({s.email ?? "-"})</option>
+                ))}
+              </select>
+            </div>
+            {selectedSlots.length > 0 && createAvailableStudents.length === 0 && (
+              <p className="mt-1 text-[10px] text-slate-400">Tidak ada siswa tersedia (semua bentrok atau sudah terdaftar)</p>
+            )}
+            {createType === "PRIVATE" && createSelectedStudentIds.length >= 1 && (
+              <p className="mt-1 text-[10px] text-emerald-600">Kelas Private hanya untuk 1 siswa</p>
+            )}
+          </div>
+        )}
+
+        {createError && <div className="rounded-2xl bg-red-50 p-3 text-sm font-semibold text-red-700">{createError}</div>}
         <button type="submit" disabled={creating}
-          className="w-full rounded-xl bg-dark-amethyst-500 px-4 py-3 text-sm font-semibold text-white shadow-md hover:bg-dark-amethyst-600 disabled:opacity-50"
+          className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 disabled:opacity-50 transition-colors"
         >
-          {creating ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Buat Kelas"}
+          {creating ? <span className="inline-flex items-center gap-2"><span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> Membuat...</span> : "Buat Kelas"}
         </button>
       </form>
     </div>
