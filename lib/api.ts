@@ -419,6 +419,7 @@ export const api = {
       fullName: string;
       phone: string;
       bio?: string | null;
+      meetLink?: string | null;
     }) {
       return authenticatedRequest<AuthSession>("/api/v1/auth/register/tutor", {
         method: "POST",

@@ -13,6 +13,7 @@ type Props = {
     fullName: string;
     phone: string;
     bio?: string | null;
+    meetLink?: string | null;
     dayoff1?: number | null;
     dayoff2?: number | null;
   }) => void;
@@ -24,6 +25,7 @@ export default function AddTutorForm({ registering, registerError, onSubmit }: P
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [bio, setBio] = useState("");
+  const [meetLink, setMeetLink] = useState("");
   const [dayoff1, setDayoff1] = useState("");
   const [dayoff2, setDayoff2] = useState("");
 
@@ -31,7 +33,7 @@ export default function AddTutorForm({ registering, registerError, onSubmit }: P
     e.preventDefault();
     const d1 = dayoff1 === "" ? null : Number(dayoff1);
     const d2 = dayoff2 === "" ? null : Number(dayoff2);
-    onSubmit({ email, password, fullName, phone, bio: bio || null, dayoff1: d1, dayoff2: d2 });
+    onSubmit({ email, password, fullName, phone, bio: bio || null, meetLink: meetLink || null, dayoff1: d1, dayoff2: d2 });
   }
 
   return (
@@ -56,6 +58,11 @@ export default function AddTutorForm({ registering, registerError, onSubmit }: P
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-slate-700">No. HP <span className="text-red-500">*</span></label>
           <input value={phone} onChange={(e) => setPhone(e.target.value)} required
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+        </div>
+        <div>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Link Meet Default</label>
+          <input type="url" value={meetLink} onChange={(e) => setMeetLink(e.target.value)} placeholder="https://meet.google.com/..."
             className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
         </div>
         <div>

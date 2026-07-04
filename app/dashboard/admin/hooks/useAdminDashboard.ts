@@ -545,6 +545,32 @@ export function useAdminDashboard() {
     }
   }
 
+  async function handleShiftSchedule(scheduleId: string) {
+    if (!detailClass) return;
+    try {
+      const schedules = [...(detailClass.schedules ?? [])].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+      const idx = schedules.findIndex((s) => s.id === scheduleId);
+      if (idx === -1) return;
+      const toShift = schedules.slice(idx);
+      await Promise.all(
+        toShift.map((s) => {
+          const d = new Date(s.date);
+          d.setDate(d.getDate() + 7);
+          return api.schedules.update(s.id, { date: d.toISOString() });
+        })
+      );
+      const updated = await api.classes.get(detailClass.id);
+      setDetailClass(updated);
+      const cls = await api.classes.listByTutor("");
+      setClasses(cls);
+      showToast(`${toShift.length} jadwal berhasil digeser +7 hari`, "success");
+    } catch {
+      showToast("Gagal menggeser jadwal", "error");
+    }
+  }
+
   async function handleReschedule(scheduleId: string, newDate: string) {
     try {
       await api.schedules.update(scheduleId, { date: new Date(newDate).toISOString() });
@@ -562,7 +588,7 @@ export function useAdminDashboard() {
 
   async function handleRegisterTutor(payload: {
     email: string; password: string; fullName: string; phone: string;
-    bio?: string | null; dayoff1?: number | null; dayoff2?: number | null;
+    bio?: string | null; meetLink?: string | null; dayoff1?: number | null; dayoff2?: number | null;
   }) {
     setRegistering(true);
     setRegisterError("");
@@ -666,7 +692,7 @@ export function useAdminDashboard() {
     approving, approveError, setApproveError,
     toast, showToast,
     createClass, handleApproveReject, openClassDetail,
-    handleSaveDetail, handleAddStudent, handleReschedule,
+    handleSaveDetail, handleAddStudent, handleReschedule, handleShiftSchedule,
     handleRegisterTutor, logout, handleImpersonate, handleSelectStudent,
     selectedStudent, setSelectedStudent,
     selectedStudentEnrollments, setSelectedStudentEnrollments,

@@ -1,6 +1,7 @@
 "use client";
 
-import { type Class, type StudentProfile } from "@/lib/api";
+import { useState, useMemo } from "react";
+import { type Class, type StudentProfile, type Schedule } from "@/lib/api";
 import { CATEGORY_LABELS, CLASS_TYPE_LABELS, DAY_LABELS } from "../../constants";
 import { X } from "lucide-react";
 
@@ -23,6 +24,7 @@ type Props = {
   onSave: () => void;
   onAddStudent: () => void;
   onReschedule: (scheduleId: string, newDate: string) => void;
+  onShiftSchedule: (scheduleId: string) => void;
 };
 
 export default function ClassDetailModal({
@@ -32,8 +34,28 @@ export default function ClassDetailModal({
   detailSaving, detailError,
   detailAddingStudentId, onDetailAddingStudentIdChange,
   tutors, pendingRemovals, onToggleRemoval,
-  onClose, onSave, onAddStudent, onReschedule,
+  onClose, onSave, onAddStudent, onReschedule, onShiftSchedule,
 }: Props) {
+  const [shiftConfirmId, setShiftConfirmId] = useState<string | null>(null);
+
+  const shiftPreview = useMemo(() => {
+    if (!shiftConfirmId) return [] as { id: string; oldDate: string; newDate: string; topic: string | null }[];
+    const sorted = [...(detailClass.schedules ?? [])].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+    const idx = sorted.findIndex((s) => s.id === shiftConfirmId);
+    if (idx === -1) return [];
+    return sorted.slice(idx).map((s) => {
+      const d = new Date(s.date);
+      d.setDate(d.getDate() + 7);
+      return {
+        id: s.id,
+        oldDate: new Date(s.date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
+        newDate: d.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
+        topic: s.topic,
+      };
+    });
+  }, [shiftConfirmId, detailClass.schedules]);
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
       <div className="fixed inset-0 bg-black/40" onClick={onClose} />
@@ -191,14 +213,25 @@ export default function ClassDetailModal({
                           <span>{s.topic ?? "—"}</span>
                         </div>
                       </div>
-                      <input type="date" value={sDate}
-                        onChange={(e) => onReschedule(s.id, e.target.value)}
-                        className={`w-36 rounded-lg border px-2 py-1 text-xs outline-none transition focus:border-blue-400 ${
-                          s.isDone
-                            ? "border-emerald-200 bg-emerald-50 text-emerald-600"
-                            : "border-slate-200 bg-slate-50"
-                        }`}
-                      />
+                      <div className="flex items-center gap-1">
+                        <input type="date" value={sDate}
+                          onChange={(e) => onReschedule(s.id, e.target.value)}
+                          className={`w-32 rounded-lg border px-2 py-1 text-xs outline-none transition focus:border-blue-400 ${
+                            s.isDone
+                              ? "border-emerald-200 bg-emerald-50 text-emerald-600"
+                              : "border-slate-200 bg-slate-50"
+                          }`}
+                        />
+                        {!s.isDone && (
+                          <button onClick={() => setShiftConfirmId(s.id)} title="Geser jadwal +7 hari"
+                            className="rounded-lg p-1.5 text-slate-400 transition hover:bg-amber-50 hover:text-amber-600"
+                          >
+                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
@@ -214,6 +247,42 @@ export default function ClassDetailModal({
           {detailSaving ? <span className="inline-flex items-center gap-2"><span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> Menyimpan...</span> : "Simpan Perubahan"}
         </button>
       </div>
+
+      {shiftConfirmId && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          <div className="fixed inset-0 bg-black/50" onClick={() => setShiftConfirmId(null)} />
+          <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-slate-200">
+            <h3 className="mb-3 text-base font-extrabold text-slate-900">Konfirmasi Geser Jadwal</h3>
+            <p className="mb-3 text-sm text-slate-600">
+              Semua jadwal berikut akan digeser <strong>+7 hari</strong>:
+            </p>
+            <div className="mb-4 max-h-48 overflow-y-auto rounded-xl border border-slate-200 text-xs">
+              {shiftPreview.map((item, i) => (
+                <div key={item.id} className={`flex items-center justify-between gap-2 px-3 py-2 ${i > 0 ? "border-t border-slate-100" : ""}`}>
+                  <span className="font-medium text-slate-700">{item.topic ?? "—"}</span>
+                  <span className="text-slate-500">
+                    <span className="line-through">{item.oldDate}</span>
+                    <span className="mx-1">→</span>
+                    <span className="font-semibold text-amber-600">{item.newDate}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => setShiftConfirmId(null)}
+                className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+              >
+                Batal
+              </button>
+              <button onClick={() => { onShiftSchedule(shiftConfirmId); setShiftConfirmId(null); }}
+                className="flex-1 rounded-xl bg-amber-500 px-4 py-2.5 text-sm font-bold text-white shadow-sm shadow-amber-500/30 transition hover:bg-amber-600"
+              >
+                Ya, Geser
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

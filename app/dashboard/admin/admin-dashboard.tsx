@@ -115,7 +115,8 @@ export default function AdminDashboard() {
           pendingRemovals={h.pendingRemovals} onToggleRemoval={h.togglePendingRemoval}
           onClose={() => { h.setDetailClass(null); h.setPendingRemovals(new Set()); }}
           onSave={h.handleSaveDetail}
-          onAddStudent={h.handleAddStudent} onReschedule={h.handleReschedule} />
+          onAddStudent={h.handleAddStudent} onReschedule={h.handleReschedule}
+          onShiftSchedule={h.handleShiftSchedule} />
       )}
 
       {h.selectedStudent && (
