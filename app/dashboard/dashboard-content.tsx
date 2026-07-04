@@ -11,6 +11,9 @@ import {
   type Enrollment,
   type Schedule,
   type Attendance,
+  type Curriculum,
+  type Topic,
+  type AssessmentSet,
 } from "@/lib/api";
 
 type StudentWithDetails = StudentProfile & {
@@ -43,7 +46,17 @@ export default function DashboardContent() {
   const [showAddStudent, setShowAddStudent] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [segment, setSegment] = useState<"children" | "schedule">("children");
+  const [segment, setSegment] = useState<"children" | "schedule" | "curriculum">("children");
+  const [curriculumSegment, setCurriculumSegment] = useState<"curriculums" | "topics" | "assessments">("curriculums");
+  const [curriculums, setCurriculums] = useState<Curriculum[]>([]);
+  const [assessmentSets, setAssessmentSets] = useState<AssessmentSet[]>([]);
+  const [curTopics, setCurTopics] = useState<Topic[]>([]);
+  const [selectedCurriculumId, setSelectedCurriculumId] = useState("");
+  const [createCurriculumOpen, setCreateCurriculumOpen] = useState(false);
+  const [createTopicOpen, setCreateTopicOpen] = useState(false);
+  const [createAssessmentSetOpen, setCreateAssessmentSetOpen] = useState(false);
+  const [createError, setCreateError] = useState("");
+  const [createSaving, setCreateSaving] = useState(false);
 
   const [form, setForm] = useState({
     email: "",
@@ -139,6 +152,88 @@ export default function DashboardContent() {
     }
   }
 
+  async function loadCurriculumData() {
+    try {
+      const [cls, sets] = await Promise.all([
+        api.curriculums.list(),
+        api.assessmentSets.list(),
+      ]);
+      setCurriculums(cls);
+      setAssessmentSets(sets);
+    } catch {}
+  }
+
+  async function loadTopics(curriculumId: string) {
+    if (!curriculumId) { setCurTopics([]); return; }
+    try {
+      setCurTopics(await api.topics.listByCurriculum(curriculumId));
+    } catch { setCurTopics([]); }
+  }
+
+  useEffect(() => {
+    if (segment === "curriculum") loadCurriculumData();
+  }, [segment]);
+
+  useEffect(() => {
+    if (selectedCurriculumId) loadTopics(selectedCurriculumId);
+  }, [selectedCurriculumId]);
+
+  async function onCreateCurriculum(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setCreateSaving(true);
+    setCreateError("");
+    try {
+      const fd = new FormData(e.currentTarget);
+      await api.curriculums.create({
+        name: fd.get("name") as string,
+        category: fd.get("category") as string,
+        assessmentSetId: (fd.get("assessmentSetId") as string) || null,
+      });
+      setCreateCurriculumOpen(false);
+      await loadCurriculumData();
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : "Gagal");
+    } finally { setCreateSaving(false); }
+  }
+
+  async function onCreateTopic(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setCreateSaving(true);
+    setCreateError("");
+    try {
+      const fd = new FormData(e.currentTarget);
+      await api.topics.create({
+        curriculumId: selectedCurriculumId,
+        title: fd.get("title") as string,
+        materialLink: (fd.get("materialLink") as string) || null,
+        exampleProjectLink: (fd.get("exampleProjectLink") as string) || null,
+        goals: (fd.get("goals") as string) || null,
+        tools: (fd.get("tools") as string) || null,
+      });
+      setCreateTopicOpen(false);
+      await loadTopics(selectedCurriculumId);
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : "Gagal");
+    } finally { setCreateSaving(false); }
+  }
+
+  async function onCreateAssessmentSet(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setCreateSaving(true);
+    setCreateError("");
+    try {
+      const fd = new FormData(e.currentTarget);
+      await api.assessmentSets.create({
+        name: fd.get("name") as string,
+        description: (fd.get("description") as string) || null,
+      });
+      setCreateAssessmentSetOpen(false);
+      await loadCurriculumData();
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : "Gagal");
+    } finally { setCreateSaving(false); }
+  }
+
   async function logout() {
     await api.auth.logout();
     router.push("/login");
@@ -205,6 +300,16 @@ export default function DashboardContent() {
               }`}
             >
               Jadwal
+            </button>
+            <button
+              onClick={() => setSegment("curriculum")}
+              className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition ${
+                segment === "curriculum"
+                  ? "bg-white text-dark-amethyst-600 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Kurikulum
             </button>
           </div>
         </div>
@@ -357,6 +462,127 @@ export default function DashboardContent() {
             )}
           </div>
         )}
+        {/* Curriculum Tab */}
+        {segment === "curriculum" && (
+          <div className="mt-4">
+            <div className="mb-3 flex gap-1 rounded-xl bg-gray-100 p-1">
+              {(["curriculums", "topics", "assessments"] as const).map((tab) => (
+                <button key={tab} onClick={() => setCurriculumSegment(tab)}
+                  className={`flex-1 rounded-lg px-4 py-2 text-xs font-medium transition ${
+                    curriculumSegment === tab
+                      ? "bg-white text-dark-amethyst-600 shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  {{ curriculums: "Kurikulum", topics: "Topik", assessments: "Penilaian" }[tab]}
+                </button>
+              ))}
+            </div>
+
+            {curriculumSegment === "curriculums" && (
+              <div className="space-y-2">
+                {curriculums.length === 0 ? (
+                  <div className="rounded-2xl bg-white p-6 text-center shadow-md">
+                    <p className="text-sm text-gray-400">Belum ada kurikulum</p>
+                  </div>
+                ) : (
+                  curriculums.map((c) => (
+                    <div key={c.id} className="rounded-2xl bg-white p-4 shadow-md">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-sm font-bold text-gray-800">{c.name}</h3>
+                          <p className="text-[10px] text-gray-400">{CATEGORY_LABELS[c.category] ?? c.category} &middot; {c.topics.length} topik</p>
+                        </div>
+                        {c.assessmentSet && (
+                          <span className="rounded-full bg-frosted-blue-50 px-2 py-0.5 text-[10px] font-medium text-frosted-blue-600">
+                            {c.assessmentSet.name}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
+                <button onClick={() => { setCreateCurriculumOpen(true); setCreateError(""); }}
+                  className="w-full rounded-2xl bg-dark-amethyst-500 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-dark-amethyst-600"
+                >
+                  + Tambah Kurikulum
+                </button>
+              </div>
+            )}
+
+            {curriculumSegment === "topics" && (
+              <div className="space-y-2">
+                <select value={selectedCurriculumId} onChange={(e) => setSelectedCurriculumId(e.target.value)}
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-dark-amethyst-400 focus:ring-2 focus:ring-dark-amethyst-100"
+                >
+                  <option value="">-- Pilih Kurikulum --</option>
+                  {curriculums.map((c) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+
+                {selectedCurriculumId && curTopics.length === 0 && (
+                  <div className="rounded-2xl bg-white p-6 text-center shadow-md">
+                    <p className="text-sm text-gray-400">Belum ada topik</p>
+                  </div>
+                )}
+                {selectedCurriculumId && curTopics.length > 0 && (
+                  <div className="space-y-1.5">
+                    {curTopics
+                      .sort((a, b) => a.order - b.order)
+                      .map((t) => (
+                        <div key={t.id} className="flex items-center gap-3 rounded-2xl bg-white p-3 shadow-md">
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-tea-green-50 text-[11px] font-bold text-tea-green-700">
+                            {t.order + 1}
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-gray-800 truncate">{t.title}</p>
+                            {t.goals && <p className="text-[10px] text-gray-400 truncate">{t.goals}</p>}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+                {selectedCurriculumId && (
+                  <button onClick={() => { setCreateTopicOpen(true); setCreateError(""); }}
+                    className="w-full rounded-2xl bg-dark-amethyst-500 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-dark-amethyst-600"
+                  >
+                    + Tambah Topik
+                  </button>
+                )}
+              </div>
+            )}
+
+            {curriculumSegment === "assessments" && (
+              <div className="space-y-2">
+                {assessmentSets.length === 0 ? (
+                  <div className="rounded-2xl bg-white p-6 text-center shadow-md">
+                    <p className="text-sm text-gray-400">Belum ada set penilaian</p>
+                  </div>
+                ) : (
+                  assessmentSets.map((s) => (
+                    <div key={s.id} className="rounded-2xl bg-white p-4 shadow-md">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-sm font-bold text-gray-800">{s.name}</h3>
+                          <p className="text-[10px] text-gray-400">
+                            {s.aspects?.length ?? 0} aspek
+                            {s.description && ` — ${s.description}`}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+                <button onClick={() => { setCreateAssessmentSetOpen(true); setCreateError(""); }}
+                  className="w-full rounded-2xl bg-dark-amethyst-500 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-dark-amethyst-600"
+                >
+                  + Tambah Set Penilaian
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* FAB Add Student */}
@@ -488,6 +714,133 @@ export default function DashboardContent() {
                 ) : (
                   "Simpan"
                 )}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Modal Create Curriculum */}
+      {createCurriculumOpen && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+          <div className="fixed inset-0 bg-black/40" onClick={() => setCreateCurriculumOpen(false)} />
+          <div className="relative w-full max-w-md rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-gray-800">Tambah Kurikulum</h2>
+              <button onClick={() => setCreateCurriculumOpen(false)} className="rounded-lg p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600">
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <form onSubmit={onCreateCurriculum}>
+              <div className="mb-3">
+                <label className="mb-1 block text-sm font-medium text-gray-700">Nama</label>
+                <input name="name" required
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-dark-amethyst-400 focus:ring-2 focus:ring-dark-amethyst-100" />
+              </div>
+              <div className="mb-3">
+                <label className="mb-1 block text-sm font-medium text-gray-700">Kategori</label>
+                <select name="category" required
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-dark-amethyst-400 focus:ring-2 focus:ring-dark-amethyst-100"
+                >
+                  <option value="JUNIOR_I">Kelas 1-3 SD</option>
+                  <option value="JUNIOR_II">Kelas 4-6 SD</option>
+                  <option value="JUNIOR_III">Kelas 7-9 SMP</option>
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="mb-1 block text-sm font-medium text-gray-700">Set Penilaian</label>
+                <select name="assessmentSetId"
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-dark-amethyst-400 focus:ring-2 focus:ring-dark-amethyst-100"
+                >
+                  <option value="">-- Tanpa penilaian --</option>
+                  {assessmentSets.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                </select>
+              </div>
+              {createError && <div className="mb-4 rounded-lg bg-berry-lipstick-50 p-3 text-sm text-berry-lipstick-600">{createError}</div>}
+              <button type="submit" disabled={createSaving}
+                className="w-full rounded-xl bg-tea-green-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-tea-green-600 disabled:opacity-50"
+              >
+                {createSaving ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Simpan"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Create Topic */}
+      {createTopicOpen && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+          <div className="fixed inset-0 bg-black/40" onClick={() => setCreateTopicOpen(false)} />
+          <div className="relative w-full max-w-md rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-gray-800">Tambah Topik</h2>
+              <button onClick={() => setCreateTopicOpen(false)} className="rounded-lg p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600">
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <form onSubmit={onCreateTopic}>
+              <div className="mb-3">
+                <label className="mb-1 block text-sm font-medium text-gray-700">Judul</label>
+                <input name="title" required
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-dark-amethyst-400 focus:ring-2 focus:ring-dark-amethyst-100" />
+              </div>
+              <div className="mb-3">
+                <label className="mb-1 block text-sm font-medium text-gray-700">Tujuan</label>
+                <input name="goals"
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-dark-amethyst-400 focus:ring-2 focus:ring-dark-amethyst-100" />
+              </div>
+              <div className="mb-3">
+                <label className="mb-1 block text-sm font-medium text-gray-700">Link Materi</label>
+                <input name="materialLink" type="url"
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-dark-amethyst-400 focus:ring-2 focus:ring-dark-amethyst-100" />
+              </div>
+              <div className="mb-3">
+                <label className="mb-1 block text-sm font-medium text-gray-700">Link Project</label>
+                <input name="exampleProjectLink" type="url"
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-dark-amethyst-400 focus:ring-2 focus:ring-dark-amethyst-100" />
+              </div>
+              <div className="mb-4">
+                <label className="mb-1 block text-sm font-medium text-gray-700">Tools</label>
+                <input name="tools"
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-dark-amethyst-400 focus:ring-2 focus:ring-dark-amethyst-100" />
+              </div>
+              {createError && <div className="mb-4 rounded-lg bg-berry-lipstick-50 p-3 text-sm text-berry-lipstick-600">{createError}</div>}
+              <button type="submit" disabled={createSaving}
+                className="w-full rounded-xl bg-tea-green-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-tea-green-600 disabled:opacity-50"
+              >
+                {createSaving ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Simpan"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Create Assessment Set */}
+      {createAssessmentSetOpen && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+          <div className="fixed inset-0 bg-black/40" onClick={() => setCreateAssessmentSetOpen(false)} />
+          <div className="relative w-full max-w-md rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-gray-800">Tambah Set Penilaian</h2>
+              <button onClick={() => setCreateAssessmentSetOpen(false)} className="rounded-lg p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600">
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <form onSubmit={onCreateAssessmentSet}>
+              <div className="mb-3">
+                <label className="mb-1 block text-sm font-medium text-gray-700">Nama</label>
+                <input name="name" required
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-dark-amethyst-400 focus:ring-2 focus:ring-dark-amethyst-100" />
+              </div>
+              <div className="mb-4">
+                <label className="mb-1 block text-sm font-medium text-gray-700">Deskripsi</label>
+                <textarea name="description" rows={3}
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-dark-amethyst-400 focus:ring-2 focus:ring-dark-amethyst-100" />
+              </div>
+              {createError && <div className="mb-4 rounded-lg bg-berry-lipstick-50 p-3 text-sm text-berry-lipstick-600">{createError}</div>}
+              <button type="submit" disabled={createSaving}
+                className="w-full rounded-xl bg-tea-green-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-tea-green-600 disabled:opacity-50"
+              >
+                {createSaving ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Simpan"}
               </button>
             </form>
           </div>

@@ -12,6 +12,9 @@ import TutorList from "./components/tutor/TutorList";
 import AddTutorForm from "./components/tutor/AddTutorForm";
 import StudentList from "./components/student/StudentList";
 import StudentDetailModal from "./components/student/StudentDetailModal";
+import CurriculumList from "./components/kurikulum/CurriculumList";
+import TopicManagement from "./components/kurikulum/TopicManagement";
+import AssessmentSetManagement from "./components/kurikulum/AssessmentSetManagement";
 
 export default function AdminDashboard() {
   const h = useAdminDashboard();
@@ -26,12 +29,13 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <AdminNavbar mainMenu={h.mainMenu} onChange={(m) => { h.setMainMenu(m); h.setSegment("classes"); h.setTutorSegment("list"); }}
+      <AdminNavbar mainMenu={h.mainMenu} onChange={(m) => { h.setMainMenu(m); h.setSegment("classes"); h.setTutorSegment("list"); h.setCurriculumSegment("list"); }}
         email={h.user?.email} onLogout={h.logout} />
 
       <div className="mx-auto flex max-w-full gap-6 px-10 py-6">
         <AdminSidebar mainMenu={h.mainMenu} segment={h.segment} onSegmentChange={h.setSegment}
-          tutorSegment={h.tutorSegment} onTutorSegmentChange={h.setTutorSegment} />
+          tutorSegment={h.tutorSegment} onTutorSegmentChange={h.setTutorSegment}
+          curriculumSegment={h.curriculumSegment} onCurriculumSegmentChange={h.setCurriculumSegment} />
 
         <main className="min-w-0 flex-1">
           {h.mainMenu === "classes" && h.segment === "classes" && (
@@ -74,10 +78,16 @@ export default function AdminDashboard() {
             <AddTutorForm registering={h.registering} registerError={h.registerError}
               onSubmit={h.handleRegisterTutor} />
           )}
-          {h.mainMenu === "curriculums" && (
-            <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-sm">
-              <p className="text-slate-400">Halaman Kurikulum — dalam pengembangan</p>
-            </div>
+          {h.mainMenu === "curriculums" && h.curriculumSegment === "list" && (
+            <CurriculumList curriculums={h.curriculums} assessmentSets={h.assessmentSets}
+              onRefresh={h.refreshCurriculumData} />
+          )}
+          {h.mainMenu === "curriculums" && h.curriculumSegment === "topics" && (
+            <TopicManagement curriculums={h.curriculums} />
+          )}
+          {h.mainMenu === "curriculums" && h.curriculumSegment === "assessments" && (
+            <AssessmentSetManagement assessmentSets={h.assessmentSets}
+              onRefresh={h.refreshCurriculumData} />
           )}
           {h.mainMenu === "students" && (
             <StudentList students={h.studentsFull} onSelect={h.handleSelectStudent} />

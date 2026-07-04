@@ -155,7 +155,7 @@ export type Curriculum = {
 
 export type Topic = {
   id: string;
-  curriculumId: string;
+  curriculumId?: string | null;
   title: string;
   materialLink?: string | null;
   exampleProjectLink?: string | null;
@@ -635,7 +635,7 @@ export const api = {
       return authenticatedRequest<Topic[]>(`/api/v1/academic/topics?curriculumId=${curriculumId}`);
     },
     async create(payload: {
-      curriculumId: string;
+      curriculumId?: string | null;
       title: string;
       materialLink?: string | null;
       exampleProjectLink?: string | null;

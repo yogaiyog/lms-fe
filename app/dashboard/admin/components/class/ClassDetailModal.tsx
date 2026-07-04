@@ -165,17 +165,39 @@ export default function ClassDetailModal({
               <div className="divide-y divide-slate-100">
                 {detailClass.schedules!.map((s) => {
                   const sDate = s.date ? new Date(s.date).toISOString().split("T")[0] : "";
+                  const formattedDate = s.date
+                    ? new Date(s.date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })
+                    : "";
                   return (
-                    <div key={s.id} className="flex items-center justify-between gap-2 px-3 py-2 text-sm">
+                    <div key={s.id} className={`flex items-center justify-between gap-2 px-3 py-2 text-sm ${s.isDone ? "bg-emerald-50/50" : ""}`}>
                       <div className="min-w-0 flex-1">
-                        <div className="font-semibold text-slate-700">
-                          {DAY_LABELS[s.dayOfWeek]} {s.startTime}-{s.endTime}
+                        <div className="flex items-center gap-1.5">
+                          <span>{formattedDate}</span>
+                          {s.isDone && (
+                            <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700">
+                              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                              </svg>
+                              Selesai
+                            </span>
+                          )}
                         </div>
-                        <div className="text-[10px] text-slate-400">{s.topic ?? "—"}</div>
+                        <div className="flex items-center gap-2 text-[10px] text-slate-400">
+                       
+                             <span className={`font-semibold ${s.isDone ? "text-slate-400" : "text-slate-700"}`}>
+                            {DAY_LABELS[s.dayOfWeek]} {s.startTime}-{s.endTime}
+                          </span>
+                          <span className="text-slate-300">•</span>
+                          <span>{s.topic ?? "—"}</span>
+                        </div>
                       </div>
                       <input type="date" value={sDate}
                         onChange={(e) => onReschedule(s.id, e.target.value)}
-                        className="w-36 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs outline-none transition focus:border-blue-400"
+                        className={`w-36 rounded-lg border px-2 py-1 text-xs outline-none transition focus:border-blue-400 ${
+                          s.isDone
+                            ? "border-emerald-200 bg-emerald-50 text-emerald-600"
+                            : "border-slate-200 bg-slate-50"
+                        }`}
                       />
                     </div>
                   );

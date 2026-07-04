@@ -22,6 +22,7 @@ import {
   type RequestClass,
   type StudentProfile,
   type TutorSlot,
+  type AssessmentSet,
 } from "@/lib/api";
 import { CATEGORY_LABELS } from "../constants";
 
@@ -46,6 +47,8 @@ export function useAdminDashboard() {
   const [classes, setClasses] = useState<Class[]>([]);
   const [requests, setRequests] = useState<RequestClass[]>([]);
   const [curriculums, setCurriculums] = useState<Curriculum[]>([]);
+  const [assessmentSets, setAssessmentSets] = useState<AssessmentSet[]>([]);
+  const [curriculumSegment, setCurriculumSegment] = useState<"list" | "topics" | "assessments">("list");
   const [loading, setLoading] = useState(true);
 
   const [createType, setCreateType] = useState<"BATCH" | "PRIVATE" | "MAKEUP">("BATCH");
@@ -126,7 +129,7 @@ export function useAdminDashboard() {
         setUser(me);
         if (me.role !== "ADMIN") { router.replace("/dashboard"); return; }
 
-        const [cls, reqs, tuts, currics, fullTutors, studentProfiles] = await Promise.all([
+        const [cls, reqs, tuts, currics, fullTutors, studentProfiles, assSets] = await Promise.all([
           api.classes.listByTutor("") as Promise<Class[]>,
           api.requestClass.list(),
           api.tutorProfiles.list() as Promise<TutorOption[]>,
@@ -135,11 +138,13 @@ export function useAdminDashboard() {
           api.studentProfiles.list() as Promise<
             { id: string; fullName: string; nickname: string; category: string; user?: { email: string }; parent?: { fullName: string } }[]
           >,
+          api.assessmentSets.list(),
         ]);
         setClasses(cls);
         setRequests(reqs);
         setTutors(tuts);
         setCurriculums(currics);
+        setAssessmentSets(assSets);
         setTutorsFull(fullTutors.map((t) => ({ id: t.id, fullName: t.fullName, phone: t.phone, email: t.user?.email, bio: t.bio })));
         setStudentsFull(
           (studentProfiles as { id: string; fullName: string; nickname: string; category: string; user?: { id: string; email: string }; parent?: { fullName: string } }[]).map((s) => ({
@@ -582,6 +587,17 @@ export function useAdminDashboard() {
     }
   }
 
+  async function refreshCurriculumData() {
+    try {
+      const [currics, assSets] = await Promise.all([
+        api.curriculums.list(),
+        api.assessmentSets.list(),
+      ]);
+      setCurriculums(currics);
+      setAssessmentSets(assSets);
+    } catch {}
+  }
+
   async function logout() {
     await api.auth.logout();
     router.push("/login");
@@ -620,6 +636,10 @@ export function useAdminDashboard() {
   return {
     user, loading, mainMenu, setMainMenu, segment, setSegment,
     tutorSegment, setTutorSegment,
+    curriculums,
+    curriculumSegment, setCurriculumSegment,
+    assessmentSets,
+    refreshCurriculumData,
     classes, requests, tutors, tutorsFull, registering, registerError,
     createType, setCreateType,
     createCategory, setCreateCategory,

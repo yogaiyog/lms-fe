@@ -1,7 +1,7 @@
 "use client";
 
 import { type Table, flexRender } from "@tanstack/react-table";
-import { type Class } from "@/lib/api";
+import { type Class, type Schedule } from "@/lib/api";
 import { DAY_LABELS } from "../../constants";
 
 type Props = {
@@ -10,6 +10,51 @@ type Props = {
   onGlobalFilterChange: (v: string) => void;
   onRowClick: (cls: Class) => void;
 };
+
+function ScheduleCell({ schedules: raw }: { schedules: Schedule[] | undefined | null }) {
+  const schedules = raw ?? [];
+
+  if (schedules.length === 0) {
+    return <span className="text-xs text-slate-400">—</span>;
+  }
+
+  const total = schedules.length;
+  const done = schedules.filter((s) => s.isDone).length;
+
+  const sorted = [...schedules].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+  const nextSched = sorted.find((s) => !s.isDone);
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center gap-2">
+        <div className="h-1.5 w-20 overflow-hidden rounded-full bg-slate-100">
+          <div
+            className="h-full rounded-full bg-emerald-500 transition-all"
+            style={{ width: `${Math.round((done / total) * 100)}%` }}
+          />
+        </div>
+        <span className="whitespace-nowrap text-xs font-medium text-slate-500">
+          {done}/{total} Selesai
+        </span>
+      </div>
+      {nextSched ? (
+        <div className="text-xs text-slate-600">
+          <span className="font-semibold">{nextSched.topic ?? "—"}</span>
+          <span className="text-slate-400">
+            {" — "}
+            {nextSched.date
+              ? `${DAY_LABELS[nextSched.dayOfWeek]}, ${new Date(nextSched.date).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}`
+              : DAY_LABELS[nextSched.dayOfWeek]}
+          </span>
+        </div>
+      ) : (
+        <div className="text-xs font-medium text-emerald-600">Semua selesai</div>
+      )}
+    </div>
+  );
+}
 
 export default function ClassesTable({ table, globalFilter, onGlobalFilterChange, onRowClick }: Props) {
   return (
@@ -36,7 +81,7 @@ export default function ClassesTable({ table, globalFilter, onGlobalFilterChange
                       {{ asc: " ▲", desc: " ▼" }[h.column.getIsSorted() as string] ?? ""}
                     </th>
                   ))}
-                  <th className="border-b border-slate-200 px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Jadwal</th>
+                  <th className="border-b border-slate-200 px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Progress</th>
                 </tr>
               ))}
             </thead>
@@ -51,22 +96,7 @@ export default function ClassesTable({ table, globalFilter, onGlobalFilterChange
                     </td>
                   ))}
                   <td className="px-3 py-3">
-                    <div className="flex flex-wrap gap-1">
-                      {(row.original.schedules ?? []).length === 0 ? (
-                        <span className="text-xs text-slate-400">—</span>
-                      ) : (
-                        row.original.schedules!.slice(0, 3).map((s) => (
-                          <span key={s.id} className="rounded-lg bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
-                            {DAY_LABELS[s.dayOfWeek]} {s.startTime}
-                          </span>
-                        ))
-                      )}
-                      {(row.original.schedules?.length ?? 0) > 3 && (
-                        <span className="rounded-lg bg-slate-50 px-2 py-0.5 text-[10px] text-slate-400">
-                          +{row.original.schedules!.length - 3}
-                        </span>
-                      )}
-                    </div>
+                    <ScheduleCell schedules={row.original.schedules} />
                   </td>
                 </tr>
               ))}
