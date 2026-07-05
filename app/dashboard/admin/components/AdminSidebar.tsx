@@ -1,7 +1,7 @@
 "use client";
 
 type Props = {
-  mainMenu: "classes" | "tutors" | "curriculums" | "students";
+  mainMenu: "classes" | "tutors" | "curriculums" | "students" | "attendance";
   segment: "classes" | "requests" | "create";
   onSegmentChange: (seg: Props["segment"]) => void;
   tutorSegment: "list" | "add";
@@ -60,6 +60,11 @@ export default function AdminSidebar({
         {mainMenu === "students" && (
           <div className="rounded-2xl bg-slate-50 p-3">
             <div className="text-sm font-semibold text-slate-400">Daftar Student</div>
+          </div>
+        )}
+        {mainMenu === "attendance" && (
+          <div className="rounded-2xl bg-slate-50 p-3">
+            <div className="text-sm font-semibold text-slate-400">Semua Absensi</div>
           </div>
         )}
       </div>

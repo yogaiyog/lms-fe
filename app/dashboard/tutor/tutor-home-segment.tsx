@@ -86,6 +86,7 @@ export default function TutorHomeSegment({
   onEditSchedule,
   onOpenScheduleDetail,
   tutorName,
+  attendanceFilledIds,
 }: {
   theme: Theme;
   classes: ClassWithSchedules[];
@@ -101,6 +102,7 @@ export default function TutorHomeSegment({
   onEditSchedule: (schedule: Schedule, classId: string) => void;
   onOpenScheduleDetail: (schedule: Schedule) => void;
   tutorName?: string;
+  attendanceFilledIds?: Set<string>;
 }) {
   const weekSchedules = getThisWeekSchedules(classes);
   const [studentListModal, setStudentListModal] = useState<{ scheduleId: string; classId: string } | null>(null);
@@ -172,10 +174,20 @@ export default function TutorHomeSegment({
                         </>
                       )}
                       {!schedule.isDone && (
-                        <button onClick={() => setStudentListModal({ scheduleId: schedule.id, classId: schedule.classId })}
-                          className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors">
-                          <User size={11} /> Lihat Siswa
-                        </button>
+                        <div className="mt-1 flex items-center gap-2">
+                          <button onClick={() => setStudentListModal({ scheduleId: schedule.id, classId: schedule.classId })}
+                            className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                            <User size={11} /> Lihat Siswa
+                          </button>
+                          {attendanceFilledIds?.has(schedule.id) && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                              </svg>
+                              Absensi Terisi
+                            </span>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -216,10 +228,17 @@ export default function TutorHomeSegment({
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-semibold text-emerald-700 animate-pulse">
                           Sedang Berlangsung
                         </span>
-                        <button onClick={() => onInitAttendanceForm(schedule.id, schedule.classId)}
-                          className="mt-2 inline-flex items-center gap-1.5 rounded-2xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-colors">
-                          <CheckSquare size={14} /> Isi Absensi
-                        </button>
+                        {attendanceFilledIds?.has(schedule.id) ? (
+                          <button onClick={() => onOpenScheduleDetail(schedule)}
+                            className="mt-2 inline-flex items-center gap-1.5 rounded-2xl bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-700 transition-colors">
+                            <CheckSquare size={14} /> Isi Assessment
+                          </button>
+                        ) : (
+                          <button onClick={() => onInitAttendanceForm(schedule.id, schedule.classId)}
+                            className="mt-2 inline-flex items-center gap-1.5 rounded-2xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-colors">
+                            <CheckSquare size={14} /> Isi Absensi
+                          </button>
+                        )}
                       </div>
                     ) : cd && !isCountdownZero ? (
                       <div className="text-right">
@@ -243,10 +262,17 @@ export default function TutorHomeSegment({
                           </div>
                         </div>
                         {isSoon && (
-                          <button onClick={() => onInitAttendanceForm(schedule.id, schedule.classId)}
-                            className="mt-2 inline-flex items-center gap-1.5 rounded-2xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-colors">
-                            <CheckSquare size={14} /> Isi Absensi
-                          </button>
+                          attendanceFilledIds?.has(schedule.id) ? (
+                            <button onClick={() => onOpenScheduleDetail(schedule)}
+                              className="mt-2 inline-flex items-center gap-1.5 rounded-2xl bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-700 transition-colors">
+                              <CheckSquare size={14} /> Isi Assessment
+                            </button>
+                          ) : (
+                            <button onClick={() => onInitAttendanceForm(schedule.id, schedule.classId)}
+                              className="mt-2 inline-flex items-center gap-1.5 rounded-2xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-colors">
+                              <CheckSquare size={14} /> Isi Absensi
+                            </button>
+                          )
                         )}
                       </div>
                     ) : null}

@@ -2,18 +2,21 @@
 
 import { LogOut } from "lucide-react";
 
+type MainMenu = "classes" | "tutors" | "curriculums" | "students" | "attendance";
+
 type Props = {
-  mainMenu: "classes" | "tutors" | "curriculums" | "students";
-  onChange: (m: Props["mainMenu"]) => void;
+  mainMenu: MainMenu;
+  onChange: (m: MainMenu) => void;
   email?: string;
   onLogout: () => void;
 };
 
-const items: { key: Props["mainMenu"]; label: string }[] = [
+const items: { key: MainMenu; label: string }[] = [
   { key: "classes", label: "Kelas" },
   { key: "tutors", label: "Tutor" },
   { key: "curriculums", label: "Kurikulum" },
   { key: "students", label: "Student" },
+  { key: "attendance", label: "Absensi" },
 ];
 
 export default function AdminNavbar({ mainMenu, onChange, email, onLogout }: Props) {

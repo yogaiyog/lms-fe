@@ -131,6 +131,8 @@ export type Attendance = {
   status: "PRESENT" | "ABSENT" | "LATE" | "SICK" | "PERMISSION";
   notes?: string | null;
   teachedBy?: string | null;
+  tutor?: TutorProfile | null;
+  schedule?: Schedule | null;
   assessment?: AttendanceAssessment | null;
   student?: StudentProfile | null;
 };
@@ -268,6 +270,7 @@ export type AttendanceAssessment = {
   totalScore?: number | null;
   percentage?: number | null;
   mentorComment?: string | null;
+  projectLink?: string | null;
   scores?: AttendanceAssessmentScore[];
   attendance?: Attendance;
   createdAt: string;
@@ -544,7 +547,7 @@ export const api = {
         body: JSON.stringify(payload),
       });
     },
-    async update(id: string, payload: Partial<{ status: string; notes: string | null }>) {
+    async update(id: string, payload: Partial<{ status: string; notes: string | null; teachedBy: string | null }>) {
       return authenticatedRequest<Attendance>(`/api/v1/academic/attendances/${id}`, {
         method: "PATCH",
         body: JSON.stringify(payload),
@@ -793,6 +796,7 @@ export const api = {
       totalScore?: number | null;
       percentage?: number | null;
       mentorComment?: string | null;
+      projectLink?: string | null;
     }) {
       return authenticatedRequest<AttendanceAssessment>("/api/v1/academic/attendance-assessments", {
         method: "POST",
@@ -803,6 +807,7 @@ export const api = {
       totalScore: number | null;
       percentage: number | null;
       mentorComment: string | null;
+      projectLink: string | null;
     }>) {
       return authenticatedRequest<AttendanceAssessment>(`/api/v1/academic/attendance-assessments/${id}`, {
         method: "PATCH",
@@ -857,6 +862,9 @@ export const api = {
   savedReports: {
     async list() {
       return authenticatedRequest<any[]>("/api/v1/academic/saved-reports");
+    },
+    async listByStudent(studentId: string) {
+      return authenticatedRequest<any[]>(`/api/v1/academic/saved-reports/student/${studentId}`);
     },
     async create(payload: { studentId: string; title: string; data: any }) {
       return authenticatedRequest<{ id: string; createdAt: string }>("/api/v1/academic/saved-reports", {

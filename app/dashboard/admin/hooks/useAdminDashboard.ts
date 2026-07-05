@@ -41,7 +41,7 @@ export type StudentItem = {
 export function useAdminDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [mainMenu, setMainMenu] = useState<"classes" | "tutors" | "curriculums" | "students">("classes");
+  const [mainMenu, setMainMenu] = useState<"classes" | "tutors" | "curriculums" | "students" | "attendance">("classes");
   const [segment, setSegment] = useState<"classes" | "requests" | "create">("classes");
 
   const [classes, setClasses] = useState<Class[]>([]);

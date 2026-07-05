@@ -40,7 +40,7 @@ export default function ReportPickerModal({
           <p className={`text-xs ${theme.textMuted} mb-3`}>
             Pilih satu atau lebih jadwal yang sudah diikuti siswa dan punya penilaian.
           </p>
-          <div className="space-y-2 max-h-60 overflow-y-auto mb-3">
+          <div className="space-y-2 max-h-[65vh] overflow-y-auto mb-3">
             {attendances
               .filter((att) => att.assessment)
               .map((att) => {
@@ -92,7 +92,7 @@ export default function ReportPickerModal({
         </button>
 
         {showSavedReports && savedReports.length > 0 && (
-          <div className="space-y-2 max-h-48 overflow-y-auto mt-3">
+          <div className="space-y-2 max-h-[30vh] overflow-y-auto mt-3">
             {savedReports.map((r) => (
               <div key={r.id} className={`rounded-xl px-4 py-3 flex items-center justify-between ${theme.dark ? "bg-slate-800" : "bg-slate-50"}`}>
                 <div className="min-w-0 flex-1 cursor-pointer" onClick={() => onLoadSavedReport(r)}>

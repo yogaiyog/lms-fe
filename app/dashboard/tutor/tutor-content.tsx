@@ -23,15 +23,17 @@ import Link from "next/link";
 import TutorHomeSegment from "./tutor-home-segment";
 import TutorClassesSegment from "./tutor-classes-segment";
 import TutorStudentsSegment from "./tutor-students-segment";
+import TutorAttendanceSegment from "./tutor-attendance-segment";
 import TutorScheduleDetailModal from "./tutor-schedule-detail-modal";
 
 const NAV_ITEMS = [
   { key: "home", label: "Beranda", icon: Home },
   { key: "classes", label: "Kelas", icon: BookOpen },
   { key: "students", label: "Siswa", icon: User },
+  { key: "attendance", label: "Absensi", icon: BookOpen },
 ] as const;
 
-const MOBILE_NAV = ["home", "classes", "students"] as const;
+const MOBILE_NAV = ["home", "classes", "students", "attendance"] as const;
 
 type ClassWithDetails = Class & {
   schedules: Schedule[];
@@ -44,12 +46,13 @@ export default function TutorDashboard() {
   const [classes, setClasses] = useState<ClassWithDetails[]>([]);
   const [students, setStudents] = useState<StudentProfile[]>([]);
   const [loading, setLoading] = useState(true);
-  const [segment, setSegment] = useState<"home" | "classes" | "students">("home");
+  const [segment, setSegment] = useState<"home" | "classes" | "students" | "attendance">("home");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [dark, setDark] = useState(false);
   const [countdowns, setCountdowns] = useState<Record<string, { days: number; hours: number; minutes: number; seconds: number }>>({});
   const [attendanceForm, setAttendanceForm] = useState<{ scheduleId: string; studentId: string; status: string }[]>([]);
   const [submittingAttendance, setSubmittingAttendance] = useState(false);
+  const [attendanceFilledIds, setAttendanceFilledIds] = useState<Set<string>>(new Set());
 
   const theme = {
     dark,
@@ -60,7 +63,7 @@ export default function TutorDashboard() {
     textMuted: dark ? "text-slate-400" : "text-slate-500",
   };
 
-  const go = (p: "home" | "classes" | "students") => { setSegment(p); setDrawerOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const go = (p: "home" | "classes" | "students" | "attendance") => { setSegment(p); setDrawerOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
 
   // Schedule edit
   const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null);
@@ -89,6 +92,7 @@ export default function TutorDashboard() {
   const [assessingAttendance, setAssessingAttendance] = useState<string | null>(null);
   const [assessmentScores, setAssessmentScores] = useState<Record<string, number>>({});
   const [mentorComment, setMentorComment] = useState("");
+  const [projectLink, setProjectLink] = useState("");
   const [savingAssessment, setSavingAssessment] = useState(false);
   const [formAspects, setFormAspects] = useState<AssessmentAspect[]>([]);
 
@@ -116,6 +120,33 @@ export default function TutorDashboard() {
         setClasses(classesWithDetails);
         const studentList = await api.studentProfiles.list();
         setStudents(studentList);
+        const now = new Date();
+        const day = now.getDay();
+        const monday = new Date(now);
+        monday.setDate(now.getDate() + (day === 0 ? -6 : 1 - day));
+        monday.setHours(0, 0, 0, 0);
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        sunday.setHours(23, 59, 59, 999);
+        const weekScheduleIds = classesWithDetails.flatMap((cls) =>
+          cls.schedules.filter((s) => {
+            const d = new Date(s.date);
+            return !s.isDone && d >= monday && d <= sunday;
+          }).map((s) => s.id)
+        );
+        if (weekScheduleIds.length > 0) {
+          const filled = new Set<string>();
+          await Promise.all(weekScheduleIds.map(async (sid) => {
+            try {
+              const atts = await api.attendances.listBySchedule(sid);
+              const cls = classesWithDetails.find((c) => c.schedules.some((s) => s.id === sid));
+              if (!cls) return;
+              const enrollmentCount = (cls.enrollments ?? []).length;
+              if (enrollmentCount > 0 && atts.length >= enrollmentCount) filled.add(sid);
+            } catch {}
+          }));
+          setAttendanceFilledIds(filled);
+        }
       } catch {
         clearSession();
         router.replace("/login");
@@ -148,6 +179,7 @@ export default function TutorDashboard() {
           schedules: cls.schedules.map((s) => (s.id === updated.id ? updated : s)),
         }))
       );
+      setDetailSchedule(null);
     } catch (e) {
       console.error("Failed to mark schedule done", e);
     }
@@ -195,11 +227,13 @@ export default function TutorDashboard() {
       }
       setAssessmentScores(scores);
       setMentorComment(att.assessment.mentorComment ?? "");
+      setProjectLink(att.assessment.projectLink ?? "");
     } else {
       const defaults: Record<string, number> = {};
       for (const asp of aspects) defaults[asp.id] = asp.minScore;
       setAssessmentScores(defaults);
       setMentorComment("");
+      setProjectLink("");
     }
     setAssessingAttendance(attendanceId);
     setExpandedStudent(null);
@@ -217,7 +251,7 @@ export default function TutorDashboard() {
       if (att?.assessment) {
         const existingScores = att.assessment.scores ?? [];
         await api.attendanceAssessments.update(att.assessment.id, {
-          totalScore: totalObtained, percentage, mentorComment: mentorComment || null,
+          totalScore: totalObtained, percentage, mentorComment: mentorComment || null, projectLink: projectLink || null,
         });
         await Promise.all(
           Object.entries(assessmentScores).map(([aspectId, score]) => {
@@ -230,7 +264,7 @@ export default function TutorDashboard() {
         );
       } else {
         const assessment = await api.attendanceAssessments.create({
-          attendanceId, totalScore: totalObtained, percentage, mentorComment: mentorComment || null,
+          attendanceId, totalScore: totalObtained, percentage, mentorComment: mentorComment || null, projectLink: projectLink || null,
         });
         await Promise.all(
           Object.entries(assessmentScores).map(([aspectId, score]) =>
@@ -344,10 +378,25 @@ export default function TutorDashboard() {
     return () => clearInterval(interval);
   }, [classes]);
 
-  function initAttendanceForm(scheduleId: string, classId: string) {
+  async function initAttendanceForm(scheduleId: string, classId: string) {
     const cls = classes.find((c) => c.id === classId);
     if (!cls) return;
-    setAttendanceForm((cls.enrollments ?? []).map((e) => ({ scheduleId, studentId: e.studentId, status: "PRESENT" })));
+    const enrollments = cls.enrollments ?? [];
+    if (enrollments.length === 0) return;
+    try {
+      const existingAttendances = await api.attendances.listBySchedule(scheduleId);
+      const existingIds = new Set(existingAttendances.map((a) => a.studentId));
+      const missing = enrollments.filter((e) => !existingIds.has(e.studentId));
+      if (missing.length === 0) {
+        setAttendanceFilledIds((prev) => new Set([...prev, scheduleId]));
+        const schedule = cls.schedules.find((s) => s.id === scheduleId);
+        if (schedule) openScheduleDetail(schedule);
+        return;
+      }
+      setAttendanceForm(missing.map((e) => ({ scheduleId, studentId: e.studentId, status: "PRESENT" })));
+    } catch {
+      setAttendanceForm(enrollments.map((e) => ({ scheduleId, studentId: e.studentId, status: "PRESENT" })));
+    }
   }
 
   function setAttendanceStatus(studentId: string, status: string) {
@@ -358,21 +407,29 @@ export default function TutorDashboard() {
     setSubmittingAttendance(true);
     try {
       const scheduleIds = new Set<string>();
-      for (const item of attendanceForm) {
-        const cls = classes.find((c) => c.schedules.some((s) => s.id === item.scheduleId));
-        if (!cls) continue;
-        const schedule = cls.schedules.find((s) => s.id === item.scheduleId);
-        if (!schedule) continue;
-        await api.attendances.create({ scheduleId: item.scheduleId, studentId: item.studentId, date: schedule.date, status: item.status, teachedBy: user?.tutorProfile?.id });
-        scheduleIds.add(item.scheduleId);
+      const results = await Promise.allSettled(
+        attendanceForm.map(async (item) => {
+          const cls = classes.find((c) => c.schedules.some((s) => s.id === item.scheduleId));
+          if (!cls) return;
+          const schedule = cls.schedules.find((s) => s.id === item.scheduleId);
+          if (!schedule) return;
+          await api.attendances.create({ scheduleId: item.scheduleId, studentId: item.studentId, date: schedule.date, status: item.status, teachedBy: user?.tutorProfile?.id });
+          scheduleIds.add(item.scheduleId);
+        })
+      );
+      const rejected = results.filter((r) => r.status === "rejected");
+      for (const r of rejected) {
+        const err = (r as PromiseRejectedResult).reason;
+        if (err?.message?.toLowerCase().includes("unique") || err?.message?.toLowerCase().includes("duplicate")) continue;
+        throw err;
       }
       setAttendanceForm([]);
+      setAttendanceFilledIds((prev) => new Set([...prev, ...scheduleIds]));
       for (const sid of scheduleIds) {
         const cls = classes.find((c) => c.schedules.some((s) => s.id === sid));
         if (!cls) continue;
         const schedule = cls.schedules.find((s) => s.id === sid);
         if (!schedule) continue;
-        await markScheduleDone(schedule);
         openScheduleDetail(schedule);
       }
     } catch (err) {
@@ -455,7 +512,7 @@ export default function TutorDashboard() {
                     );
                   }
                   return (
-                    <button key={item.key} onClick={() => go(item.key as "home" | "classes" | "students")}
+                    <button key={item.key} onClick={() => go(item.key as "home" | "classes" | "students" | "attendance")}
                       className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold ${active ? "bg-blue-600 text-white" : `${theme.text} hover:bg-blue-50 hover:text-blue-700`}`}>
                       <Icon size={18} /> {item.label}
                     </button>
@@ -505,6 +562,12 @@ export default function TutorDashboard() {
                 students={students}
               />
             )}
+            {segment === "attendance" && user?.tutorProfile?.id && (
+              <TutorAttendanceSegment
+                theme={theme}
+                tutorId={user.tutorProfile.id}
+              />
+            )}
             {segment === "home" && (
               <TutorHomeSegment
                 theme={theme}
@@ -521,6 +584,7 @@ export default function TutorDashboard() {
                 onEditSchedule={startEditSchedule}
                 onOpenScheduleDetail={openScheduleDetail}
                 tutorName={user?.tutorProfile?.fullName}
+                attendanceFilledIds={attendanceFilledIds}
               />
             )}
           </main>
@@ -640,6 +704,7 @@ export default function TutorDashboard() {
           formAspects={formAspects}
           assessmentScores={assessmentScores}
           mentorComment={mentorComment}
+          projectLink={projectLink}
           savingAssessment={savingAssessment}
           onClose={() => setDetailSchedule(null)}
           onToggleExpand={(studentId) => setExpandedStudent((prev) => prev === studentId ? null : studentId)}
@@ -650,7 +715,9 @@ export default function TutorDashboard() {
           onCancelAssessment={() => setAssessingAttendance(null)}
           onScoreChange={(aspectId, value) => setAssessmentScores((prev) => ({ ...prev, [aspectId]: value }))}
           onMentorCommentChange={setMentorComment}
+          onProjectLinkChange={setProjectLink}
           onSaveAssessment={saveAssessment}
+          onMarkDone={markScheduleDone}
         />
       )}
     </div>

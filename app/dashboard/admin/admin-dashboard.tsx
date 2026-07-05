@@ -15,6 +15,7 @@ import StudentDetailModal from "./components/student/StudentDetailModal";
 import CurriculumList from "./components/kurikulum/CurriculumList";
 import TopicManagement from "./components/kurikulum/TopicManagement";
 import AssessmentSetManagement from "./components/kurikulum/AssessmentSetManagement";
+import AdminAttendance from "./components/attendance/AdminAttendance";
 
 export default function AdminDashboard() {
   const h = useAdminDashboard();
@@ -91,6 +92,9 @@ export default function AdminDashboard() {
           )}
           {h.mainMenu === "students" && (
             <StudentList students={h.studentsFull} onSelect={h.handleSelectStudent} />
+          )}
+          {h.mainMenu === "attendance" && (
+            <AdminAttendance />
           )}
         </main>
       </div>

@@ -27,6 +27,7 @@ export default function TutorScheduleDetailModal({
   formAspects,
   assessmentScores,
   mentorComment,
+  projectLink,
   savingAssessment,
   onClose,
   onToggleExpand,
@@ -34,7 +35,9 @@ export default function TutorScheduleDetailModal({
   onCancelAssessment,
   onScoreChange,
   onMentorCommentChange,
+  onProjectLinkChange,
   onSaveAssessment,
+  onMarkDone,
 }: {
   theme: Theme;
   detailSchedule: Schedule;
@@ -45,6 +48,7 @@ export default function TutorScheduleDetailModal({
   formAspects: AssessmentAspect[];
   assessmentScores: Record<string, number>;
   mentorComment: string;
+  projectLink: string;
   savingAssessment: boolean;
   onClose: () => void;
   onToggleExpand: (studentId: string) => void;
@@ -52,7 +56,9 @@ export default function TutorScheduleDetailModal({
   onCancelAssessment: () => void;
   onScoreChange: (aspectId: string, value: number) => void;
   onMentorCommentChange: (value: string) => void;
+  onProjectLinkChange: (value: string) => void;
   onSaveAssessment: (attendanceId: string) => void;
+  onMarkDone: (schedule: Schedule) => void;
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
@@ -169,6 +175,12 @@ export default function TutorScheduleDetailModal({
                         ))
                       )}
                       <div>
+                        <label className={`mb-1 block text-xs font-semibold ${theme.textMuted}`}>Link Project</label>
+                        <input type="url" value={projectLink} onChange={(e) => onProjectLinkChange(e.target.value)}
+                          placeholder="https://scratch.mit.edu/projects/..."
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                      </div>
+                      <div>
                         <label className={`mb-1 block text-xs font-semibold ${theme.textMuted}`}>Catatan Mentor</label>
                         <textarea value={mentorComment} onChange={(e) => onMentorCommentChange(e.target.value)}
                           className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100 resize-none" rows={2} />
@@ -199,6 +211,11 @@ export default function TutorScheduleDetailModal({
                           </div>
                         </div>
                       ))}
+                      {att.assessment.projectLink && (
+                        <div className="pt-2">
+                          <p className={`text-xs font-semibold ${theme.textMuted}`}>Link Project: <a href={att.assessment.projectLink} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:underline">{att.assessment.projectLink}</a></p>
+                        </div>
+                      )}
                       {att.assessment.mentorComment && (
                         <div className="pt-2 border-t border-slate-200">
                           <p className={`text-xs font-semibold ${theme.textMuted}`}>Catatan Mentor: <span className="font-medium">{att.assessment.mentorComment}</span></p>
@@ -209,6 +226,14 @@ export default function TutorScheduleDetailModal({
                 </div>
               );
             })}
+          </div>
+        )}
+        {!detailSchedule.isDone && !loadingDetail && (
+          <div className="mt-6 border-t border-slate-200 pt-4">
+            <button onClick={() => onMarkDone(detailSchedule)}
+              className="w-full rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-emerald-600/30 hover:bg-emerald-700 transition-colors">
+              Kelas Selesai
+            </button>
           </div>
         )}
       </div>
