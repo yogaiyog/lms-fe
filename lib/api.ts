@@ -130,6 +130,7 @@ export type Attendance = {
   date: string;
   status: "PRESENT" | "ABSENT" | "LATE" | "SICK" | "PERMISSION";
   notes?: string | null;
+  teachedBy?: string | null;
   assessment?: AttendanceAssessment | null;
   student?: StudentProfile | null;
 };
@@ -337,9 +338,13 @@ async function request<T>(
     headers.set("Authorization", `Bearer ${token}`);
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const separator = path.includes("?") ? "&" : "?";
+  const url = `${API_BASE_URL}${path}${separator}_t=${Date.now()}`;
+
+  const response = await fetch(url, {
     ...options,
     headers,
+    cache: "no-store",
   });
 
   const payload = (await response.json()) as ApiSuccess<T> | ApiError;
@@ -533,7 +538,7 @@ export const api = {
       const all = await this.list();
       return all.filter((a) => a.scheduleId === scheduleId);
     },
-    async create(payload: { scheduleId: string; studentId: string; date: string; status?: string; notes?: string | null }) {
+    async create(payload: { scheduleId: string; studentId: string; date: string; status?: string; notes?: string | null; teachedBy?: string | null }) {
       return authenticatedRequest<Attendance>("/api/v1/academic/attendances", {
         method: "POST",
         body: JSON.stringify(payload),
@@ -585,7 +590,7 @@ export const api = {
         body: JSON.stringify(payload),
       });
     },
-    async update(id: string, payload: Partial<{ topic: string; meetLink: string; date: string; isDone: boolean }>) {
+    async update(id: string, payload: Partial<{ topic: string; meetLink: string; date: string; isDone: boolean; startTime: string; endTime: string; dayOfWeek: string }>) {
       return authenticatedRequest<Schedule>(`/api/v1/academic/schedules/${id}`, {
         method: "PATCH",
         body: JSON.stringify(payload),

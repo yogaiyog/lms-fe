@@ -363,7 +363,7 @@ export default function TutorDashboard() {
         if (!cls) continue;
         const schedule = cls.schedules.find((s) => s.id === item.scheduleId);
         if (!schedule) continue;
-        await api.attendances.create({ scheduleId: item.scheduleId, studentId: item.studentId, date: schedule.date, status: item.status });
+        await api.attendances.create({ scheduleId: item.scheduleId, studentId: item.studentId, date: schedule.date, status: item.status, teachedBy: user?.tutorProfile?.id });
         scheduleIds.add(item.scheduleId);
       }
       setAttendanceForm([]);
@@ -520,6 +520,7 @@ export default function TutorDashboard() {
                 onCancelAttendance={() => setAttendanceForm([])}
                 onEditSchedule={startEditSchedule}
                 onOpenScheduleDetail={openScheduleDetail}
+                tutorName={user?.tutorProfile?.fullName}
               />
             )}
           </main>

@@ -25,6 +25,7 @@ type Props = {
   onAddStudent: () => void;
   onReschedule: (scheduleId: string, newDate: string) => void;
   onShiftSchedule: (scheduleId: string) => void;
+  onUpdateScheduleTime: (scheduleId: string, startTime: string, endTime: string) => void;
 };
 
 export default function ClassDetailModal({
@@ -34,7 +35,7 @@ export default function ClassDetailModal({
   detailSaving, detailError,
   detailAddingStudentId, onDetailAddingStudentIdChange,
   tutors, pendingRemovals, onToggleRemoval,
-  onClose, onSave, onAddStudent, onReschedule, onShiftSchedule,
+  onClose, onSave, onAddStudent, onReschedule, onShiftSchedule, onUpdateScheduleTime,
 }: Props) {
   const [shiftConfirmId, setShiftConfirmId] = useState<string | null>(null);
 
@@ -147,7 +148,7 @@ export default function ClassDetailModal({
           </div>
         </div>
 
-        {detailClass.type !== "MAKEUP" && (detailClass.enrollments ?? []).length < 1 && (
+        {detailClass.type !== "MAKEUP" && (
           <div className="mb-4">
             <label className="mb-1.5 block text-sm font-semibold text-slate-700">
               Tambah Siswa
@@ -155,24 +156,28 @@ export default function ClassDetailModal({
                 <span className="ml-1 text-xs font-normal text-purple-600">(Private — maks 1)</span>
               )}
             </label>
-            <div className="flex gap-2">
-              <select value={detailAddingStudentId} onChange={(e) => onDetailAddingStudentIdChange(e.target.value)}
-                className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-              >
-                <option value="">-- Pilih siswa --</option>
-                {detailStudents.map((s) => (
-                  <option key={s.id} value={s.id}>{s.fullName} ({s.user?.email ?? "-"})</option>
-                ))}
-              </select>
-              <button onClick={onAddStudent} disabled={!detailAddingStudentId || detailSaving}
-                className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 disabled:opacity-50 transition-colors"
-              >
-                {detailSaving ? "..." : "+"}
-              </button>
-            </div>
-            {detailStudents.length === 0 && (detailClass.schedules ?? []).length > 0 && (
-              <p className="mt-1 text-[10px] text-slate-400">Semua siswa kategori ini sudah memiliki jadwal bentrok atau sudah terdaftar</p>
-            )}
+            {detailClass.type === "PRIVATE" && (detailClass.enrollments ?? []).length >= 1 ? (
+              <p className="rounded-xl bg-purple-50 px-4 py-3 text-sm text-purple-700">Kelas Private sudah memiliki 1 siswa.</p>
+            ) : (<>
+              <div className="flex gap-2">
+                <select value={detailAddingStudentId} onChange={(e) => onDetailAddingStudentIdChange(e.target.value)}
+                  className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                >
+                  <option value="">-- Pilih siswa --</option>
+                  {detailStudents.map((s) => (
+                    <option key={s.id} value={s.id}>{s.fullName} ({s.user?.email ?? "-"})</option>
+                  ))}
+                </select>
+                <button onClick={onAddStudent} disabled={!detailAddingStudentId || detailSaving}
+                  className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                >
+                  {detailSaving ? "..." : "+"}
+                </button>
+              </div>
+              {detailStudents.length === 0 && (detailClass.schedules ?? []).length > 0 && (
+                <p className="mt-1 text-[10px] text-slate-400">Semua siswa kategori ini sudah memiliki jadwal bentrok atau sudah terdaftar</p>
+              )}
+            </>)}
           </div>
         )}
 
@@ -186,7 +191,7 @@ export default function ClassDetailModal({
             ) : (
               <div className="divide-y divide-slate-100">
                 {detailClass.schedules!.map((s) => {
-                  const sDate = s.date ? new Date(s.date).toISOString().split("T")[0] : "";
+                  const sDate = s.date ? new Date(s.date).toLocaleDateString("sv-SE") : "";
                   const formattedDate = s.date
                     ? new Date(s.date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })
                     : "";
@@ -205,10 +210,30 @@ export default function ClassDetailModal({
                           )}
                         </div>
                         <div className="flex items-center gap-2 text-[10px] text-slate-400">
-                       
-                             <span className={`font-semibold ${s.isDone ? "text-slate-400" : "text-slate-700"}`}>
-                            {DAY_LABELS[s.dayOfWeek]} {s.startTime}-{s.endTime}
+                          <span className={`font-semibold ${s.isDone ? "text-slate-400" : "text-slate-700"}`}>
+                            {s.date ? new Date(s.date).toLocaleDateString("id-ID", { weekday: "long" }) : ""}
                           </span>
+                          {s.isDone ? (
+                            <span className={`font-semibold ${s.isDone ? "text-slate-400" : "text-slate-700"}`}>
+                              {s.startTime}-{s.endTime}
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1">
+                              <input type="time" defaultValue={s.startTime}
+                                onBlur={(e) => {
+                                  if (e.target.value !== s.startTime) onUpdateScheduleTime(s.id, e.target.value, s.endTime);
+                                }}
+                                className="w-16 rounded border border-slate-200 px-1 py-0.5 text-[10px] outline-none focus:border-blue-400"
+                              />
+                              <span>–</span>
+                              <input type="time" defaultValue={s.endTime}
+                                onBlur={(e) => {
+                                  if (e.target.value !== s.endTime) onUpdateScheduleTime(s.id, s.startTime, e.target.value);
+                                }}
+                                className="w-16 rounded border border-slate-200 px-1 py-0.5 text-[10px] outline-none focus:border-blue-400"
+                              />
+                            </span>
+                          )}
                           <span className="text-slate-300">•</span>
                           <span>{s.topic ?? "—"}</span>
                         </div>

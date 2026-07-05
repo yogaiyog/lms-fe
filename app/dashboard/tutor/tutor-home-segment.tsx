@@ -85,6 +85,7 @@ export default function TutorHomeSegment({
   onCancelAttendance,
   onEditSchedule,
   onOpenScheduleDetail,
+  tutorName,
 }: {
   theme: Theme;
   classes: ClassWithSchedules[];
@@ -99,6 +100,7 @@ export default function TutorHomeSegment({
   onCancelAttendance: () => void;
   onEditSchedule: (schedule: Schedule, classId: string) => void;
   onOpenScheduleDetail: (schedule: Schedule) => void;
+  tutorName?: string;
 }) {
   const weekSchedules = getThisWeekSchedules(classes);
   const [studentListModal, setStudentListModal] = useState<{ scheduleId: string; classId: string } | null>(null);
@@ -283,6 +285,11 @@ export default function TutorHomeSegment({
                 <X size={20} />
               </button>
             </div>
+            {tutorName && (
+              <div className={`mb-3 rounded-xl px-4 py-2.5 text-sm ${theme.dark ? "bg-blue-900/30" : "bg-blue-50"}`}>
+                <span className="font-semibold text-blue-600">Pengajar: {tutorName}</span>
+              </div>
+            )}
             <div className="space-y-3">
               {attendanceForm.map((item) => (
                 <div key={item.studentId} className={`flex items-center justify-between rounded-xl px-4 py-3 ${theme.dark ? "bg-slate-800" : "bg-slate-50"}`}>

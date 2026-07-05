@@ -92,20 +92,24 @@ export default function StudentDashboard() {
           api.studentBadges.listByStudent(studentId),
         ]);
 
-        const enrollment = allEnrollments[0];
-        if (!enrollment || !enrollment.classId) { setLoading(false); return; }
+        const activeEnrollments = allEnrollments.filter((e) => e.classId);
+        if (activeEnrollments.length === 0) { setLoading(false); return; }
 
-        setTotalMeetLeft(enrollment.totalMeetLeft ?? 0);
+        setTotalMeetLeft(activeEnrollments.reduce((sum, e) => sum + (e.totalMeetLeft ?? 0), 0));
 
-        const [cls, schs, anns] = await Promise.all([
-          api.classes.get(enrollment.classId).catch(() => null),
-          api.schedules.listByClass(enrollment.classId),
-          api.announcements.listByClass(enrollment.classId),
-        ]);
+        const classes = await Promise.all(
+          activeEnrollments.map((e) => api.classes.get(e.classId!).catch(() => null))
+        );
+        const allSchedules = await Promise.all(
+          activeEnrollments.map((e) => api.schedules.listByClass(e.classId!))
+        );
+        const allAnnouncements = await Promise.all(
+          activeEnrollments.map((e) => api.announcements.listByClass(e.classId!))
+        );
 
-        setMyClass(cls);
-        setSchedules(schs);
-        setAnnouncements(anns);
+        setMyClass(classes[0]);
+        setSchedules(allSchedules.flat());
+        setAnnouncements(allAnnouncements.flat());
         setStudentBadges(allBadges);
       } catch {
         clearSession();

@@ -116,7 +116,8 @@ export default function AdminDashboard() {
           onClose={() => { h.setDetailClass(null); h.setPendingRemovals(new Set()); }}
           onSave={h.handleSaveDetail}
           onAddStudent={h.handleAddStudent} onReschedule={h.handleReschedule}
-          onShiftSchedule={h.handleShiftSchedule} />
+          onShiftSchedule={h.handleShiftSchedule}
+          onUpdateScheduleTime={h.handleUpdateScheduleTime} />
       )}
 
       {h.selectedStudent && (
@@ -124,7 +125,7 @@ export default function AdminDashboard() {
           student={h.selectedStudent}
           enrollments={h.selectedStudentEnrollments}
           loading={h.studentDetailLoading}
-          onImpersonate={() => h.handleImpersonate(h.selectedStudent!.id)}
+          onImpersonate={() => h.handleImpersonate(h.selectedStudent!.userId)}
           onClose={() => { h.setSelectedStudent(null); h.setSelectedStudentEnrollments([]); }}
         />
       )}

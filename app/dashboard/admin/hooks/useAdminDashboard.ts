@@ -269,11 +269,15 @@ export function useAdminDashboard() {
     getFilteredRowModel: getFilteredRowModel(),
   });
 
+  const DAY_ORDER = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+  function dayKeyFromDate(date: Date | string) {
+    return DAY_ORDER[new Date(date).getDay()];
+  }
+
   function generateScheduleSlots(topics: { id: string; title: string }[], slots: { dayOfWeek: string; startTime: string; endTime: string }[], startDate: string, classType: string = "BATCH") {
     const sorted = [...topics].sort((a, b) => a.title.localeCompare(b.title));
     const topicsToUse = classType === "MAKEUP" ? [sorted[0]] : sorted;
     const start = new Date(startDate);
-    const DAY_ORDER = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
     return topicsToUse.map((topic, i) => {
       const slot = slots[i % slots.length];
       const weekOffset = Math.floor(i / slots.length);
@@ -558,7 +562,7 @@ export function useAdminDashboard() {
         toShift.map((s) => {
           const d = new Date(s.date);
           d.setDate(d.getDate() + 7);
-          return api.schedules.update(s.id, { date: d.toISOString() });
+          return api.schedules.update(s.id, { date: d.toISOString(), dayOfWeek: dayKeyFromDate(d) });
         })
       );
       const updated = await api.classes.get(detailClass.id);
@@ -566,14 +570,30 @@ export function useAdminDashboard() {
       const cls = await api.classes.listByTutor("");
       setClasses(cls);
       showToast(`${toShift.length} jadwal berhasil digeser +7 hari`, "success");
+    } catch (err) {
+      console.error("Shift schedule error", err);
+      showToast(err instanceof Error ? err.message : "Gagal menggeser jadwal", "error");
+    }
+  }
+
+  async function handleUpdateScheduleTime(scheduleId: string, startTime: string, endTime: string) {
+    try {
+      await api.schedules.update(scheduleId, { startTime, endTime });
+      if (detailClass) {
+        const updated = await api.classes.get(detailClass.id);
+        setDetailClass(updated);
+        const cls = await api.classes.listByTutor("");
+        setClasses(cls);
+      }
+      showToast("Jam jadwal berhasil diubah", "success");
     } catch {
-      showToast("Gagal menggeser jadwal", "error");
+      showToast("Gagal mengubah jam jadwal", "error");
     }
   }
 
   async function handleReschedule(scheduleId: string, newDate: string) {
     try {
-      await api.schedules.update(scheduleId, { date: new Date(newDate).toISOString() });
+      await api.schedules.update(scheduleId, { date: new Date(newDate).toISOString(), dayOfWeek: dayKeyFromDate(newDate) });
       if (detailClass) {
         const updated = await api.classes.get(detailClass.id);
         setDetailClass(updated);
@@ -581,8 +601,9 @@ export function useAdminDashboard() {
         setClasses(cls);
       }
       showToast("Jadwal berhasil digeser", "success");
-    } catch {
-      showToast("Gagal menggeser jadwal", "error");
+    } catch (err) {
+      console.error("Reschedule error", err);
+      showToast(err instanceof Error ? err.message : "Gagal menggeser jadwal", "error");
     }
   }
 
@@ -692,7 +713,7 @@ export function useAdminDashboard() {
     approving, approveError, setApproveError,
     toast, showToast,
     createClass, handleApproveReject, openClassDetail,
-    handleSaveDetail, handleAddStudent, handleReschedule, handleShiftSchedule,
+    handleSaveDetail, handleAddStudent, handleReschedule, handleShiftSchedule, handleUpdateScheduleTime,
     handleRegisterTutor, logout, handleImpersonate, handleSelectStudent,
     selectedStudent, setSelectedStudent,
     selectedStudentEnrollments, setSelectedStudentEnrollments,
