@@ -61,7 +61,7 @@ export default function ApproveRejectModal({
             >
               <option value="">-- Pilih kelas --</option>
               {classes.filter((c) => c.category === request.category && c.isActive).map((c) => (
-                <option key={c.id} value={c.id}>{c.name} ({c.tutor?.fullName})</option>
+                <option key={c.id} value={c.id}>{c.name} ({c.tutors?.map((t) => t.fullName).join(", ")})</option>
               ))}
             </select>
           </div>

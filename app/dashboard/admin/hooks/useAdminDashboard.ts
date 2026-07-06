@@ -51,10 +51,10 @@ export function useAdminDashboard() {
   const [curriculumSegment, setCurriculumSegment] = useState<"list" | "topics" | "assessments">("list");
   const [loading, setLoading] = useState(true);
 
-  const [createType, setCreateType] = useState<"BATCH" | "PRIVATE" | "MAKEUP">("BATCH");
+  const [createType, setCreateType] = useState<"BATCH" | "PRIVATE" | "MAKEUP" | "OFFLINE">("BATCH");
   const [createCurriculumId, setCreateCurriculumId] = useState("");
   const [createCategory, setCreateCategory] = useState("JUNIOR_I");
-  const [createTutorId, setCreateTutorId] = useState("");
+  const [createTutorIds, setCreateTutorIds] = useState<string[]>([]);
   const [tutorSegment, setTutorSegment] = useState<"list" | "add">("list");
   const [tutors, setTutors] = useState<TutorOption[]>([]);
   const [tutorsFull, setTutorsFull] = useState<{ id: string; fullName: string; phone: string; email?: string; bio?: string | null }[]>([]);
@@ -86,7 +86,7 @@ export function useAdminDashboard() {
 
   const [detailClass, setDetailClass] = useState<Class | null>(null);
   const [detailClassName, setDetailClassName] = useState("");
-  const [detailTutorId, setDetailTutorId] = useState("");
+  const [detailTutorIds, setDetailTutorIds] = useState<string[]>([]);
   const [detailStudents, setDetailStudents] = useState<StudentProfile[]>([]);
   const [detailStudentMap, setDetailStudentMap] = useState<Record<string, StudentProfile>>({});
   const [detailSaving, setDetailSaving] = useState(false);
@@ -168,13 +168,32 @@ export function useAdminDashboard() {
   );
 
   useEffect(() => {
-    if (!createTutorId) { setTutorSlots([]); setTutorDayoffs([]); setSelectedSlots([]); return; }
+    if (createTutorIds.length === 0) { setTutorSlots([]); setTutorDayoffs([]); setSelectedSlots([]); return; }
     setSlotsLoading(true);
-    api.tutorSlots.list(createTutorId)
-      .then((res) => { setTutorSlots(res.slots); setTutorDayoffs(res.dayoffs); setSelectedSlots([]); })
+    Promise.all(createTutorIds.map((id) => api.tutorSlots.list(id)))
+      .then((results) => {
+        const slotMap = new Map<string, TutorSlot>();
+        const allDayoffs = new Set<number>();
+        for (const res of results) {
+          for (const d of res.dayoffs) allDayoffs.add(d);
+          for (const s of res.slots) {
+            const key = `${s.dayOfWeek}|${s.startTime}`;
+            if (!slotMap.has(key)) {
+              slotMap.set(key, { ...s });
+            } else {
+              const existing = slotMap.get(key)!;
+              if (s.isFilled) existing.isFilled = true;
+              if (s.isDayoff) existing.isDayoff = true;
+            }
+          }
+        }
+        setTutorSlots(Array.from(slotMap.values()));
+        setTutorDayoffs(Array.from(allDayoffs));
+        setSelectedSlots([]);
+      })
       .catch(() => { setTutorSlots([]); setTutorDayoffs([]); })
       .finally(() => setSlotsLoading(false));
-  }, [createTutorId]);
+  }, [createTutorIds]);
 
   const selectedCurriculum = useMemo(
     () => filteredCurriculums.find((c) => c.id === createCurriculumId),
@@ -225,7 +244,7 @@ export function useAdminDashboard() {
       cell: (info) => CATEGORY_LABELS[info.getValue()] ?? info.getValue(),
       enableColumnFilter: false,
     }),
-    classColumnHelper.accessor("tutor.fullName", { id: "tutor", header: "Tutor", enableColumnFilter: false }),
+    classColumnHelper.accessor((row) => row.tutors?.map((t) => t.fullName).join(", ") ?? "", { id: "tutors", header: "Tutor", enableColumnFilter: false }),
     classColumnHelper.accessor((row) => row.enrollments?.length ?? 0, { id: "siswa", header: "Siswa", enableColumnFilter: false }),
     classColumnHelper.accessor((row) => row.schedules?.length ?? 0, { id: "jadwal", header: "Jadwal", enableColumnFilter: false }),
     classColumnHelper.accessor("isActive", {
@@ -363,7 +382,9 @@ export function useAdminDashboard() {
         ? `Make Up - ${selectedCurriculum!.name}`
         : createType === "PRIVATE"
           ? `${selectedCurriculum!.name} - Private`
-          : `${selectedCurriculum!.name} - Batch ${createBatchPreview}`;
+          : createType === "OFFLINE"
+            ? `${selectedCurriculum!.name} - Offline`
+            : `${selectedCurriculum!.name} - Batch ${createBatchPreview}`;
       const topics = selectedCurriculum!.topics;
       const scheduleData = generateScheduleSlots(topics, selectedSlots, createStartDate, createType);
       const startDateISO = new Date(createStartDate).toISOString();
@@ -371,7 +392,7 @@ export function useAdminDashboard() {
         name: autoName,
         type: createType,
         category: createCategory,
-        tutorId: createTutorId,
+        tutorIds: createTutorIds,
         curriculumId: createCurriculumId,
         startDate: startDateISO,
       });
@@ -389,7 +410,7 @@ export function useAdminDashboard() {
       }
       setCreateCurriculumId("");
       setCreateCategory("JUNIOR_I");
-      setCreateTutorId("");
+      setCreateTutorIds([]);
       setCreateStartDate("");
       setSelectedSlots([]);
       setCreateSelectedStudentIds([]);
@@ -442,7 +463,7 @@ export function useAdminDashboard() {
       setDetailStudentMap(map);
       setDetailClass(fullClass);
       setDetailClassName(fullClass.name);
-      setDetailTutorId(fullClass.tutorId);
+      setDetailTutorIds(fullClass.tutors?.map((t) => t.id) ?? []);
       const enrolledIds = new Set((fullClass.enrollments ?? []).map((e) => e.studentId));
       const classSlots = (fullClass.schedules ?? []).map((s) => ({
         dayOfWeek: s.dayOfWeek, startTime: s.startTime, endTime: s.endTime,
@@ -478,7 +499,7 @@ export function useAdminDashboard() {
       }
       await api.classes.update(detailClass.id, {
         name: detailClassName,
-        tutorId: detailTutorId,
+        tutorIds: detailTutorIds,
       });
       const allStudents = await api.studentProfiles.list();
       const map: Record<string, StudentProfile> = {};
@@ -680,6 +701,19 @@ export function useAdminDashboard() {
     }).catch(() => showToast("Gagal mengakses akun siswa", "error"));
   }
 
+  async function refreshStudentEnrollments() {
+    if (!selectedStudent) return;
+    setStudentDetailLoading(true);
+    try {
+      const enrollments = await api.enrollments.listByStudent(selectedStudent.id);
+      setSelectedStudentEnrollments(enrollments);
+    } catch {
+      showToast("Gagal memuat ulang enrollment", "error");
+    } finally {
+      setStudentDetailLoading(false);
+    }
+  }
+
   return {
     user, loading, mainMenu, setMainMenu, segment, setSegment,
     tutorSegment, setTutorSegment,
@@ -691,7 +725,7 @@ export function useAdminDashboard() {
     createType, setCreateType,
     createCategory, setCreateCategory,
     createCurriculumId, setCreateCurriculumId,
-    createTutorId, setCreateTutorId,
+    createTutorIds, setCreateTutorIds,
     createStartDate, setCreateStartDate,
     creating, createError,
     filteredCurriculums, selectedCurriculum, createBatchPreview,
@@ -701,7 +735,7 @@ export function useAdminDashboard() {
     reqGlobalFilter, setReqGlobalFilter, reqTable,
     detailClass, setDetailClass,
     detailClassName, setDetailClassName,
-    detailTutorId, setDetailTutorId,
+    detailTutorIds, setDetailTutorIds,
     detailStudents, detailStudentMap,
     detailSaving, detailError,
     detailAddingStudentId, setDetailAddingStudentId,
@@ -717,7 +751,7 @@ export function useAdminDashboard() {
     handleRegisterTutor, logout, handleImpersonate, handleSelectStudent,
     selectedStudent, setSelectedStudent,
     selectedStudentEnrollments, setSelectedStudentEnrollments,
-    studentDetailLoading,
+    studentDetailLoading, refreshStudentEnrollments,
     studentsFull,
     createSelectedStudentIds, setCreateSelectedStudentIds,
     createAvailableStudents, getSlotsConflictReason,

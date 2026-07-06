@@ -18,6 +18,7 @@ export const CLASS_TYPE_LABELS: Record<string, string> = {
   BATCH: "Batch",
   PRIVATE: "Private",
   MAKEUP: "Make Up",
+  OFFLINE: "Offline",
 };
 
 export const STATUS_LABELS: Record<string, string> = {

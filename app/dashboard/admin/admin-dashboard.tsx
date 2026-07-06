@@ -55,7 +55,7 @@ export default function AdminDashboard() {
               createType={h.createType} onCreateTypeChange={h.setCreateType}
               createCategory={h.createCategory} onCreateCategoryChange={h.setCreateCategory}
               createCurriculumId={h.createCurriculumId} onCreateCurriculumIdChange={h.setCreateCurriculumId}
-              createTutorId={h.createTutorId} onCreateTutorIdChange={h.setCreateTutorId}
+              createTutorIds={h.createTutorIds} onCreateTutorIdsChange={h.setCreateTutorIds}
               createStartDate={h.createStartDate} onCreateStartDateChange={h.setCreateStartDate}
               creating={h.creating} createError={h.createError}
               filteredCurriculums={h.filteredCurriculums} selectedCurriculum={h.selectedCurriculum}
@@ -111,7 +111,7 @@ export default function AdminDashboard() {
       {h.detailClass && (
         <ClassDetailModal detailClass={h.detailClass}
           detailClassName={h.detailClassName} onDetailClassNameChange={h.setDetailClassName}
-          detailTutorId={h.detailTutorId} onDetailTutorIdChange={h.setDetailTutorId}
+          detailTutorIds={h.detailTutorIds} onDetailTutorIdsChange={h.setDetailTutorIds}
           detailStudents={h.detailStudents} detailStudentMap={h.detailStudentMap}
           detailSaving={h.detailSaving} detailError={h.detailError}
           detailAddingStudentId={h.detailAddingStudentId} onDetailAddingStudentIdChange={h.setDetailAddingStudentId}
@@ -129,8 +129,11 @@ export default function AdminDashboard() {
           student={h.selectedStudent}
           enrollments={h.selectedStudentEnrollments}
           loading={h.studentDetailLoading}
+          curriculums={h.curriculums}
+          classes={h.classes}
           onImpersonate={() => h.handleImpersonate(h.selectedStudent!.userId)}
           onClose={() => { h.setSelectedStudent(null); h.setSelectedStudentEnrollments([]); }}
+          onRefreshEnrollments={h.refreshStudentEnrollments}
         />
       )}
 

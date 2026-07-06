@@ -5,14 +5,14 @@ import { type Curriculum, type TutorSlot } from "@/lib/api";
 import { X } from "lucide-react";
 
 type Props = {
-  createType: "BATCH" | "PRIVATE" | "MAKEUP";
-  onCreateTypeChange: (v: "BATCH" | "PRIVATE" | "MAKEUP") => void;
+  createType: "BATCH" | "PRIVATE" | "MAKEUP" | "OFFLINE";
+  onCreateTypeChange: (v: "BATCH" | "PRIVATE" | "MAKEUP" | "OFFLINE") => void;
   createCategory: string;
   onCreateCategoryChange: (v: string) => void;
   createCurriculumId: string;
   onCreateCurriculumIdChange: (v: string) => void;
-  createTutorId: string;
-  onCreateTutorIdChange: (v: string) => void;
+  createTutorIds: string[];
+  onCreateTutorIdsChange: (v: string[]) => void;
   createStartDate: string;
   onCreateStartDateChange: (v: string) => void;
   creating: boolean;
@@ -42,7 +42,7 @@ export default function CreateClassForm({
   createType, onCreateTypeChange,
   createCategory, onCreateCategoryChange,
   createCurriculumId, onCreateCurriculumIdChange,
-  createTutorId, onCreateTutorIdChange,
+  createTutorIds, onCreateTutorIdsChange,
   createStartDate, onCreateStartDateChange,
   creating, createError,
   filteredCurriculums, selectedCurriculum, createBatchPreview,
@@ -77,7 +77,7 @@ export default function CreateClassForm({
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-slate-700">Tipe Kelas</label>
           <div className="flex gap-2">
-            {(["BATCH", "PRIVATE", "MAKEUP"] as const).map((t) => (
+            {(["BATCH", "PRIVATE", "MAKEUP", "OFFLINE"] as const).map((t) => (
               <button key={t} type="button"
                 onClick={() => {
                   onCreateTypeChange(t);
@@ -90,7 +90,7 @@ export default function CreateClassForm({
                     : "border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300"
                 }`}
               >
-                {t === "BATCH" ? "Batch" : t === "PRIVATE" ? "Private" : "Make Up"}
+                {t === "BATCH" ? "Batch" : t === "PRIVATE" ? "Private" : t === "MAKEUP" ? "Make Up" : "Offline"}
               </button>
             ))}
           </div>
@@ -109,29 +109,68 @@ export default function CreateClassForm({
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-slate-700">Batch</label>
           <div className="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500">
-            {createType === "BATCH" ? (createBatchPreview !== null ? createBatchPreview : "Otomatis") : "—"}
+            {createType === "BATCH" ? (createBatchPreview !== null ? createBatchPreview : "Otomatis") : createType === "OFFLINE" ? "—" : "—"}
           </div>
           <p className="mt-1 text-[10px] text-slate-400">Nama kelas: <strong>{selectedCurriculum ? (
             createType === "MAKEUP" ? `Make Up - ${selectedCurriculum.name}`
             : createType === "PRIVATE" ? `${selectedCurriculum.name} - Private`
+            : createType === "OFFLINE" ? `${selectedCurriculum.name} - Offline`
             : `${selectedCurriculum.name} - Batch ${createBatchPreview ?? "?"}`
           ) : "—"}</strong></p>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Tutor</label>
-          <select value={createTutorId} onChange={(e) => onCreateTutorIdChange(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" required
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+            Tutor <span className="text-red-500">*</span> {createTutorIds.length > 0 && <span className="font-normal text-slate-400">({createTutorIds.length})</span>}
+          </label>
+          {createTutorIds.length > 0 && (
+            <div className="mb-2 max-h-32 overflow-y-auto rounded-xl border border-slate-200">
+              {createTutorIds.map((tid) => {
+                const t = tutors.find((x) => x.id === tid);
+                return (
+                  <div key={tid} className="flex items-center justify-between border-b border-slate-100 px-3 py-2 text-sm last:border-0">
+                    <span className="text-slate-700">{t?.fullName ?? tid}</span>
+                    <button type="button" onClick={() => onCreateTutorIdsChange(createTutorIds.filter((id) => id !== tid))}
+                      className="rounded-xl p-1 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors">
+                      <X size={16} />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          <select value="" onChange={(e) => {
+            const id = e.target.value;
+            if (id && !createTutorIds.includes(id)) {
+              onCreateTutorIdsChange([...createTutorIds, id]);
+            }
+          }}
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
           >
-            <option value="">-- Pilih tutor --</option>
-            {tutors.map((t) => <option key={t.id} value={t.id}>{t.fullName}</option>)}
+            <option value="">-- Tambah tutor --</option>
+            {tutors.filter((t) => !createTutorIds.includes(t.id)).map((t) => (
+              <option key={t.id} value={t.id}>{t.fullName}</option>
+            ))}
           </select>
         </div>
 
-        {createTutorId && (
+        {createTutorIds.length > 0 && (
           <div>
             <label className="mb-2 block text-sm font-semibold text-slate-700">
               Jadwal Kelas {selectedSlots.length > 0 && <span className="font-normal text-slate-400">({selectedSlots.length}/{createType === "MAKEUP" ? 1 : 2} dipilih)</span>}
             </label>
+            {createTutorIds.length > 0 && (
+              <div className="mb-2 flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
+                <span className="font-semibold text-slate-600">Tutor terpilih:</span>
+                {createTutorIds.map((tid) => {
+                  const t = tutors.find((x) => x.id === tid);
+                  return (
+                    <span key={tid} className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+                      {t?.fullName ?? tid}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
             {selectedCurriculum && selectedSlots.length > 0 && (
               <p className="mb-2 text-[10px] text-slate-400">
                 {createType === "MAKEUP"
@@ -200,7 +239,7 @@ export default function CreateClassForm({
                 </table>
               </div>
             )}
-            {selectedSlots.length === 0 && createTutorId && !slotsLoading && (
+            {selectedSlots.length === 0 && createTutorIds.length > 0 && !slotsLoading && (
               <p className="mt-1 text-[10px] text-slate-400">Klik slot yang tersedia (maksimal {createType === "MAKEUP" ? 1 : 2})</p>
             )}
           </div>

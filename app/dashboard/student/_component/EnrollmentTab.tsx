@@ -146,14 +146,14 @@ export default function EnrollmentTab({ theme, classes, schedules, studentId, to
                     )}
                   </div>
 
-                  {cls.tutor && (
+                  {cls.tutors && cls.tutors.length > 0 && (
                     <div className={`mt-4 pt-4 border-t ${theme.border} flex items-center gap-3`}>
                       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
-                        {cls.tutor.fullName?.charAt(0) ?? "T"}
+                        {cls.tutors[0].fullName?.charAt(0) ?? "T"}
                       </div>
                       <div>
                         <p className={`text-xs font-semibold ${theme.textMuted}`}>Tutor</p>
-                        <p className={`text-sm font-bold ${theme.text}`}>{cls.tutor.fullName ?? "-"}</p>
+                        <p className={`text-sm font-bold ${theme.text}`}>{cls.tutors.map((t) => t.fullName).join(", ") ?? "-"}</p>
                       </div>
                     </div>
                   )}
@@ -392,14 +392,14 @@ function ClassDetailModal({
               )}
             </div> */}
 
-            {cls.tutor && (
+            {cls.tutors && cls.tutors.length > 0 && (
               <div className={`mt-5 pt-5 border-t ${theme.border} flex items-center gap-3`}>
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
-                  {cls.tutor.fullName?.charAt(0) ?? "T"}
+                  {cls.tutors[0].fullName?.charAt(0) ?? "T"}
                 </div>
                 <div>
                   <p className={`text-[10px] font-semibold ${theme.textMuted}`}>Tutor</p>
-                  <p className={`text-sm font-bold ${theme.text}`}>{cls.tutor.fullName ?? "-"}</p>
+                  <p className={`text-sm font-bold ${theme.text}`}>{cls.tutors.map((t) => t.fullName).join(", ") ?? "-"}</p>
                 </div>
               </div>
             )}

@@ -78,6 +78,15 @@ export type StudentProfile = {
   parent?: { id: string; fullName: string; phone?: string };
 };
 
+export type MeetUsage = {
+  id: string;
+  enrollmentId: string;
+  scheduleId: string;
+  studentId: string;
+  date: string;
+  createdAt: string;
+};
+
 export type Enrollment = {
   id: string;
   studentId: string;
@@ -86,6 +95,7 @@ export type Enrollment = {
   joinedAt: string;
   totalMeetPurchased: number;
   totalMeetLeft: number;
+  meetUsages?: MeetUsage[];
   class: Class | null;
   curriculum?: Curriculum;
   student?: StudentProfile;
@@ -96,15 +106,17 @@ export type Enrollment = {
 export type Class = {
   id: string;
   name: string;
-  type: "BATCH" | "PRIVATE" | "MAKEUP";
+  type: "BATCH" | "PRIVATE" | "MAKEUP" | "OFFLINE";
   category: string;
-  tutorId: string;
+  tutorIds?: string[];
   curriculumId?: string | null;
   batch: number;
   startDate: string;
   isActive: boolean;
+  isOffline?: boolean;
+  location?: string | null;
   schedules?: Schedule[];
-  tutor?: TutorProfile;
+  tutors?: TutorProfile[];
   enrollments?: { id: string; studentId: string; classId: string; totalMeetPurchased?: number | null; totalMeetLeft?: number | null }[];
   curriculum?: Curriculum | null;
 };
@@ -564,13 +576,13 @@ export const api = {
     async listByTutor(tutorId: string) {
       return authenticatedRequest<Class[]>(`/api/v1/academic/classes?tutorId=${tutorId}`);
     },
-    async create(payload: { name: string; type?: "BATCH" | "PRIVATE" | "MAKEUP"; category: string; tutorId: string; curriculumId?: string | null; startDate: string }) {
+    async create(payload: { name: string; type?: "BATCH" | "PRIVATE" | "MAKEUP" | "OFFLINE"; category: string; tutorIds: string[]; curriculumId?: string | null; startDate: string }) {
       return authenticatedRequest<Class>("/api/v1/academic/classes", {
         method: "POST",
         body: JSON.stringify(payload),
       });
     },
-    async update(id: string, payload: { name?: string; tutorId?: string; isActive?: boolean; type?: "BATCH" | "PRIVATE" | "MAKEUP" }) {
+    async update(id: string, payload: { name?: string; tutorIds?: string[]; isActive?: boolean; type?: "BATCH" | "PRIVATE" | "MAKEUP" | "OFFLINE" }) {
       return authenticatedRequest<Class>(`/api/v1/academic/classes/${id}`, {
         method: "PATCH",
         body: JSON.stringify(payload),

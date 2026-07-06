@@ -1,16 +1,18 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { type Class, type StudentProfile, type Schedule } from "@/lib/api";
+import { api, type Class, type StudentProfile, type Schedule } from "@/lib/api";
 import { CATEGORY_LABELS, CLASS_TYPE_LABELS, DAY_LABELS } from "../../constants";
 import { X } from "lucide-react";
+
+const DAY_NAMES = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
 
 type Props = {
   detailClass: Class;
   detailClassName: string;
   onDetailClassNameChange: (v: string) => void;
-  detailTutorId: string;
-  onDetailTutorIdChange: (v: string) => void;
+  detailTutorIds: string[];
+  onDetailTutorIdsChange: (v: string[]) => void;
   detailStudents: StudentProfile[];
   detailStudentMap: Record<string, StudentProfile>;
   detailSaving: boolean;
@@ -30,7 +32,7 @@ type Props = {
 
 export default function ClassDetailModal({
   detailClass, detailClassName, onDetailClassNameChange,
-  detailTutorId, onDetailTutorIdChange,
+  detailTutorIds, onDetailTutorIdsChange,
   detailStudents, detailStudentMap,
   detailSaving, detailError,
   detailAddingStudentId, onDetailAddingStudentIdChange,
@@ -38,6 +40,58 @@ export default function ClassDetailModal({
   onClose, onSave, onAddStudent, onReschedule, onShiftSchedule, onUpdateScheduleTime,
 }: Props) {
   const [shiftConfirmId, setShiftConfirmId] = useState<string | null>(null);
+  const [detailAddingTutorId, setDetailAddingTutorId] = useState("");
+  const [tutorToast, setTutorToast] = useState("");
+
+  async function handleAddTutor() {
+    const id = detailAddingTutorId;
+    if (!id || detailTutorIds.includes(id)) return;
+    setTutorToast("");
+
+    const futureSchedules = (detailClass.schedules ?? []).filter((s) => !s.isDone);
+    if (futureSchedules.length === 0) {
+      onDetailTutorIdsChange([...detailTutorIds, id]);
+      setDetailAddingTutorId("");
+      return;
+    }
+
+    try {
+      const res = await api.tutorSlots.list(id);
+      const conflicts: string[] = [];
+
+      for (const s of futureSchedules) {
+        const dayIdx = DAY_NAMES.indexOf(s.dayOfWeek);
+
+        if (res.dayoffs.includes(dayIdx)) {
+          conflicts.push(`${s.dayOfWeek} ${s.startTime}-${s.endTime} (hari off)`);
+          continue;
+        }
+
+        const matchingSlot = res.slots.find(
+          (slot) =>
+            slot.dayOfWeek === s.dayOfWeek &&
+            slot.startTime <= s.startTime &&
+            slot.endTime >= s.endTime &&
+            !slot.isFilled,
+        );
+
+        if (!matchingSlot) {
+          conflicts.push(`${s.dayOfWeek} ${s.startTime}-${s.endTime}`);
+        }
+      }
+
+      if (conflicts.length > 0) {
+        setTutorToast(
+          `Tidak bisa menambahkan tutor: jadwal berikut bermasalah:\n${conflicts.join("\n")}`,
+        );
+      } else {
+        onDetailTutorIdsChange([...detailTutorIds, id]);
+        setDetailAddingTutorId("");
+      }
+    } catch {
+      setTutorToast("Gagal memvalidasi jadwal tutor");
+    }
+  }
 
   const shiftPreview = useMemo(() => {
     if (!shiftConfirmId) return [] as { id: string; oldDate: string; newDate: string; topic: string | null }[];
@@ -60,7 +114,7 @@ export default function ClassDetailModal({
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
       <div className="fixed inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl border border-slate-200">
+      <div className="relative max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl border border-slate-200">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-extrabold tracking-tight text-slate-900">Detail Kelas</h2>
           <button onClick={onClose} className="rounded-xl p-1.5 text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-colors">
@@ -100,12 +154,45 @@ export default function ClassDetailModal({
         </div>
 
         <div className="mb-4">
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Tutor</label>
-          <select value={detailTutorId} onChange={(e) => onDetailTutorIdChange(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-          >
-            {tutors.map((t) => <option key={t.id} value={t.id}>{t.fullName}</option>)}
-          </select>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+            Tutor {detailTutorIds.length > 0 && <span className="font-normal text-slate-400">({detailTutorIds.length})</span>}
+          </label>
+          {detailTutorIds.length > 0 && (
+            <div className="mb-2 max-h-32 overflow-y-auto rounded-xl border border-slate-200">
+              {detailTutorIds.map((tid) => {
+                const t = tutors.find((x) => x.id === tid);
+                return (
+                  <div key={tid} className="flex items-center justify-between border-b border-slate-100 px-3 py-2 text-sm last:border-0">
+                    <span className="text-slate-700">{t?.fullName ?? tid}</span>
+                    <button type="button" onClick={() => onDetailTutorIdsChange(detailTutorIds.filter((id) => id !== tid))}
+                      className="rounded-xl p-1 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors">
+                      <X size={16} />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          <div className="flex gap-2">
+            <select value={detailAddingTutorId} onChange={(e) => setDetailAddingTutorId(e.target.value)}
+              className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+            >
+              <option value="">-- Tambah tutor --</option>
+              {tutors.filter((t) => !detailTutorIds.includes(t.id)).map((t) => (
+                <option key={t.id} value={t.id}>{t.fullName}</option>
+              ))}
+            </select>
+            <button onClick={handleAddTutor} disabled={!detailAddingTutorId || detailSaving}
+              className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            >
+              {detailSaving ? "..." : "+"}
+            </button>
+          </div>
+          {tutorToast && (
+            <div className="mt-2 whitespace-pre-wrap rounded-xl bg-red-50 p-3 text-xs font-semibold text-red-700">
+              {tutorToast}
+            </div>
+          )}
         </div>
 
         <div className="mb-4">
@@ -223,14 +310,14 @@ export default function ClassDetailModal({
                                 onBlur={(e) => {
                                   if (e.target.value !== s.startTime) onUpdateScheduleTime(s.id, e.target.value, s.endTime);
                                 }}
-                                className="w-16 rounded border border-slate-200 px-1 py-0.5 text-[10px] outline-none focus:border-blue-400"
+                                className="w-20 rounded border border-slate-200 px-2 py-0.5 text-[10px] outline-none focus:border-blue-400"
                               />
                               <span>–</span>
                               <input type="time" defaultValue={s.endTime}
                                 onBlur={(e) => {
                                   if (e.target.value !== s.endTime) onUpdateScheduleTime(s.id, s.startTime, e.target.value);
                                 }}
-                                className="w-16 rounded border border-slate-200 px-1 py-0.5 text-[10px] outline-none focus:border-blue-400"
+                                className="w-20 rounded border border-slate-200 px-2 py-0.5 text-[10px] outline-none focus:border-blue-400"
                               />
                             </span>
                           )}
