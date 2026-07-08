@@ -347,6 +347,7 @@ export default function TutorHomeSegment({
                     <option value="ABSENT">Tidak Hadir</option>
                     <option value="SICK">Sakit</option>
                     <option value="PERMISSION">Izin</option>
+                    <option value="RESCHEDULE">Reschedule</option>
                   </select>
                 </div>
               ))}

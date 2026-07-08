@@ -21,8 +21,8 @@ export const NAV_ITEMS: { key: Segment; label: string; icon: any }[] = [
   { key: "schedule", label: "Jadwal", icon: Calendar },
   { key: "roadmap", label: "Roadmap", icon: Route },
   { key: "reports", label: "Laporan", icon: FileText },
-  { key: "enrollment", label: "Kelas", icon: Users },
-  { key: "badges", label: "Badges", icon: Award },
+  { key: "enrollment", label: "Enrollment", icon: Users },
+  { key: "badges", label: "Badges & Sertifikat", icon: Award },
 ];
 
 export const MOBILE_NAV: Segment[] = ["overview", "schedule", "roadmap", "reports", "badges"];

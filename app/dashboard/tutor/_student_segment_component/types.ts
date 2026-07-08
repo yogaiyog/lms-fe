@@ -55,6 +55,26 @@ export type AspectSummary = {
   narrative: string;
 };
 
+export type AssessmentScore = {
+  aspectTitle: string;
+  aspectDescription: string | null;
+  avgScore: number;
+  avgMaxScore: number;
+  avgPercentage: number;
+  count: number;
+};
+
+export type ReportNote = {
+  comment: string;
+  date: string;
+  tutorName: string;
+};
+
+export type ReportProjectLink = {
+  url: string;
+  date: string;
+};
+
 export type GeneratedReport = {
   student: { id: string; fullName: string; nickname: string };
   generatedAt: string;
@@ -66,4 +86,7 @@ export type GeneratedReport = {
   topics: string[];
   topStrengths: AspectSummary[];
   topWeakness: AspectSummary | null;
+  assessmentScores: AssessmentScore[];
+  notes: ReportNote[];
+  projectLinks: ReportProjectLink[];
 };

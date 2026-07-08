@@ -20,6 +20,7 @@ export default function TopicManagement({ curriculums }: Props) {
   const [detailDirty, setDetailDirty] = useState(false);
   const [detailSaving, setDetailSaving] = useState(false);
   const [detailError, setDetailError] = useState("");
+  const [materialViewTopic, setMaterialViewTopic] = useState<Topic | null>(null);
 
   async function loadTopics(curriculumId: string) {
     if (!curriculumId) { setTopics([]); return; }
@@ -182,6 +183,28 @@ export default function TopicManagement({ curriculums }: Props) {
         </div>
       )}
 
+      {materialViewTopic && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4">
+          <div className="relative w-full max-w-4xl rounded-3xl bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+              <h3 className="text-lg font-bold text-slate-800">Materi: {materialViewTopic.title}</h3>
+              <button onClick={() => setMaterialViewTopic(null)} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <div className="p-2">
+              <iframe
+                src={materialViewTopic.materialLink ?? ""}
+                width="100%"
+                height="700"
+                allowFullScreen
+                className="rounded-2xl"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       {detailTopic && (
         <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
           <div className="fixed inset-0 bg-black/40" onClick={() => setDetailTopic(null)} />
@@ -205,8 +228,16 @@ export default function TopicManagement({ curriculums }: Props) {
             </div>
             <div className="mb-3">
               <label className="mb-1 block text-sm font-semibold text-slate-700">Link Materi</label>
-              <input type="url" value={detailTopic.materialLink ?? ""} onChange={(e) => { setDetailTopic({ ...detailTopic, materialLink: e.target.value || null }); setDetailDirty(true); }}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+              <div className="flex gap-2">
+                <input type="url" value={detailTopic.materialLink ?? ""} onChange={(e) => { setDetailTopic({ ...detailTopic, materialLink: e.target.value || null }); setDetailDirty(true); }}
+                  className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                {detailTopic.materialLink && (
+                  <button onClick={() => setMaterialViewTopic(detailTopic)}
+                    className="shrink-0 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700">
+                    Lihat
+                  </button>
+                )}
+              </div>
             </div>
             <div className="mb-3">
               <label className="mb-1 block text-sm font-semibold text-slate-700">Link Project</label>

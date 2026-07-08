@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { X, User, Mail, GraduationCap, BookOpen, Calendar, Zap, ArrowRight, Plus, Pencil, Loader2 } from "lucide-react";
+import { X, User, Mail, GraduationCap, BookOpen, Calendar, Zap, ArrowRight, Plus, Pencil, Loader2, FileText } from "lucide-react";
 import { api, type StudentProfile, type Enrollment, type Curriculum, type Class } from "@/lib/api";
-import { p } from "framer-motion/client";
+import CertificatePreviewModal from "../../../shared/CertificatePreviewModal";
 
 const CATEGORY_LABELS: Record<string, string> = {
   JUNIOR_I: "Kelas 1-3 SD",
@@ -32,6 +32,7 @@ export default function StudentDetailModal({
   const [formClassId, setFormClassId] = useState("");
   const [formTotalMeetPurchased, setFormTotalMeetPurchased] = useState("");
   const [formSubmitting, setFormSubmitting] = useState(false);
+  const [previewEnrollment, setPreviewEnrollment] = useState<Enrollment | null>(null);
 
   const isEdit = !!editingEnrollment;
   const selectedCurriculum = curriculums.find((c) => c.id === formCurriculumId);
@@ -100,7 +101,7 @@ export default function StudentDetailModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-lg rounded-3xl border border-slate-200 bg-white shadow-xl">
+      <div className="w-full max-w-3xl rounded-3xl border border-slate-200 bg-white shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
           <h2 className="text-lg font-extrabold tracking-tight text-slate-900">Detail Siswa</h2>
@@ -226,7 +227,7 @@ export default function StudentDetailModal({
             ) : enrollments.length === 0 ? (
               <p className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-400">Belum ada enrollment</p>
             ) : (
-              <div className="space-y-2">
+              <div className="max-h-[320px] space-y-2 overflow-y-auto pr-1">
                 {enrollments.map((enr) => (
                   <div key={enr.id} className="rounded-2xl border border-slate-100 bg-white px-4 py-3">
                     <div className="flex items-center justify-between">
@@ -257,6 +258,10 @@ export default function StudentDetailModal({
                             ) : null;
                           })()}
                         </div>
+                        <button onClick={() => setPreviewEnrollment(enr)}
+                          className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-green-600">
+                          <FileText size={14} />
+                        </button>
                         <button onClick={() => openEditForm(enr)}
                           className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-blue-600">
                           <Pencil size={14} />
@@ -282,6 +287,13 @@ export default function StudentDetailModal({
             Impersonate
           </button>
         </div>
+      <CertificatePreviewModal
+        open={!!previewEnrollment}
+        enrollment={previewEnrollment}
+        studentName={student.fullName}
+        mode="admin"
+        onClose={() => setPreviewEnrollment(null)}
+      />
       </div>
     </div>
   );

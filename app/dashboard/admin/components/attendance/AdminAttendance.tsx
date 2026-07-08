@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useState, useMemo } from "react";
 import { CalendarDays, ChevronDown, ChevronRight, Search } from "lucide-react";
-import { api, type Attendance, type Schedule } from "@/lib/api";
+import { api, type Attendance, type Class, type Schedule } from "@/lib/api";
 
 const ATTENDANCE_LABELS: Record<string, { label: string; color: string }> = {
   PRESENT: { label: "Hadir", color: "text-emerald-600 bg-emerald-100" },
@@ -66,6 +66,7 @@ function fmtDate(d: Date): string {
 export default function AdminAttendance() {
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [tutors, setTutors] = useState<TutorOption[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -80,12 +81,14 @@ export default function AdminAttendance() {
   useEffect(() => {
     (async () => {
       try {
-        const [list, tuts] = await Promise.all([
+        const [list, tuts, cls] = await Promise.all([
           api.attendances.list(),
           api.tutorProfiles.list() as Promise<TutorOption[]>,
+          api.classes.list(),
         ]);
         setAttendances(list);
         setTutors(tuts);
+        setClasses(cls);
       } catch (e) {
         console.error("Failed to load data", e);
       } finally {
@@ -142,6 +145,12 @@ export default function AdminAttendance() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / 10));
   const safePage = Math.min(page, totalPages);
   const paged = filtered.slice((safePage - 1) * 10, safePage * 10);
+
+  const classMap = useMemo(() => {
+    const map = new Map<string, Class>();
+    for (const c of classes) map.set(c.id, c);
+    return map;
+  }, [classes]);
 
   const totalSchedules = filtered.length;
   const totalStudents = new Set(filtered.flatMap((g) => g.attendances.map((a) => a.studentId))).size;
@@ -221,10 +230,10 @@ export default function AdminAttendance() {
           <p className="text-2xl font-extrabold text-blue-600">{totalSchedules}</p>
           <p className="text-[10px] font-semibold text-slate-500">Total Jadwal</p>
         </div>
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center">
+        {/* <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center">
           <p className="text-2xl font-extrabold text-emerald-600">{totalStudents}</p>
           <p className="text-[10px] font-semibold text-slate-500">Siswa Diampu</p>
-        </div>
+        </div> */}
         <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center">
           <p className="text-2xl font-extrabold text-amber-600">{totalAttendanceRecords}</p>
           <p className="text-[10px] font-semibold text-slate-500">Total Absensi</p>
@@ -246,9 +255,11 @@ export default function AdminAttendance() {
                   <th className="text-left py-3 px-3 font-semibold whitespace-nowrap">Tanggal</th>
                   <th className="text-left py-3 px-3 font-semibold whitespace-nowrap">Jam</th>
                   <th className="text-left py-3 px-3 font-semibold whitespace-nowrap">Topik</th>
+                  <th className="text-left py-3 px-3 font-semibold whitespace-nowrap">Nama Kelas</th>
+                  <th className="text-left py-3 px-3 font-semibold whitespace-nowrap">Tutor terdaftar</th>
                   <th className="text-left py-3 px-3 font-semibold whitespace-nowrap">Siswa</th>
                   <th className="text-left py-3 px-3 font-semibold whitespace-nowrap">Status</th>
-                  <th className="text-left py-3 px-3 font-semibold whitespace-nowrap">Tutor</th>
+                  <th className="text-left py-3 px-3 font-semibold whitespace-nowrap">Assesed by</th>
                   <th className="text-right py-3 px-3 font-semibold whitespace-nowrap">Nilai</th>
                 </tr>
               </thead>
@@ -277,6 +288,14 @@ export default function AdminAttendance() {
                             <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 font-semibold text-blue-700">{s.topic}</span>
                           ) : <span className="text-slate-300">—</span>}
                         </td>
+                        <td className="py-3 px-3 whitespace-nowrap font-semibold text-slate-700">
+                          {classMap.get(s.classId)?.name ?? <span className="text-slate-300">—</span>}
+                        </td>
+                        <td className="py-3 px-3 whitespace-nowrap text-slate-500">
+                          {classMap.get(s.classId)?.tutors?.length
+                            ? classMap.get(s.classId)!.tutors!.map((t) => t.fullName).join(", ")
+                            : <span className="text-slate-300">—</span>}
+                        </td>
                         <td className="py-3 px-3 text-slate-400">{group.attendances.length} siswa</td>
                         <td className="py-3 px-3"><span className="text-emerald-600 font-semibold">{presentCount} hadir</span></td>
                         <td className="py-3 px-3" />
@@ -289,6 +308,8 @@ export default function AdminAttendance() {
                           return (
                             <tr key={att.id} className={`border-t border-slate-100 bg-white`}>
                               <td className="py-2 px-2" />
+                              <td className="py-2 px-3" />
+                              <td className="py-2 px-3" />
                               <td className="py-2 px-3" />
                               <td className="py-2 px-3" />
                               <td className="py-2 px-3" />

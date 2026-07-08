@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { BookOpen, Users, Calendar, ShoppingCart, Clock, X, Check, AlertTriangle } from "lucide-react";
+import { useState } from "react";
+import { BookOpen, Users, Calendar, ShoppingCart, X, Check } from "lucide-react";
 import Card from "./Card";
 import type { Theme } from "./types";
-import type { Schedule, Class, Attendance } from "@/lib/api";
-import { api } from "@/lib/api";
+import type { Schedule, Class, Enrollment } from "@/lib/api";
 
 type Props = {
   theme: Theme;
   classes: Class[];
+  enrollments: Enrollment[];
   schedules: Schedule[];
   studentId?: string;
   totalMeetLeft: number;
@@ -27,39 +27,23 @@ const TYPE_LABELS: Record<string, string> = {
   MAKEUP: "Makeup",
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  PRESENT: "Hadir",
-  LATE: "Terlambat",
-  ABSENT: "Tidak Hadir",
-  SICK: "Sakit",
-  PERMISSION: "Izin",
-};
-
-const STATUS_COLORS: Record<string, string> = {
-  PRESENT: "bg-emerald-100 text-emerald-700",
-  LATE: "bg-amber-100 text-amber-700",
-  ABSENT: "bg-red-100 text-red-700",
-  SICK: "bg-purple-100 text-purple-700",
-  PERMISSION: "bg-blue-100 text-blue-700",
-};
-
-export default function EnrollmentTab({ theme, classes, schedules, studentId, totalMeetLeft }: Props) {
+export default function EnrollmentTab({ theme, classes, enrollments, schedules, studentId, totalMeetLeft }: Props) {
   const [selectedClass, setSelectedClass] = useState<Class | null>(null);
 
   return (
     <div>
       <div className="mb-6 flex items-start gap-3">
         <div>
-          <h1 className={`text-2xl font-extrabold tracking-tight ${theme.text}`}>Kelas Saya</h1>
-          <p className={`mt-1 text-sm ${theme.textMuted}`}>Informasi kelas dan kehadiran kamu.</p>
+          <h1 className={`text-2xl font-extrabold tracking-tight ${theme.text}`}>Enrollment</h1>
+          <p className={`mt-1 text-sm ${theme.textMuted}`}>Daftar enrollment dan kehadiran kamu.</p>
         </div>
       </div>
 
-      {classes.length === 0 ? (
+      {classes.length === 0 && enrollments.filter((e) => !e.classId).length === 0 ? (
         <Card theme={theme} className="p-12 flex flex-col items-center text-center border-dashed">
           <span className="text-5xl mb-4">📚</span>
-          <h3 className={`font-bold ${theme.text}`}>Belum ada kelas</h3>
-          <p className={`text-sm mt-1 max-w-sm ${theme.textMuted}`}>Kamu belum terdaftar di kelas manapun.</p>
+          <h3 className={`font-bold ${theme.text}`}>Belum ada enrollment</h3>
+          <p className={`text-sm mt-1 max-w-sm ${theme.textMuted}`}>Kamu belum terdaftar di enrollment manapun.</p>
         </Card>
       ) : (
         <div className="space-y-4">
@@ -146,6 +130,32 @@ export default function EnrollmentTab({ theme, classes, schedules, studentId, to
                     )}
                   </div>
 
+                  {cls.curriculum?.topics && cls.curriculum.topics.length > 0 && (() => {
+                    const topics = [...cls.curriculum!.topics!].sort((a, b) => a.order - b.order);
+                    const myEnrollment = cls.enrollments?.find((e) => studentId ? e.studentId === studentId : true);
+                    const meetScheduleIds = new Set((myEnrollment?.meetUsages ?? []).map((m) => m.scheduleId));
+                    const classSchedulesForTopics = classSchedules;
+                    return (
+                      <div className={`mt-4 pt-4 border-t ${theme.border}`}>
+                        <h3 className={`text-[10px] font-semibold mb-2 ${theme.textMuted}`}>Kurikulum</h3>
+                        <div className="space-y-1">
+                          {topics.map((topic) => {
+                            const tSchedules = classSchedulesForTopics.filter((s) => s.topicId === topic.id);
+                            const completed = tSchedules.length > 0 && tSchedules.every((s) => meetScheduleIds.has(s.id));
+                            return (
+                              <div key={topic.id} className="flex items-center gap-2">
+                                <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${completed ? "bg-emerald-100 text-emerald-600" : "bg-slate-200 text-slate-400"}`}>
+                                  {completed ? <Check size={8} /> : <span className="text-[8px] font-bold">{topics.indexOf(topic) + 1}</span>}
+                                </span>
+                                <span className={`text-[11px] ${completed ? "text-emerald-600 font-semibold" : theme.textMuted}`}>{topic.title}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
+
                   {cls.tutors && cls.tutors.length > 0 && (
                     <div className={`mt-4 pt-4 border-t ${theme.border} flex items-center gap-3`}>
                       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
@@ -161,6 +171,39 @@ export default function EnrollmentTab({ theme, classes, schedules, studentId, to
               </button>
             );
           })}
+
+          {enrollments.filter((e) => !e.classId).map((enr) => (
+            <div key={enr.id}
+              className={`rounded-2xl border ${theme.border} ${theme.card} px-5 py-4 flex items-center justify-between gap-3`}>
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
+                  <BookOpen size={20} className="text-amber-600" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className={`text-base font-extrabold ${theme.text}`}>{enr.curriculum?.name ?? "Menunggu kelas"}</h3>
+                  <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                    <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-semibold text-amber-700">
+                      Menunggu Kelas
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 shrink-0">
+                <div className="text-right">
+                  <p className={`text-[10px] font-semibold ${theme.textMuted}`}>Dibeli</p>
+                  <p className={`text-base font-extrabold ${theme.text}`}>{enr.totalMeetPurchased}</p>
+                </div>
+                <div className="text-right">
+                  <p className={`text-[10px] font-semibold ${theme.textMuted}`}>Sisa</p>
+                  <p className={`text-base font-extrabold ${theme.text}`}>{enr.totalMeetLeft}</p>
+                </div>
+                <div className="text-right">
+                  <p className={`text-[10px] font-semibold ${theme.textMuted}`}>Hadir</p>
+                  <p className={`text-base font-extrabold text-emerald-600`}>{enr.meetUsages?.length ?? 0}</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
@@ -186,44 +229,16 @@ function ClassDetailModal({
   studentId?: string;
   onClose: () => void;
 }) {
-  const [attendances, setAttendances] = useState<Attendance[]>([]);
-  const [loaded, setLoaded] = useState(() => !studentId);
-
   const myEnrollment = cls.enrollments?.find((e) =>
     studentId ? e.studentId === studentId : true
   );
   const topics = [...(cls.curriculum?.topics ?? [])].sort((a, b) => a.order - b.order);
   const purchased = myEnrollment?.totalMeetPurchased ?? 0;
-  const doneSchedules = schedules.filter(
-    (s) => s.isDone || s.date < new Date().toISOString().split("T")[0]
-  );
+  const meetUsages = myEnrollment?.meetUsages ?? [];
+  const meetScheduleIds = new Set(meetUsages.map((m) => m.scheduleId));
 
-  useEffect(() => {
-    if (!studentId || loaded) return;
-
-    let cancelled = false;
-
-    (async () => {
-      try {
-        const res = await api.attendances.listByStudent(studentId);
-        if (cancelled) return;
-        const filtered = (res ?? []).filter((a) =>
-          schedules.some((s) => s.id === a.scheduleId)
-        );
-        setAttendances(filtered);
-      } finally {
-        if (!cancelled) setLoaded(true);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [studentId, loaded, schedules]);
-
-  function attendanceFor(schedule: Schedule) {
-    return attendances.find((a) => a.scheduleId === schedule.id);
-  }
+  const attended = meetUsages.length;
+  const remaining = Math.max(0, purchased - attended);
 
   function topicSchedules(topicId: string) {
     return schedules.filter((s) => s.topicId === topicId);
@@ -232,25 +247,15 @@ function ClassDetailModal({
   function isTopicCompleted(topicId: string) {
     const tSchedules = topicSchedules(topicId);
     if (tSchedules.length === 0) return false;
-    return tSchedules.every((s) => {
-      const att = attendanceFor(s);
-      return att && (att.status === "PRESENT" || att.status === "LATE");
-    });
+    return tSchedules.every((s) => meetScheduleIds.has(s.id));
   }
 
   function topicAttendedCount(topicId: string) {
     const tSchedules = topicSchedules(topicId);
     if (tSchedules.length === 0) return 0;
-    return tSchedules.filter((s) => {
-      const att = attendanceFor(s);
-      return att && (att.status === "PRESENT" || att.status === "LATE");
-    }).length;
+    return tSchedules.filter((s) => meetScheduleIds.has(s.id)).length;
   }
 
-  const attended = attendances.filter(
-    (a) => a.status === "PRESENT" || a.status === "LATE"
-  ).length;
-  const remaining = Math.max(0, purchased - attended);
   const meetLeftForTopicProgress = myEnrollment?.totalMeetLeft ?? remaining;
   const paidTopicStartIndex = attended;
   const paidTopicEndIndex = Math.min(topics.length - 1, attended + meetLeftForTopicProgress);
@@ -279,15 +284,7 @@ function ClassDetailModal({
           </button>
         </div>
 
-        {!loaded && studentId && (
-          <div className="flex items-center justify-center py-10">
-            <span className="inline-block h-6 w-6 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-          </div>
-        )}
-
-        {loaded && (
-          <>
-            <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-3 gap-3 mb-6">
               <div className={`rounded-xl p-3 text-center ${theme.dark ? "bg-slate-800" : "bg-blue-50"}`}>
                 <p className={`text-lg font-extrabold text-blue-600`}>{purchased}</p>
                 <p className={`text-[10px] font-semibold ${theme.textMuted}`}>Dibeli</p>
@@ -346,52 +343,6 @@ function ClassDetailModal({
               </div>
             )}
 
-            {/* <div className={`border-t ${theme.border} pt-5`}>
-              <h3 className={`text-sm font-bold mb-3 ${theme.text}`}>Riwayat Pertemuan</h3>
-              {doneSchedules.length === 0 ? (
-                <p className={`text-sm ${theme.textMuted}`}>Belum ada pertemuan yang selesai.</p>
-              ) : (
-                <div className="space-y-1.5">
-                  {[...doneSchedules]
-                    .sort((a, b) => b.date.localeCompare(a.date) || b.startTime.localeCompare(a.startTime))
-                    .map((s) => {
-                      const att = attendanceFor(s);
-                      return (
-                        <div key={s.id}
-                          className={`flex items-center justify-between rounded-xl px-3 py-2.5 ${theme.dark ? "bg-slate-800" : "bg-slate-50"}`}>
-                          <div className="flex items-center gap-3 min-w-0">
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-200">
-                              <Calendar size={14} className="text-slate-500" />
-                            </div>
-                            <div className="min-w-0">
-                              <p className={`text-xs font-semibold ${theme.text}`}>
-                                {new Date(s.date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
-                              </p>
-                              <p className={`text-[10px] ${theme.textMuted}`}>
-                                {DAY_LABELS[s.dayOfWeek] ?? s.dayOfWeek} · {s.startTime}–{s.endTime}
-                              </p>
-                              {s.topic && (
-                                <p className={`text-[10px] font-semibold text-blue-600 mt-0.5`}>{s.topic}</p>
-                              )}
-                            </div>
-                          </div>
-                          {att ? (
-                            <span className={`shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold ${STATUS_COLORS[att.status] ?? "bg-slate-100 text-slate-600"}`}>
-                              {att.status === "PRESENT" ? <Check size={10} /> : att.status === "LATE" ? <Clock size={10} /> : <AlertTriangle size={10} />}
-                              {STATUS_LABELS[att.status] ?? att.status}
-                            </span>
-                          ) : (
-                            <span className="shrink-0 inline-flex items-center rounded-full bg-slate-200 px-2.5 py-1 text-[10px] font-semibold text-slate-500">
-                              Belum
-                            </span>
-                          )}
-                        </div>
-                      );
-                    })}
-                </div>
-              )}
-            </div> */}
-
             {cls.tutors && cls.tutors.length > 0 && (
               <div className={`mt-5 pt-5 border-t ${theme.border} flex items-center gap-3`}>
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
@@ -403,9 +354,7 @@ function ClassDetailModal({
                 </div>
               </div>
             )}
-          </>
-        )}
+          </div>
       </div>
-    </div>
   );
 }

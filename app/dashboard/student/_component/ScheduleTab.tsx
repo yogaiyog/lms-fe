@@ -1,19 +1,35 @@
 "use client";
 
-import { Calendar, Clock, Video, Users, BookOpen } from "lucide-react";
+import { Calendar, Clock, Video, Users, BookOpen, CheckCircle2, AlertTriangle, Bed, FileX } from "lucide-react";
 import Card from "./Card";
 import { DAY_LABELS } from "./types";
 import type { Theme } from "./types";
-import type { Schedule, Class } from "@/lib/api";
+import type { Schedule, Class, Attendance } from "@/lib/api";
 
 type Props = {
   theme: Theme;
   schedules: Schedule[];
   classes: Class[];
+  attendances: Attendance[];
 };
 
-export default function ScheduleTab({ theme, schedules, classes }: Props) {
+export default function ScheduleTab({ theme, schedules, classes, attendances }: Props) {
   const todayStr = new Date().toISOString().split("T")[0];
+
+  const attendanceByScheduleId = new Map<string, Attendance>();
+  for (const a of attendances) {
+    if (!attendanceByScheduleId.has(a.scheduleId)) {
+      attendanceByScheduleId.set(a.scheduleId, a);
+    }
+  }
+
+  const STATUS_BADGE: Record<string, { label: string; bg: string; text: string; icon: React.ReactNode }> = {
+    PRESENT: { label: "Masuk", bg: "bg-emerald-100", text: "text-emerald-700", icon: <CheckCircle2 size={10} /> },
+    LATE: { label: "Terlambat", bg: "bg-amber-100", text: "text-amber-700", icon: <Clock size={10} /> },
+    SICK: { label: "Sakit", bg: "bg-red-100", text: "text-red-700", icon: <Bed size={10} /> },
+    PERMISSION: { label: "Izin", bg: "bg-orange-100", text: "text-orange-700", icon: <FileX size={10} /> },
+    ABSENT: { label: "Tidak Hadir", bg: "bg-red-100", text: "text-red-700", icon: <AlertTriangle size={10} /> },
+  };
 
   function classFor(schedule: Schedule) {
     return classes.find((c) => c.id === schedule.classId);
@@ -71,11 +87,19 @@ export default function ScheduleTab({ theme, schedules, classes }: Props) {
                             {cls.enrollments.length} siswa
                           </span>
                         )}
-                        {isPast && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
-                            <Clock size={10} /> Selesai
-                          </span>
-                        )}
+                        {isPast && (() => {
+                          const att = attendanceByScheduleId.get(schedule.id);
+                          const b = att ? STATUS_BADGE[att.status] : null;
+                          return b ? (
+                            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${b.bg} ${b.text}`}>
+                              {b.icon} {b.label}
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
+                              <Clock size={10} /> Selesai
+                            </span>
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>

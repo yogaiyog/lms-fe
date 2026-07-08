@@ -10,8 +10,11 @@ import {
   type AuthUser,
   type Class,
   type Schedule,
+  type Attendance,
+  type Enrollment,
   type Announcement,
   type StudentBadge,
+  type Certificate,
 } from "@/lib/api";
 import type { Theme, Segment } from "./_component/types";
 import Sidebar from "./_component/Sidebar";
@@ -37,8 +40,11 @@ export default function StudentDashboard() {
   const [allClasses, setAllClasses] = useState<Class[]>([]);
   const [selectedClassId, setSelectedClassId] = useState<string>("");
   const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [attendances, setAttendances] = useState<Attendance[]>([]);
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [studentBadges, setStudentBadges] = useState<StudentBadge[]>([]);
+  const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [totalMeetLeft, setTotalMeetLeft] = useState(0);
   const [countdowns, setCountdowns] = useState<Record<string, { days: number; hours: number; minutes: number; seconds: number }>>({});
 
@@ -67,10 +73,15 @@ export default function StudentDashboard() {
         if (!session.user.studentProfile) { return; }
         const studentId = session.user.studentProfile.id;
 
-        const [allEnrollments, allBadges] = await Promise.all([
+        const [allEnrollments, allBadges, allAttendances, allCertificates] = await Promise.all([
           api.enrollments.listByStudent(studentId),
           api.studentBadges.listByStudent(studentId),
+          api.attendances.listByStudent(studentId),
+          api.certificates.listByStudent(studentId),
         ]);
+
+        setEnrollments(allEnrollments);
+        setCertificates(allCertificates);
 
         const activeEnrollments = allEnrollments.filter((e) => e.classId);
         if (activeEnrollments.length === 0) { setLoading(false); return; }
@@ -92,6 +103,7 @@ export default function StudentDashboard() {
         setMyClass(validClasses[0]);
         setSelectedClassId(validClasses[0]?.id ?? "");
         setSchedules(allSchedules.flat());
+        setAttendances(allAttendances);
         setAnnouncements(allAnnouncements.flat());
         setStudentBadges(allBadges);
       } catch {
@@ -221,13 +233,13 @@ export default function StudentDashboard() {
             )}
 
             {segment === "schedule" && (
-              <ScheduleTab theme={theme} schedules={filteredSchedules} classes={allClasses} />
+              <ScheduleTab theme={theme} schedules={filteredSchedules} classes={allClasses} attendances={attendances} />
             )}
             {segment === "reports" && (
               <ReportTab theme={theme} studentId={user?.studentProfile?.id} />
             )}
             {segment === "enrollment" && (
-              <EnrollmentTab theme={theme} classes={allClasses} schedules={schedules} studentId={user?.studentProfile?.id} totalMeetLeft={totalMeetLeft} />
+              <EnrollmentTab theme={theme} classes={allClasses} enrollments={enrollments} schedules={schedules} studentId={user?.studentProfile?.id} totalMeetLeft={totalMeetLeft} />
             )}
 
             {segment === "roadmap" && (
@@ -244,7 +256,7 @@ export default function StudentDashboard() {
             )}
 
             {segment === "badges" && (
-              <BadgesTab theme={theme} studentBadges={studentBadges} />
+              <BadgesTab theme={theme} studentBadges={studentBadges} certificates={certificates} enrollments={enrollments} />
             )}
           </main>
         </div>

@@ -83,6 +83,7 @@ export type MeetUsage = {
   enrollmentId: string;
   scheduleId: string;
   studentId: string;
+  attendanceId: string;
   date: string;
   createdAt: string;
 };
@@ -117,7 +118,7 @@ export type Class = {
   location?: string | null;
   schedules?: Schedule[];
   tutors?: TutorProfile[];
-  enrollments?: { id: string; studentId: string; classId: string; totalMeetPurchased?: number | null; totalMeetLeft?: number | null }[];
+  enrollments?: { id: string; studentId: string; classId: string; totalMeetPurchased?: number | null; totalMeetLeft?: number | null; meetUsages?: MeetUsage[] }[];
   curriculum?: Curriculum | null;
 };
 
@@ -140,7 +141,7 @@ export type Attendance = {
   scheduleId: string;
   studentId: string;
   date: string;
-  status: "PRESENT" | "ABSENT" | "LATE" | "SICK" | "PERMISSION";
+  status: "PRESENT" | "ABSENT" | "LATE" | "SICK" | "PERMISSION" | "RESCHEDULE";
   notes?: string | null;
   teachedBy?: string | null;
   tutor?: TutorProfile | null;
@@ -159,6 +160,18 @@ export type TutorProfile = {
   user?: { id: string; email: string };
 };
 
+export type Certificate = {
+  id: string;
+  studentId: string;
+  curriculumId: string;
+  certificateNumber: string;
+  grade?: string | null;
+  filePath?: string | null;
+  issuedAt: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type Curriculum = {
   id: string;
   category: string;
@@ -166,6 +179,7 @@ export type Curriculum = {
   topics: Topic[];
   assessmentSetId?: string | null;
   assessmentSet?: AssessmentSet | null;
+  certificates?: Certificate[];
 };
 
 export type Topic = {
@@ -513,6 +527,9 @@ export const api = {
     async list() {
       return authenticatedRequest<Enrollment[]>("/api/v1/academic/enrollments");
     },
+    async get(id: string) {
+      return authenticatedRequest<Enrollment>(`/api/v1/academic/enrollments/${id}`);
+    },
     async listByStudent(studentId: string) {
       return authenticatedRequest<Enrollment[]>(`/api/v1/academic/enrollments/student/${studentId}`);
     },
@@ -539,6 +556,89 @@ export const api = {
       return authenticatedRequest<void>(`/api/v1/academic/enrollments/${id}`, {
         method: "DELETE",
       });
+    },
+  },
+  certificates: {
+    async list() {
+      return authenticatedRequest<Certificate[]>("/api/v1/academic/certificates");
+    },
+    async get(id: string) {
+      return authenticatedRequest<Certificate>(`/api/v1/academic/certificates/${id}`);
+    },
+    async listByStudent(studentId: string) {
+      return authenticatedRequest<Certificate[]>(`/api/v1/academic/certificates/student/${studentId}`);
+    },
+    async create(payload: { studentId: string; curriculumId: string; certificateNumber: string; grade?: string | null; filePath?: string | null }) {
+      return authenticatedRequest<Certificate>("/api/v1/academic/certificates", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    },
+    async update(id: string, payload: Record<string, unknown>) {
+      return authenticatedRequest<Certificate>(`/api/v1/academic/certificates/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+      });
+    },
+    async delete(id: string) {
+      return authenticatedRequest<void>(`/api/v1/academic/certificates/${id}`, {
+        method: "DELETE",
+      });
+    },
+    async generate(payload: { name: string; course: string; date: string; certificateNumber: string; instructor: string; grade?: string }) {
+      return authenticatedRequest<{ success: true; data: { success: true; fileName: string; filePath: string } }>("/api/v1/academic/certificates/generate", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    },
+    async generatePdf(payload: { name: string; course: string; date: string; certificateNumber: string; instructor: string; grade?: string }): Promise<Blob> {
+      const session = getStoredSession();
+      if (!session) throw new Error("Silakan login dulu");
+
+      const response = await fetch(`${API_BASE_URL}/api/v1/academic/certificates/generate-pdf`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ message: "Gagal membuat sertifikat PDF" }));
+        throw new Error(error.message ?? "Gagal membuat sertifikat PDF");
+      }
+
+      return response.blob();
+    },
+    async generateAndDownload(payload: { name: string; course: string; date: string; certificateNumber: string; instructor: string; grade?: string }): Promise<void> {
+      const session = getStoredSession();
+      if (!session) throw new Error("Silakan login dulu");
+
+      const response = await fetch(`${API_BASE_URL}/api/v1/academic/certificates/generate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ message: "Gagal membuat sertifikat" }));
+        throw new Error(error.message ?? "Gagal membuat sertifikat");
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const sanitizedName = payload.name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+      a.download = `${sanitizedName}.pptx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     },
   },
   attendances: {

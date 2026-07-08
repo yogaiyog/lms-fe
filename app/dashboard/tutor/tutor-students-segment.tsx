@@ -179,11 +179,31 @@ export default function TutorStudentsSegment({
     const strengths = aspectSummaries.filter((a) => a.avgPercentage >= 50).slice(0, 2);
     const topWeakness = aspectSummaries.filter((a) => a.avgPercentage < 50).at(-1) ?? null;
 
+    const notes = selectedAttendances
+      .filter((a) => a.assessment?.mentorComment)
+      .map((a) => ({
+        comment: a.assessment!.mentorComment!,
+        date: a.date ?? a.schedule?.date ?? "",
+        tutorName: a.tutor?.fullName ?? "Tutor",
+      }));
+
+    const projectLinks = selectedAttendances
+      .filter((a) => a.assessment?.projectLink)
+      .map((a) => ({
+        url: a.assessment!.projectLink!,
+        date: a.date ?? a.schedule?.date ?? "",
+      }));
+
     const report: GeneratedReport = {
       student: { id: selectedStudent.id, fullName: selectedStudent.fullName, nickname: selectedStudent.nickname },
       generatedAt: new Date().toISOString(), selectedCount: selectedAttendances.length,
       totalScore, maxScore, scorePercentage, statusCounts, topics,
       topStrengths: strengths, topWeakness,
+      assessmentScores: aspectSummaries.map((a) => ({
+        aspectTitle: a.aspectTitle, aspectDescription: a.aspectDescription,
+        avgScore: a.avgScore, avgMaxScore: a.avgMaxScore, avgPercentage: a.avgPercentage, count: a.count,
+      })),
+      notes, projectLinks,
     };
     setGeneratedReport(report);
     setReportViewData(report);
