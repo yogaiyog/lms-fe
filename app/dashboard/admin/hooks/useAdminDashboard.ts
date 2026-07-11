@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   useReactTable,
   getCoreRowModel,
@@ -39,19 +39,34 @@ export type StudentItem = {
   email?: string;
   category?: Category | null;
   parentName?: string;
+  isActive?: boolean;
+  createdAt?: string;
+  school?: string | null;
 };
 
 export function useAdminDashboard() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const menuParam = searchParams.get("menu") as "classes" | "tutors" | "curriculums" | "students" | "attendance" | null;
+  const segParam = searchParams.get("seg");
+
+  const validMenus = ["classes", "tutors", "curriculums", "students", "attendance"] as const;
+  const initialMenu = menuParam && validMenus.includes(menuParam) ? menuParam : "classes";
+
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [mainMenu, setMainMenu] = useState<"classes" | "tutors" | "curriculums" | "students" | "attendance">("classes");
-  const [segment, setSegment] = useState<"classes" | "requests" | "create">("classes");
+  const [mainMenu, setMainMenu] = useState<"classes" | "tutors" | "curriculums" | "students" | "attendance">(initialMenu);
+  const [segment, setSegment] = useState<"classes" | "requests" | "create">(
+    initialMenu === "classes" && ["classes", "requests", "create"].includes(segParam ?? "") ? segParam as "classes" | "requests" | "create" : "classes"
+  );
 
   const [classes, setClasses] = useState<Class[]>([]);
   const [requests, setRequests] = useState<RequestClass[]>([]);
   const [curriculums, setCurriculums] = useState<Curriculum[]>([]);
   const [assessmentSets, setAssessmentSets] = useState<AssessmentSet[]>([]);
-  const [curriculumSegment, setCurriculumSegment] = useState<"list" | "topics" | "assessments">("list");
+  const [curriculumSegment, setCurriculumSegment] = useState<"list" | "topics" | "assessments">(
+    initialMenu === "curriculums" && ["list", "topics", "assessments"].includes(segParam ?? "") ? segParam as "list" | "topics" | "assessments" : "list"
+  );
   const [loading, setLoading] = useState(true);
 
   const [createType, setCreateType] = useState<"BATCH" | "PRIVATE" | "MAKEUP" | "TRIAL">("BATCH");
@@ -61,7 +76,12 @@ export function useAdminDashboard() {
   const [createCurriculumId, setCreateCurriculumId] = useState("");
   const [createCategory, setCreateCategory] = useState("Kelas 1");
   const [createTutorIds, setCreateTutorIds] = useState<string[]>([]);
-  const [tutorSegment, setTutorSegment] = useState<"list" | "add">("list");
+  const [tutorSegment, setTutorSegment] = useState<"list" | "add">(
+    initialMenu === "tutors" && ["list", "add"].includes(segParam ?? "") ? segParam as "list" | "add" : "list"
+  );
+  const [studentSegment, setStudentSegment] = useState<"list" | "enrollment" | "parent" | "add">(
+    initialMenu === "students" && ["list", "enrollment", "parent", "add"].includes(segParam ?? "") ? segParam as "list" | "enrollment" | "parent" | "add" : "list"
+  );
   const [tutors, setTutors] = useState<TutorOption[]>([]);
   const [tutorsFull, setTutorsFull] = useState<{ id: string; fullName: string; phone: string; email?: string; bio?: string | null }[]>([]);
   const [registering, setRegistering] = useState(false);
@@ -127,6 +147,19 @@ export function useAdminDashboard() {
   const [approveError, setApproveError] = useState("");
 
   useEffect(() => {
+    const seg = mainMenu === "classes" ? segment
+      : mainMenu === "tutors" ? tutorSegment
+      : mainMenu === "students" ? studentSegment
+      : mainMenu === "curriculums" ? curriculumSegment
+      : "";
+    const params = new URLSearchParams({ menu: mainMenu });
+    if (seg) params.set("seg", seg);
+    const qs = params.toString();
+    const url = qs ? `?${qs}` : window.location.pathname;
+    router.replace(url, { scroll: false });
+  }, [mainMenu, segment, tutorSegment, studentSegment, curriculumSegment, router]);
+
+  useEffect(() => {
     const session = getStoredSession();
     if (!session) { router.replace("/login"); return; }
     (async () => {
@@ -135,7 +168,7 @@ export function useAdminDashboard() {
         setUser(me);
         if (me.role !== "ADMIN") { router.replace("/dashboard"); return; }
 
-        const [cls, reqs, tuts, currics, fullTutors, studentProfiles, assSets] = await Promise.all([
+        const [cls, reqs, tuts, currics, fullTutors, studentProfiles, assSets, cats, parents] = await Promise.all([
           api.classes.listByTutor("") as Promise<Class[]>,
           api.requestClass.list(),
           api.tutorProfiles.list() as Promise<TutorOption[]>,
@@ -143,18 +176,22 @@ export function useAdminDashboard() {
           api.tutorProfiles.list() as Promise<{ id: string; fullName: string; phone: string; user?: { email: string }; bio?: string | null }[]>,
           api.studentProfiles.list(),
           api.assessmentSets.list(),
+          api.categories.list(),
+          api.parentProfiles.list("?showArchived=true"),
         ]);
         setClasses(cls);
         setRequests(reqs);
         setTutors(tuts);
         setCurriculums(currics);
         setAssessmentSets(assSets);
+        setCategories(cats);
+        setAllParents(parents);
         setTutorsFull(fullTutors.map((t) => ({ id: t.id, fullName: t.fullName, phone: t.phone, email: t.user?.email, bio: t.bio })));
         setStudentsFull(
           studentProfiles.map((s) => ({
             id: s.id, userId: s.user?.id ?? s.id, fullName: s.fullName, nickname: s.nickname,
             email: s.user?.email, category: s.category,
-            parentName: s.parent?.fullName,
+            parentName: s.parent?.fullName, isActive: s.isActive, createdAt: s.createdAt, school: s.school,
           })),
         );
       } catch {
@@ -695,6 +732,123 @@ export function useAdminDashboard() {
     }
   }
 
+  async function handleCreateParent(payload: {
+    email: string;
+    password: string;
+    fullName: string;
+    phone: string;
+  }): Promise<string> {
+    const session = await api.auth.registerParentByAdmin(payload);
+    const parentId = session.user.parentProfile?.id;
+    if (!parentId) throw new Error("Gagal mendapatkan data orang tua");
+    const parents = await api.parentProfiles.list("?showArchived=true");
+    setAllParents(parents);
+    showToast("Orang tua berhasil ditambahkan", "success");
+    return parentId;
+  }
+
+  async function handleRegisterStudent(payload: {
+    parentId: string;
+    email: string;
+    password: string;
+    fullName: string;
+    nickname: string;
+    birthDate: string;
+    categoryId?: string | null;
+    school?: string | null;
+  }) {
+    setRegistering(true);
+    setRegisterError("");
+    try {
+      await api.studentProfiles.create(payload);
+      window.location.reload();
+    } catch (err) {
+      setRegisterError(err instanceof Error ? err.message : "Gagal menambahkan siswa");
+    } finally {
+      setRegistering(false);
+    }
+  }
+
+  async function handleArchiveStudent(student: StudentItem) {
+    try {
+      await api.studentProfiles.update(student.id, { isActive: false });
+      setStudentsFull((prev) => prev.map((s) => s.id === student.id ? { ...s, isActive: false } : s));
+      showToast("Siswa berhasil diarsipkan", "success");
+    } catch {
+      showToast("Gagal mengarsipkan siswa", "error");
+    }
+  }
+
+  async function handleRestoreStudent(student: StudentItem) {
+    try {
+      await api.studentProfiles.update(student.id, { isActive: true });
+      setStudentsFull((prev) => prev.map((s) => s.id === student.id ? { ...s, isActive: true } : s));
+      showToast("Siswa berhasil diaktifkan kembali", "success");
+    } catch {
+      showToast("Gagal mengaktifkan siswa", "error");
+    }
+  }
+
+  async function handleDeleteStudent(student: StudentItem) {
+    try {
+      await api.studentProfiles.delete(student.id);
+      window.location.reload();
+    } catch {
+      showToast("Gagal menghapus siswa", "error");
+    }
+  }
+
+  async function handleArchiveParent(parent: ParentProfile) {
+    try {
+      await api.parentProfiles.update(parent.id, { isActive: false });
+      const studentIds = (parent.students ?? []).map((s) => s.id);
+      if (studentIds.length > 0) {
+        await Promise.all(studentIds.map((id) => api.studentProfiles.update(id, { isActive: false })));
+        setStudentsFull((prev) => prev.map((s) => studentIds.includes(s.id) ? { ...s, isActive: false } : s));
+      }
+      setAllParents((prev) => prev.map((p) => p.id === parent.id ? { ...p, isActive: false } : p));
+      showToast("Orang tua dan siswa berhasil diarsipkan", "success");
+    } catch {
+      showToast("Gagal mengarsipkan orang tua", "error");
+    }
+  }
+
+  async function handleRestoreParent(parent: ParentProfile) {
+    try {
+      await api.parentProfiles.update(parent.id, { isActive: true });
+      const studentIds = (parent.students ?? []).map((s) => s.id);
+      if (studentIds.length > 0) {
+        await Promise.all(studentIds.map((id) => api.studentProfiles.update(id, { isActive: true })));
+        setStudentsFull((prev) => prev.map((s) => studentIds.includes(s.id) ? { ...s, isActive: true } : s));
+      }
+      setAllParents((prev) => prev.map((p) => p.id === parent.id ? { ...p, isActive: true } : p));
+      showToast("Orang tua dan siswa berhasil diaktifkan kembali", "success");
+    } catch {
+      showToast("Gagal mengaktifkan orang tua", "error");
+    }
+  }
+
+  async function handleDeleteParent(parent: ParentProfile) {
+    try {
+      await api.parentProfiles.delete(parent.id);
+      window.location.reload();
+    } catch {
+      showToast("Gagal menghapus orang tua", "error");
+    }
+  }
+
+  async function handleToggleClassActive(cls: Class) {
+    try {
+      const next = !cls.isActive;
+      await api.classes.update(cls.id, { isActive: next });
+      const updated = await api.classes.listByTutor("");
+      setClasses(updated);
+      showToast(next ? "Kelas berhasil diaktifkan" : "Kelas berhasil dinonaktifkan", "success");
+    } catch {
+      showToast("Gagal mengubah status kelas", "error");
+    }
+  }
+
   async function refreshCurriculumData() {
     try {
       const [currics, assSets] = await Promise.all([
@@ -715,7 +869,7 @@ export function useAdminDashboard() {
   const [selectedStudentEnrollments, setSelectedStudentEnrollments] = useState<Enrollment[]>([]);
   const [selectedStudentCertificates, setSelectedStudentCertificates] = useState<Certificate[]>([]);
   const [studentDetailLoading, setStudentDetailLoading] = useState(false);
-  const [studentSegment, setStudentSegment] = useState<"list" | "enrollment" | "parent">("list");
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const [allEnrollments, setAllEnrollments] = useState<Enrollment[]>([]);
   const [allEnrollmentsLoading, setAllEnrollmentsLoading] = useState(false);
@@ -733,7 +887,6 @@ export function useAdminDashboard() {
       setSelectedStudent(profile);
       setSelectedStudentEnrollments(enrollments);
       setSelectedStudentCertificates(certificates);
-      setStudentSegment("enrollment");
     } catch {
       setSelectedStudent(null);
       setSelectedStudentEnrollments([]);
@@ -782,7 +935,7 @@ export function useAdminDashboard() {
   async function fetchAllParents() {
     setAllParentsLoading(true);
     try {
-      const list = await api.parentProfiles.list();
+      const list = await api.parentProfiles.list("?showArchived=true");
       setAllParents(list);
     } catch {
       showToast("Gagal memuat data orang tua", "error");
@@ -834,6 +987,11 @@ export function useAdminDashboard() {
     studentDetailLoading, refreshStudentEnrollments,
     studentsFull,
     studentSegment, setStudentSegment,
+    categories,
+    handleRegisterStudent, handleCreateParent,
+    handleArchiveStudent, handleRestoreStudent, handleDeleteStudent,
+    handleArchiveParent, handleRestoreParent, handleDeleteParent,
+    handleToggleClassActive,
     allEnrollments, allEnrollmentsLoading, fetchAllEnrollments,
     allParents, allParentsLoading, fetchAllParents,
     createSelectedStudentIds, setCreateSelectedStudentIds,

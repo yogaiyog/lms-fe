@@ -9,6 +9,7 @@ type Props = {
   globalFilter: string;
   onGlobalFilterChange: (v: string) => void;
   onRowClick: (cls: Class) => void;
+  onToggleActive?: (cls: Class) => void;
 };
 
 function ScheduleCell({ schedules: raw }: { schedules: Schedule[] | undefined | null }) {
@@ -56,7 +57,7 @@ function ScheduleCell({ schedules: raw }: { schedules: Schedule[] | undefined | 
   );
 }
 
-export default function ClassesTable({ table, globalFilter, onGlobalFilterChange, onRowClick }: Props) {
+export default function ClassesTable({ table, globalFilter, onGlobalFilterChange, onRowClick, onToggleActive }: Props) {
   return (
     <div className="rounded-3xl border border-slate-200 bg-white shadow-sm">
       <div className="px-4 pt-4">
@@ -82,6 +83,7 @@ export default function ClassesTable({ table, globalFilter, onGlobalFilterChange
                     </th>
                   ))}
                   <th className="border-b border-slate-200 px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Progress</th>
+                  <th className="border-b border-slate-200 px-3 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">Aksi</th>
                 </tr>
               ))}
             </thead>
@@ -97,6 +99,19 @@ export default function ClassesTable({ table, globalFilter, onGlobalFilterChange
                   ))}
                   <td className="px-3 py-3">
                     <ScheduleCell schedules={row.original.schedules} />
+                  </td>
+                  <td className="px-3 py-3 text-center" onClick={(e) => e.stopPropagation()}>
+                    {row.original.isActive ? (
+                      <button onClick={() => onToggleActive?.(row.original)}
+                        className="rounded-lg px-2.5 py-1 text-[10px] font-bold text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors">
+                        Nonaktifkan
+                      </button>
+                    ) : (
+                      <button onClick={() => onToggleActive?.(row.original)}
+                        className="rounded-lg px-2.5 py-1 text-[10px] font-bold text-emerald-600 hover:bg-emerald-50 transition-colors">
+                        Aktifkan
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

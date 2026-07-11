@@ -8,7 +8,7 @@ type Props = {
   onTutorSegmentChange: (seg: Props["tutorSegment"]) => void;
   curriculumSegment: "list" | "topics" | "assessments";
   onCurriculumSegmentChange: (seg: Props["curriculumSegment"]) => void;
-  studentSegment: "list" | "enrollment" | "parent";
+  studentSegment: "list" | "enrollment" | "parent" | "add";
   onStudentSegmentChange: (seg: Props["studentSegment"]) => void;
 };
 
@@ -62,13 +62,13 @@ export default function AdminSidebar({
         )}
         {mainMenu === "students" && (
           <div className="flex flex-col gap-1">
-            {(["list", "enrollment", "parent"] as const).map((seg) => (
+            {(["list", "enrollment", "parent", "add"] as const).map((seg) => (
               <button key={seg} onClick={() => onStudentSegmentChange(seg)}
                 className={`rounded-2xl px-4 py-2.5 text-left text-sm font-semibold transition-colors ${
                   studentSegment === seg ? "bg-blue-600 text-white shadow-sm shadow-blue-600/30" : "text-slate-500 hover:bg-blue-50 hover:text-blue-700"
                 }`}
               >
-                {seg === "list" ? "Daftar Siswa" : seg === "enrollment" ? "Enrollment" : "Orang Tua"}
+                {seg === "list" ? "Daftar Siswa" : seg === "enrollment" ? "Enrollment" : seg === "parent" ? "Orang Tua" : "Tambah Siswa"}
               </button>
             ))}
           </div>

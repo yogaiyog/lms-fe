@@ -59,6 +59,8 @@ export type ParentProfile = {
   userId: string;
   fullName: string;
   phone: string;
+  isActive?: boolean;
+  createdAt?: string;
   user?: { id: string; email: string };
   students?: StudentProfile[];
 };
@@ -76,6 +78,9 @@ export type StudentProfile = {
   totalXp: number;
   currentStreak: number;
   lastActive?: string | null;
+  isActive?: boolean;
+  createdAt?: string;
+  school?: string | null;
   enrollments?: Enrollment[];
   user?: { id: string; email: string };
   parent?: { id: string; fullName: string; phone?: string };
@@ -537,6 +542,17 @@ export const api = {
         body: JSON.stringify(payload),
       });
     },
+    async registerParentByAdmin(payload: {
+      email: string;
+      password: string;
+      fullName: string;
+      phone: string;
+    }) {
+      return authenticatedRequest<AuthSession>("/api/v1/auth/register/parent", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    },
     async registerTutor(payload: {
       email: string;
       password: string;
@@ -615,13 +631,18 @@ export const api = {
     },
   },
   parentProfiles: {
-    async list() {
-      return authenticatedRequest<ParentProfile[]>("/api/v1/parent-profiles");
+    async list(query?: string) {
+      return authenticatedRequest<ParentProfile[]>(`/api/v1/parent-profiles${query ?? ""}`);
     },
     async update(id: string, payload: Record<string, unknown>) {
       return authenticatedRequest<ParentProfile>(`/api/v1/parent-profiles/${id}`, {
         method: "PATCH",
         body: JSON.stringify(payload),
+      });
+    },
+    async delete(id: string) {
+      return authenticatedRequest<{ id: string }>(`/api/v1/parent-profiles/${id}`, {
+        method: "DELETE",
       });
     },
   },
@@ -653,10 +674,22 @@ export const api = {
       birthDate: string;
       avatarUrl?: string | null;
       categoryId?: string | null;
+      school?: string | null;
     }) {
       return authenticatedRequest<StudentProfile>("/api/v1/auth/register/student", {
         method: "POST",
         body: JSON.stringify(payload),
+      });
+    },
+    async update(id: string, payload: Record<string, unknown>) {
+      return authenticatedRequest<StudentProfile>(`/api/v1/student-profiles/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+      });
+    },
+    async delete(id: string) {
+      return authenticatedRequest<{ id: string }>(`/api/v1/student-profiles/${id}`, {
+        method: "DELETE",
       });
     },
   },

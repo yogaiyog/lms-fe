@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useAdminDashboard } from "./hooks/useAdminDashboard";
 import AdminNavbar from "./components/AdminNavbar";
 import AdminSidebar from "./components/AdminSidebar";
@@ -13,6 +13,8 @@ import TutorList from "./components/tutor/TutorList";
 import TutorDetailModal from "./components/tutor/TutorDetailModal";
 import AddTutorForm from "./components/tutor/AddTutorForm";
 import StudentList from "./components/student/StudentList";
+import AddStudentForm from "./components/student/AddStudentForm";
+import AllParentsView from "./components/student/AllParentsView";
 import StudentDetailModal from "./components/student/StudentDetailModal";
 import CurriculumList from "./components/kurikulum/CurriculumList";
 import TopicManagement from "./components/kurikulum/TopicManagement";
@@ -58,7 +60,8 @@ export default function AdminDashboard() {
         <main className="min-w-0 flex-1">
           {h.mainMenu === "classes" && h.segment === "classes" && (
             <ClassesTable table={h.classTable} globalFilter={h.classGlobalFilter}
-              onGlobalFilterChange={h.setClassGlobalFilter} onRowClick={h.openClassDetail} />
+              onGlobalFilterChange={h.setClassGlobalFilter} onRowClick={h.openClassDetail}
+              onToggleActive={h.handleToggleClassActive} />
           )}
 
           {h.mainMenu === "classes" && h.segment === "requests" && (
@@ -111,7 +114,20 @@ export default function AdminDashboard() {
               onRefresh={h.refreshCurriculumData} />
           )}
           {h.mainMenu === "students" && h.studentSegment === "list" && (
-            <StudentList students={h.studentsFull} onSelect={h.handleSelectStudent} />
+            <StudentList students={h.studentsFull} onSelect={h.handleSelectStudent}
+              onArchive={h.handleArchiveStudent} onRestore={h.handleRestoreStudent}
+              onDelete={h.handleDeleteStudent} />
+          )}
+
+          {h.mainMenu === "students" && h.studentSegment === "add" && (
+            <AddStudentForm
+              categories={h.categories}
+              parents={h.allParents}
+              registering={h.registering}
+              registerError={h.registerError}
+              onCreateParent={h.handleCreateParent}
+              onSubmit={h.handleRegisterStudent}
+            />
           )}
 
           {h.mainMenu === "students" && h.studentSegment === "enrollment" && (
@@ -140,6 +156,9 @@ export default function AdminDashboard() {
                 });
                 setParentSaveError("");
               }}
+              onArchive={h.handleArchiveParent}
+              onRestore={h.handleRestoreParent}
+              onDelete={h.handleDeleteParent}
             />
           )}
           {h.mainMenu === "attendance" && (
@@ -181,9 +200,12 @@ export default function AdminDashboard() {
           loading={h.studentDetailLoading}
           curriculums={h.curriculums}
           classes={h.classes}
+          parents={h.allParents}
+          categories={h.categories}
           onImpersonate={() => h.handleImpersonate(h.selectedStudent!.userId)}
           onClose={() => { h.setSelectedStudent(null); h.setSelectedStudentEnrollments([]); }}
           onRefreshEnrollments={h.refreshStudentEnrollments}
+          onUpdate={(updated) => h.setSelectedStudent(updated)}
         />
       )}
 
@@ -381,53 +403,4 @@ function AllEnrollmentsView({ enrollments, loading, onRefresh, onSelectStudent }
   );
 }
 
-function AllParentsView({ parents, loading, onRefresh, onEdit }: {
-  parents: import("@/lib/api").ParentProfile[];
-  loading: boolean;
-  onRefresh: () => void;
-  onEdit: (parent: import("@/lib/api").ParentProfile) => void;
-}) {
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-lg font-extrabold text-slate-900">Semua Orang Tua</h2>
-        <button onClick={onRefresh} className="rounded-lg px-3 py-1 text-xs font-semibold text-blue-600 hover:bg-blue-50">
-          Refresh
-        </button>
-      </div>
-      {parents.length === 0 ? (
-        <p className="text-sm text-slate-400 py-4 text-center">Belum ada orang tua terdaftar</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr>
-                <th className="border-b border-slate-200 px-3 py-2.5 text-left text-xs font-semibold uppercase text-slate-500">Nama</th>
-                <th className="border-b border-slate-200 px-3 py-2.5 text-left text-xs font-semibold uppercase text-slate-500">Email</th>
-                <th className="border-b border-slate-200 px-3 py-2.5 text-left text-xs font-semibold uppercase text-slate-500">Telepon</th>
-              </tr>
-            </thead>
-            <tbody>
-              {parents.map((p) => (
-                <tr key={p.id} onClick={() => onEdit(p)}
-                  className="border-b border-slate-100 last:border-0 cursor-pointer hover:bg-blue-50">
-                  <td className="px-3 py-2.5 font-semibold text-slate-900">{p.fullName}</td>
-                  <td className="px-3 py-2.5 text-slate-600">{p.user?.email ?? "—"}</td>
-                  <td className="px-3 py-2.5 text-slate-600">{p.phone}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
-}
+// AllParentsView moved to ./components/student/AllParentsView.tsx

@@ -22,6 +22,7 @@ type Theme = {
 type ClassWithSchedules = {
   id: string;
   name: string;
+  type?: string;
   isOnline?: boolean;
   schedules: Schedule[];
   enrollments?: { id: string; studentId: string }[];
@@ -221,9 +222,9 @@ export default function TutorHomeSegment({
                             )}
                           </div>
                         )}
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 animate-pulse">
+                        {/* <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 animate-pulse">
                           Berlangsung
-                        </span>
+                        </span> */}
                         <div className="flex items-center gap-1.5">
                           {attendanceFilledIds?.has(schedule.id) ? (
                             <button onClick={() => onOpenScheduleDetail(schedule)}
@@ -339,20 +340,24 @@ export default function TutorHomeSegment({
               </div>
             )}
             <div className="space-y-3">
-              {attendanceForm.map((item) => (
+              {attendanceForm.map((item) => {
+                const cls = classes.find((c) => c.schedules.some((s) => s.id === item.scheduleId));
+                const isPrivate = cls?.type === "PRIVATE";
+                return (
                 <div key={item.studentId} className={`flex items-center justify-between rounded-xl px-4 py-3 ${theme.dark ? "bg-slate-800" : "bg-slate-50"}`}>
                   <span className={`text-sm font-semibold ${theme.text}`}>{getStudentName(item.studentId, students)}</span>
                   <select value={item.status} onChange={(e) => onSetAttendanceStatus(item.studentId, e.target.value)}
                     className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold outline-none transition focus:border-blue-400">
                     <option value="PRESENT">Hadir</option>
                     <option value="LATE">Terlambat</option>
-                    <option value="ABSENT">Tidak Hadir</option>
-                    <option value="SICK">Sakit</option>
-                    <option value="PERMISSION">Izin</option>
+                    {!isPrivate && <option value="ABSENT">Tidak Hadir</option>}
+                    {!isPrivate && <option value="SICK">Sakit</option>}
+                    {!isPrivate && <option value="PERMISSION">Izin</option>}
                     <option value="RESCHEDULE">Reschedule</option>
                   </select>
                 </div>
-              ))}
+                );
+              })}
             </div>
             <button onClick={onSubmitAttendance} disabled={submittingAttendance}
               className="mt-4 w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 disabled:opacity-50 transition-colors">

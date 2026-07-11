@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Rocket, LogIn, UserPlus } from "lucide-react";
 
-const LOGO_EXTS = ["png", "jpeg", "jpg", "webp", "svg"];
+const LOGO_EXTS = ["jpeg", "png", "jpg", "webp", "svg"];
 
 export default function HomeContent() {
   const [logoSrc, setLogoSrc] = useState<string | null>(null);

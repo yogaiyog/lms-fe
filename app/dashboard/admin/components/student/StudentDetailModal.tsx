@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { X, User, Mail, GraduationCap, BookOpen, Calendar, Zap, ArrowRight, Plus, Pencil, Loader2, FileText, FileCheck } from "lucide-react";
-import { api, type StudentProfile, type Enrollment, type Curriculum, type Class, type Certificate } from "@/lib/api";
+import { useEffect, useState, useRef, useMemo, type FormEvent } from "react";
+import { X, User, Mail, GraduationCap, BookOpen, Calendar, ArrowRight, Plus, Pencil, Loader2, FileText, FileCheck, Save } from "lucide-react";
+import { api, checkEmail, type StudentProfile, type Enrollment, type Curriculum, type Class, type Certificate, type ParentProfile, type Category } from "@/lib/api";
 import CertificatePreviewModal from "../../../shared/CertificatePreviewModal";
 
 type Props = {
@@ -12,14 +12,17 @@ type Props = {
   loading: boolean;
   curriculums: Curriculum[];
   classes: Class[];
+  parents: ParentProfile[];
+  categories: Category[];
   onImpersonate: (studentId: string) => void;
   onClose: () => void;
   onRefreshEnrollments: () => void;
+  onUpdate: (updated: StudentProfile) => void;
 };
 
 export default function StudentDetailModal({
-  student, enrollments, certificates, loading, curriculums, classes,
-  onImpersonate, onClose, onRefreshEnrollments,
+  student, enrollments, certificates, loading, curriculums, classes, parents, categories,
+  onImpersonate, onClose, onRefreshEnrollments, onUpdate,
 }: Props) {
   const [showForm, setShowForm] = useState(false);
   const [editingEnrollment, setEditingEnrollment] = useState<Enrollment | null>(null);
@@ -29,6 +32,18 @@ export default function StudentDetailModal({
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [previewEnrollment, setPreviewEnrollment] = useState<Enrollment | null>(null);
   const [localCertificates, setLocalCertificates] = useState<Certificate[]>(certificates);
+
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editBirthDate, setEditBirthDate] = useState("");
+  const [editParentId, setEditParentId] = useState("");
+  const [editCategoryId, setEditCategoryId] = useState("");
+  const [editSchool, setEditSchool] = useState("");
+  const [editSaving, setEditSaving] = useState(false);
+  const [editError, setEditError] = useState("");
+  const [emailStatus, setEmailStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
+  const emailTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -46,6 +61,11 @@ export default function StudentDetailModal({
 
   const isCertificateSent = (enr: Enrollment) =>
     localCertificates.some((cert) => cert.studentId === enr.studentId && cert.curriculumId === enr.curriculumId);
+
+  const filteredClasses = useMemo(
+    () => classes.filter((c) => c.isActive !== false && (!formCurriculumId || c.curriculumId === formCurriculumId)),
+    [classes, formCurriculumId],
+  );
 
   function openAddForm() {
     setEditingEnrollment(null);
@@ -71,7 +91,72 @@ export default function StudentDetailModal({
     setFormTotalMeetPurchased("");
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  function startEditing() {
+    setEditName(student.fullName);
+    setEditEmail(student.user?.email ?? "");
+    setEditBirthDate(student.birthDate?.split("T")[0] ?? "");
+    setEditParentId(student.parentId);
+    setEditCategoryId(student.categoryId ?? "");
+    setEditSchool(student.school ?? "");
+    setEmailStatus("idle");
+    setEditError("");
+    setEditing(true);
+  }
+
+  function cancelEditing() {
+    setEditing(false);
+    setEditError("");
+  }
+
+  function handleEmailChange(val: string) {
+    setEditEmail(val);
+    if (emailTimer.current) clearTimeout(emailTimer.current);
+    if (!val) { setEmailStatus("idle"); return; }
+    if (val === student.user?.email) { setEmailStatus("available"); return; }
+    setEmailStatus("checking");
+    emailTimer.current = setTimeout(async () => {
+      const available = await checkEmail(val);
+      setEmailStatus(available ? "available" : "taken");
+    }, 500);
+  }
+
+  async function handleSaveEdit(e: FormEvent) {
+    e.preventDefault();
+    setEditSaving(true);
+    setEditError("");
+    try {
+      const promises: Promise<unknown>[] = [];
+
+      if (editEmail !== student.user?.email) {
+        promises.push(api.users.update(student.userId, { email: editEmail }));
+      }
+
+      const profileUpdates: Record<string, unknown> = {};
+      if (editName !== student.fullName) profileUpdates.fullName = editName;
+      if (editBirthDate && editBirthDate !== student.birthDate?.split("T")[0]) {
+        profileUpdates.birthDate = new Date(editBirthDate).toISOString();
+      }
+      if (editParentId !== student.parentId) profileUpdates.parentId = editParentId;
+      if (editCategoryId !== (student.categoryId ?? "")) profileUpdates.categoryId = editCategoryId || null;
+      if (editSchool !== (student.school ?? "")) profileUpdates.school = editSchool || null;
+
+      if (Object.keys(profileUpdates).length > 0) {
+        promises.push(api.studentProfiles.update(student.id, profileUpdates));
+      }
+
+      await Promise.all(promises);
+
+      const updated = await api.studentProfiles.get(student.id);
+      onUpdate(updated);
+      setEditing(false);
+    } catch (err) {
+      setEditError(err instanceof Error ? err.message : "Gagal menyimpan");
+    } finally {
+      setEditSaving(false);
+    }
+  }
+
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (formSubmitting || meetError) return;
 
@@ -105,67 +190,151 @@ export default function StudentDetailModal({
     }
   }
 
-  const filteredClasses = classes.filter(
-    (c) => !formCurriculumId || c.curriculumId === formCurriculumId
-  );
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-3xl rounded-3xl border border-slate-200 bg-white shadow-xl">
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+      <div className="w-full max-w-3xl rounded-3xl border border-slate-200 bg-white shadow-xl max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 shrink-0">
           <h2 className="text-lg font-extrabold tracking-tight text-slate-900">Detail Siswa</h2>
-          <button onClick={onClose} className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
-            <X size={20} />
-          </button>
+          <div className="flex items-center gap-2">
+            {!editing && (
+              <button onClick={startEditing}
+                className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-bold text-blue-600 hover:bg-blue-50 transition-colors">
+                <Pencil size={13} />
+                Edit
+              </button>
+            )}
+            <button onClick={onClose} className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+              <X size={20} />
+            </button>
+          </div>
         </div>
 
-        {/* Body */}
-        <div className="space-y-5 px-6 py-5">
-          {/* Student Info Card */}
-          <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-50">
-              <User size={24} className="text-blue-600" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-lg font-bold text-slate-900">{student.fullName}</p>
-              <p className="text-sm text-slate-500">@{student.nickname}</p>
-              <div className="mt-2 flex flex-wrap gap-3">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700">
-                  <GraduationCap size={12} />
-                  {student.category?.label ?? "-"}
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">
-                  <Zap size={12} />
-                  XP {student.totalXp}
-                </span>
-              </div>
-            </div>
-          </div>
+        <div className="space-y-5 px-6 py-5 overflow-y-auto flex-1">
+          {editing ? (
+            <form onSubmit={handleSaveEdit} className="space-y-4">
+              <div className="rounded-2xl bg-blue-50 border border-blue-200 p-4 space-y-4">
+                <h3 className="text-sm font-bold text-slate-700">Edit Data Siswa</h3>
 
-          {/* Detail Fields */}
-          <div className="space-y-3 rounded-2xl bg-slate-50 p-4">
-            {student.user?.email && (
-              <div className="flex items-center gap-2 text-sm text-slate-600">
-                <Mail size={14} className="shrink-0 text-slate-400" />
-                <span className="truncate">{student.user.email}</span>
-              </div>
-            )}
-            {student.parent && (
-              <div className="flex items-center gap-2 text-sm text-slate-600">
-                <User size={14} className="shrink-0 text-slate-400" />
-                <span>Orang Tua: {student.parent.fullName}</span>
-              </div>
-            )}
-            {student.birthDate && (
-              <div className="flex items-center gap-2 text-sm text-slate-600">
-                <Calendar size={14} className="shrink-0 text-slate-400" />
-                <span>Lahir: {new Date(student.birthDate).toLocaleDateString("id-ID")}</span>
-              </div>
-            )}
-          </div>
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-slate-600">Nama Lengkap</label>
+                  <input value={editName} onChange={(e) => setEditName(e.target.value)} required
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                </div>
 
-          {/* Enrollments */}
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-slate-600">Email</label>
+                  <input type="email" value={editEmail}
+                    onChange={(e) => handleEmailChange(e.target.value)} required
+                    className={`w-full rounded-xl border bg-white px-3 py-2.5 text-sm outline-none focus:ring-2 ${
+                      emailStatus === "taken" ? "border-red-400 focus:border-red-400 focus:ring-red-100" :
+                      emailStatus === "available" && editEmail !== student.user?.email ? "border-green-400 focus:border-green-400 focus:ring-green-100" :
+                      "border-slate-200 focus:border-blue-400 focus:ring-blue-100"
+                    }`} />
+                  {emailStatus === "checking" && <p className="mt-1 text-xs text-slate-400">Memeriksa email...</p>}
+                  {emailStatus === "available" && editEmail !== student.user?.email && <p className="mt-1 text-xs text-green-600">Email tersedia</p>}
+                  {emailStatus === "taken" && <p className="mt-1 text-xs text-red-600">Email sudah digunakan</p>}
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-slate-600">Tanggal Lahir</label>
+                  <input type="date" value={editBirthDate} onChange={(e) => setEditBirthDate(e.target.value)} required
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-slate-600">Orang Tua</label>
+                  <select value={editParentId} onChange={(e) => setEditParentId(e.target.value)} required
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                    <option value="">-- Pilih Orang Tua --</option>
+                    {parents.map((p) => (
+                      <option key={p.id} value={p.id}>{p.fullName} ({p.user?.email ?? "—"})</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-slate-600">Kategori</label>
+                  <select value={editCategoryId} onChange={(e) => setEditCategoryId(e.target.value)} required
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                    <option value="">-- Pilih Kategori --</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>{cat.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-slate-600">Sekolah (opsional)</label>
+                  <input value={editSchool} onChange={(e) => setEditSchool(e.target.value)}
+                    placeholder="Nama sekolah"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                </div>
+
+                {editError && (
+                  <div className="rounded-xl bg-red-50 p-2.5 text-xs font-semibold text-red-700">{editError}</div>
+                )}
+
+                <div className="flex items-center justify-end gap-2 pt-1">
+                  <button type="button" onClick={cancelEditing}
+                    className="rounded-xl px-3 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-200/60 transition">
+                    Batal
+                  </button>
+                  <button type="submit" disabled={editSaving || emailStatus === "taken" || emailStatus === "checking"}
+                    className="inline-flex items-center gap-1 rounded-xl bg-blue-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50 transition">
+                    {editSaving && <Loader2 size={13} className="animate-spin" />}
+                    <Save size={13} />
+                    Simpan
+                  </button>
+                </div>
+              </div>
+            </form>
+          ) : (
+            <>
+              <div className="flex items-start gap-4">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-50">
+                  <User size={24} className="text-blue-600" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-lg font-bold text-slate-900">{student.fullName}</p>
+                  <p className="text-sm text-slate-500">@{student.nickname}</p>
+                  <div className="mt-2 flex flex-wrap gap-3">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700">
+                      <GraduationCap size={12} />
+                      {student.category?.label ?? "-"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3 rounded-2xl bg-slate-50 p-4">
+                {student.user?.email && (
+                  <div className="flex items-center gap-2 text-sm text-slate-600">
+                    <Mail size={14} className="shrink-0 text-slate-400" />
+                    <span className="truncate">{student.user.email}</span>
+                  </div>
+                )}
+                {student.parent && (
+                  <div className="flex items-center gap-2 text-sm text-slate-600">
+                    <User size={14} className="shrink-0 text-slate-400" />
+                    <span>Orang Tua: {student.parent.fullName}</span>
+                  </div>
+                )}
+                {student.birthDate && (
+                  <div className="flex items-center gap-2 text-sm text-slate-600">
+                    <Calendar size={14} className="shrink-0 text-slate-400" />
+                    <span>Lahir: {new Date(student.birthDate).toLocaleDateString("id-ID")}</span>
+                  </div>
+                )}
+                {student.school && (
+                  <div className="flex items-center gap-2 text-sm text-slate-600">
+                    <GraduationCap size={14} className="shrink-0 text-slate-400" />
+                    <span>Sekolah: {student.school}</span>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
           <div>
             <div className="mb-2 flex items-center justify-between">
               <h3 className="flex items-center gap-1.5 text-sm font-bold text-slate-700">
@@ -249,9 +418,7 @@ export default function StudentDetailModal({
                           {enr.curriculum?.name ?? "—"}
                         </p>
                         <p className="text-xs text-slate-500">
-                          {enr.class
-                            ? `Kelas: ${enr.class.name}`
-                            : "Belum ditempatkan di kelas"}
+                          {enr.class ? `Kelas: ${enr.class.name}` : "Belum ditempatkan di kelas"}
                         </p>
                       </div>
                       <div className="ml-3 flex shrink-0 items-center gap-3">
@@ -260,36 +427,30 @@ export default function StudentDetailModal({
                             {enr.meetUsages?.length ?? 0} / {enr.totalMeetPurchased} sesi digunakan
                           </p>
                           {enr.verified ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700">
-                              Terverifikasi
-                            </span>
+                            <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700">Terverifikasi</span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
-                              Menunggu Verifikasi
-                            </span>
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">Menunggu Verifikasi</span>
                           )}
                           {(() => {
                             const c = curriculums.find((c) => c.id === enr.curriculumId);
                             return c?.topics.length ? (
                               enr.totalMeetPurchased != c.topics.length ? (
-                              <p className="text-[11px] text-slate-400">
-                                {enr.totalMeetPurchased} / {c.topics.length} pertemuan dibayar
-                              </p>) : (<p className="text-[11px] text-green-400">
-                                Lunas
-                              </p>)
+                              <p className="text-[11px] text-slate-400">{enr.totalMeetPurchased} / {c.topics.length} pertemuan dibayar</p>
+                              ) : (<p className="text-[11px] text-green-400">Lunas</p>)
                             ) : null;
                           })()}
                         </div>
-                        {!isCertificateSent(enr)? (
-                        <button onClick={() => setPreviewEnrollment(enr)}
-                          className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-green-600">
-                          <FileText size={14} />
-                        </button>
-                        ):  <button onClick={() => setPreviewEnrollment(enr)}
-                          className="rounded-lg p-1.5 text-green-400 transition bg-green-100 hover:bg-slate-100 hover:text-slate-600">
-                          <FileCheck size={14} />
-                        </button>}
-                   
+                        {!isCertificateSent(enr) ? (
+                          <button onClick={() => setPreviewEnrollment(enr)}
+                            className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-green-600">
+                            <FileText size={14} />
+                          </button>
+                        ) : (
+                          <button onClick={() => setPreviewEnrollment(enr)}
+                            className="rounded-lg p-1.5 text-green-400 transition bg-green-100 hover:bg-slate-100 hover:text-slate-600">
+                            <FileCheck size={14} />
+                          </button>
+                        )}
                         <button onClick={() => openEditForm(enr)}
                           className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-blue-600">
                           <Pencil size={14} />
@@ -303,8 +464,7 @@ export default function StudentDetailModal({
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4">
+        <div className="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4 shrink-0">
           <button onClick={onClose}
             className="rounded-xl px-4 py-2 text-sm font-bold text-slate-600 transition hover:bg-slate-100">
             Tutup
@@ -315,6 +475,7 @@ export default function StudentDetailModal({
             Impersonate
           </button>
         </div>
+      </div>
       <CertificatePreviewModal
         open={!!previewEnrollment}
         enrollment={previewEnrollment}
@@ -329,7 +490,6 @@ export default function StudentDetailModal({
         }}
         onClose={() => setPreviewEnrollment(null)}
       />
-      </div>
     </div>
   );
 }

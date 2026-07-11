@@ -16,7 +16,7 @@ type Props = {
   navItems?: NavItem[];
 };
 
-const LOGO_EXTS = ["png", "jpeg", "jpg", "webp", "svg"];
+const LOGO_EXTS = ["jpeg", "png", "jpg", "webp", "svg"];
 
 export default function Sidebar({ theme, segment, onNavigate, user, title, navItems }: Props) {
   const items = navItems ?? NAV_ITEMS;

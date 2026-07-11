@@ -6,7 +6,7 @@ import { api, saveSession } from "@/lib/api";
 import Link from "next/link";
 import { LogIn } from "lucide-react";
 
-const LOGO_EXTS = ["png", "jpeg", "jpg", "webp", "svg"];
+const LOGO_EXTS = ["jpeg", "png", "jpg", "webp", "svg"];
 
 export default function LoginContent() {
   const router = useRouter();

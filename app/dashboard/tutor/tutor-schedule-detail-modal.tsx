@@ -149,6 +149,7 @@ export default function TutorScheduleDetailModal({
                             <option value="ABSENT">Tidak Hadir</option>
                             <option value="SICK">Sakit</option>
                             <option value="PERMISSION">Izin</option>
+                            <option value="RESCHEDULE">Reschedule</option>
                           </select>
                           {statusSaving === att.id && <Loader2 size={12} className="animate-spin text-slate-400" />}
                         </div>
@@ -159,12 +160,14 @@ export default function TutorScheduleDetailModal({
                             att.status === "LATE" ? "bg-amber-100 text-amber-700 hover:bg-amber-200" :
                             att.status === "ABSENT" ? "bg-red-100 text-red-700 hover:bg-red-200" :
                             att.status === "SICK" ? "bg-blue-100 text-blue-700 hover:bg-blue-200" :
+                            att.status === "RESCHEDULE" ? "bg-orange-100 text-orange-700 hover:bg-orange-200" :
                             "bg-slate-100 text-slate-700 hover:bg-slate-200"
                           }`}>
                           <Check size={11} />
                           {att.status === "PRESENT" ? "Hadir" :
                            att.status === "LATE" ? "Terlambat" :
                            att.status === "ABSENT" ? "Tidak Hadir" :
+                           att.status === "RESCHEDULE" ? "Reschedule" :
                            att.status === "SICK" ? "Sakit" : "Izin"}
                         </button>
                       )}

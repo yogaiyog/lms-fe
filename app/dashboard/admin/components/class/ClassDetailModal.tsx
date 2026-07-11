@@ -268,7 +268,7 @@ export default function ClassDetailModal({
                   className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                 >
                   <option value="">-- Pilih siswa --</option>
-                  {detailStudents.map((s) => (
+                  {detailStudents.filter((s) => s.isActive !== false).map((s) => (
                     <option key={s.id} value={s.id}>{s.fullName} ({s.user?.email ?? "-"})</option>
                   ))}
                 </select>
