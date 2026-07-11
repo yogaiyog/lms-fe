@@ -1,6 +1,6 @@
 "use client";
 
-import { User, Star, Zap, CheckCircle } from "lucide-react";
+import { User, CheckCircle } from "lucide-react";
 import type { Theme } from "./types";
 import { Card } from "./components";
 
@@ -8,7 +8,7 @@ export default function StudentProfileCard({
   theme, student, totalPresent,
 }: {
   theme: Theme;
-  student: { nickname?: string; fullName: string; totalXp: number; currentStreak?: number | null };
+  student: { nickname?: string; fullName: string };
   totalPresent: number;
 }) {
   return (
@@ -23,23 +23,15 @@ export default function StudentProfileCard({
             <p className={`text-sm ${theme.textMuted}`}>{student.fullName}</p>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-3">
-          <div className={`p-3 text-center rounded-xl ${theme.dark ? "bg-slate-800" : "bg-slate-50"}`}>
-            <div className="flex justify-center mb-1"><Star size={18} className="text-amber-500" /></div>
-            <p className={`text-lg font-extrabold ${theme.text}`}>{student.totalXp}</p>
-            <p className={`text-[10px] font-semibold ${theme.textMuted}`}>Total XP</p>
-          </div>
-          <div className={`p-3 text-center rounded-xl ${theme.dark ? "bg-slate-800" : "bg-slate-50"}`}>
-            <div className="flex justify-center mb-1"><Zap size={18} className="text-emerald-500" /></div>
-            <p className={`text-lg font-extrabold ${theme.text}`}>{student.currentStreak ?? 0}</p>
-            <p className={`text-[10px] font-semibold ${theme.textMuted}`}>Streak</p>
-          </div>
-          <div className={`p-3 text-center rounded-xl ${theme.dark ? "bg-slate-800" : "bg-slate-50"}`}>
-            <div className="flex justify-center mb-1"><CheckCircle size={18} className="text-blue-500" /></div>
-            <p className={`text-lg font-extrabold ${theme.text}`}>{totalPresent}</p>
-            <p className={`text-[10px] font-semibold ${theme.textMuted}`}>Hadir</p>
-          </div>
-        </div>
+        {/* <div className="flex justify-center"> */}
+          {/* <div className={`inline-flex items-center gap-3 px-5 py-3 rounded-xl ${theme.dark ? "bg-slate-800" : "bg-slate-50"}`}>
+            <CheckCircle size={20} className="text-blue-500" />
+            <div>
+              <p className={`text-lg font-extrabold ${theme.text}`}>{totalPresent}</p>
+              <p className={`text-[10px] font-semibold ${theme.textMuted}`}>Hadir</p>
+            </div>
+          </div> */}
+        {/* </div> */}
       </div>
     </Card>
   );

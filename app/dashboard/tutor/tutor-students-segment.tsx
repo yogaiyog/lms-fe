@@ -288,7 +288,6 @@ export default function TutorStudentsSegment({
                 <AttendanceList attendances={attendances} theme={theme} onSave={handleAttendanceSave} />
               )}
 
-              <BadgeList theme={theme} badges={badges} />
 
               {assessments.length > 0 && (
                 <AssessmentList assessments={assessments} theme={theme} onSave={handleAssessmentSave} studentId={selectedStudent.id} />
