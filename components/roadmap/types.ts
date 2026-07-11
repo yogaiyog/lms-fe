@@ -4,7 +4,8 @@ export interface RoadmapItem {
   id: string;
   title: string;
   description?: string;
-  icon: ReactNode;
+  icon?: ReactNode;
+  imageUrl?: string | null;
   /** Any valid CSS color (hex, rgb, hsl...) used for the border, icon and glow */
   color: string;
   completed: boolean;

@@ -23,7 +23,7 @@ export default function AdminNavbar({ mainMenu, onChange, email, onLogout }: Pro
   return (
     <nav className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-slate-200 bg-white/90 backdrop-blur px-6 py-3">
       <div className="flex items-center gap-8">
-        <span className="text-lg font-extrabold tracking-tight text-slate-900">JTCourse Admin</span>
+        <span className="text-lg font-extrabold tracking-tight text-slate-900">{process.env.NEXT_PUBLIC_COMPANY_NAME || "JTCourse"} Admin</span>
         <div className="flex gap-1">
           {items.map((item) => (
             <button key={item.key} onClick={() => onChange(item.key)}

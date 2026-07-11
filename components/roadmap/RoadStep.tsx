@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { RoadmapAvatar } from './RoadmapAvatar';
 import type { RoadmapItem } from './types';
 import { CheckIcon, LockIcon } from './icons';
 
@@ -14,7 +15,7 @@ interface RoadStepProps {
 }
 
 export function RoadStep({ item, index, xPercent, y, animated, onSelect }: RoadStepProps) {
-  const { title, description, icon, color, completed, locked, current, lessons, duration } = item;
+  const { title, description, icon, imageUrl, color, completed, locked, current, lessons, duration } = item;
 
   const badgeColor = locked ? '#94a3b8' : color;
   const sizeClasses = current ? 'h-28 w-28 md:h-32 md:w-32' : 'h-24 w-24 md:h-28 md:w-28';
@@ -68,7 +69,17 @@ export function RoadStep({ item, index, xPercent, y, animated, onSelect }: RoadS
             whileHover={!locked ? { rotate: 10 } : undefined}
             transition={{ type: 'spring', stiffness: 300, damping: 12 }}
           >
-            {locked ? <LockIcon className="h-7 w-7 md:h-8 md:w-8" /> : icon}
+            {locked ? (
+              <LockIcon className="h-7 w-7 md:h-8 md:w-8" />
+            ) : (
+              <RoadmapAvatar
+                label={title}
+                imageUrl={imageUrl}
+                icon={icon}
+                fallbackSeed={item.id}
+                className="flex h-12 w-12 items-center justify-center rounded-full md:h-14 md:w-14"
+              />
+            )}
           </motion.span>
 
           {completed && (
@@ -82,20 +93,20 @@ export function RoadStep({ item, index, xPercent, y, animated, onSelect }: RoadS
         </motion.button>
       </div>
 
-      <div className="mt-3 text-center">
-        <p className={['text-sm font-semibold leading-tight', locked ? 'text-slate-400' : 'text-slate-800'].join(' ')}>
+      <div className="mt-3 rounded-2xl border border-white/70 bg-white/85 px-3 py-2 text-center shadow-sm backdrop-blur-sm">
+        <p className={['text-sm font-extrabold leading-tight tracking-tight', locked ? 'text-slate-500' : 'text-slate-900'].join(' ')}>
           {title}
         </p>
 
         {description && (
-          <p className={['mt-0.5 line-clamp-2 text-xs leading-snug', locked ? 'text-slate-300' : 'text-slate-500'].join(' ')}>
+          <p className={['mt-1 line-clamp-2 text-xs font-medium leading-snug', locked ? 'text-slate-400' : 'text-slate-600'].join(' ')}>
             {description}
           </p>
         )}
 
         {(lessons !== undefined || duration) && (
           <div
-            className={['mt-1 flex items-center justify-center gap-1.5 text-[11px] font-medium', locked ? 'text-slate-300' : 'text-slate-400'].join(
+            className={['mt-1 flex items-center justify-center gap-1.5 text-[11px] font-semibold', locked ? 'text-slate-300' : 'text-slate-500'].join(
               ' ',
             )}
           >

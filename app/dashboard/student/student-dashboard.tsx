@@ -172,26 +172,34 @@ export default function StudentDashboard() {
   );
 
   const topicColors = ["#22c55e", "#6366f1", "#0ea5e9", "#f59e0b", "#ec4899", "#8b5cf6", "#14b8a6", "#f97316"];
-  const topicIcons = [<span>🌱</span>, <span>🧩</span>, <span>⚡</span>, <span>⚛️</span>, <span>🎛️</span>, <span>🏆</span>, <span>💡</span>, <span>📚</span>];
 
-  let foundCurrent = false;
-  const roadmapItems: RoadmapItem[] = [...(selectedClass?.curriculum?.topics ?? [])]
-    .sort((a, b) => a.order - b.order)
-    .map((topic, index, arr) => {
-      const topicSchedules = filteredSchedules.filter((s) => s.topicId === topic.id);
-      const completed = topicSchedules.length > 0 && topicSchedules.every((s) => s.isDone);
-      const prevCompleted = index === 0 ? true : (() => {
-        const prev = arr[index - 1];
-        return filteredSchedules.filter((s) => s.topicId === prev.id).every((s) => s.isDone);
-      })();
-      const locked = !prevCompleted && index > 0;
-      const current = !foundCurrent && !completed && !locked;
-      if (current) foundCurrent = true;
-      return {
+  const sortedTopics = [...(selectedClass?.curriculum?.topics ?? [])].sort((a, b) => a.order - b.order);
+  const firstIncompleteIndex = sortedTopics.findIndex((topic) => {
+    const topicSchedules = filteredSchedules.filter((s) => s.topicId === topic.id);
+    const completed = topicSchedules.length > 0 && topicSchedules.every((s) => s.isDone);
+    const prevCompleted = (() => {
+      const idx = sortedTopics.indexOf(topic);
+      if (idx === 0) return true;
+      const prev = sortedTopics[idx - 1];
+      return filteredSchedules.filter((s) => s.topicId === prev.id).every((s) => s.isDone);
+    })();
+    return !completed && prevCompleted;
+  });
+
+  const roadmapItems: RoadmapItem[] = sortedTopics.map((topic, index) => {
+    const topicSchedules = filteredSchedules.filter((s) => s.topicId === topic.id);
+    const completed = topicSchedules.length > 0 && topicSchedules.every((s) => s.isDone);
+    const prevCompleted = index === 0 ? true : (() => {
+      const prev = sortedTopics[index - 1];
+      return filteredSchedules.filter((s) => s.topicId === prev.id).every((s) => s.isDone);
+    })();
+    const locked = !prevCompleted && index > 0;
+    const current = index === firstIncompleteIndex;
+    return {
         id: topic.id,
         title: topic.title,
         description: topic.goals ?? undefined,
-        icon: topicIcons[index % topicIcons.length],
+        imageUrl: topic.imageUrl ?? null,
         color: topicColors[index % topicColors.length],
         completed,
         locked,

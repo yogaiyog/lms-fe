@@ -84,7 +84,7 @@ export default function EnrollmentTab({ theme, classes, enrollments, schedules, 
                         <h3 className={`text-lg font-extrabold ${theme.text}`}>{cls.name}</h3>
                         <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                           <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-semibold text-blue-700">
-                            {CATEGORY_LABELS[cls.category] ?? cls.category}
+                            {cls.category?.label ?? "-"}
                           </span>
                           <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-[10px] font-semibold text-purple-700">
                             {TYPE_LABELS[cls.type] ?? cls.type}
@@ -272,7 +272,7 @@ function ClassDetailModal({
             <h2 className={`text-xl font-extrabold ${theme.text}`}>{cls.name}</h2>
             <div className="flex items-center gap-1.5 mt-1 flex-wrap">
               <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-semibold text-blue-700">
-                {CATEGORY_LABELS[cls.category] ?? cls.category}
+                {cls.category?.label ?? "-"}
               </span>
               <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-[10px] font-semibold text-purple-700">
                 {TYPE_LABELS[cls.type] ?? cls.type}

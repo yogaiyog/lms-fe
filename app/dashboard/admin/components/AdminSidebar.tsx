@@ -8,12 +8,15 @@ type Props = {
   onTutorSegmentChange: (seg: Props["tutorSegment"]) => void;
   curriculumSegment: "list" | "topics" | "assessments";
   onCurriculumSegmentChange: (seg: Props["curriculumSegment"]) => void;
+  studentSegment: "list" | "enrollment" | "parent";
+  onStudentSegmentChange: (seg: Props["studentSegment"]) => void;
 };
 
 export default function AdminSidebar({
   mainMenu, segment, onSegmentChange,
   tutorSegment, onTutorSegmentChange,
   curriculumSegment, onCurriculumSegmentChange,
+  studentSegment, onStudentSegmentChange,
 }: Props) {
   return (
     <aside className="w-56 shrink-0">
@@ -58,8 +61,16 @@ export default function AdminSidebar({
           </div>
         )}
         {mainMenu === "students" && (
-          <div className="rounded-2xl bg-slate-50 p-3">
-            <div className="text-sm font-semibold text-slate-400">Daftar Student</div>
+          <div className="flex flex-col gap-1">
+            {(["list", "enrollment", "parent"] as const).map((seg) => (
+              <button key={seg} onClick={() => onStudentSegmentChange(seg)}
+                className={`rounded-2xl px-4 py-2.5 text-left text-sm font-semibold transition-colors ${
+                  studentSegment === seg ? "bg-blue-600 text-white shadow-sm shadow-blue-600/30" : "text-slate-500 hover:bg-blue-50 hover:text-blue-700"
+                }`}
+              >
+                {seg === "list" ? "Daftar Siswa" : seg === "enrollment" ? "Enrollment" : "Orang Tua"}
+              </button>
+            ))}
           </div>
         )}
         {mainMenu === "attendance" && (

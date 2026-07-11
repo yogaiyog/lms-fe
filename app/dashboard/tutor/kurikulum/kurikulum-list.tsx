@@ -105,7 +105,7 @@ export default function KurikulumList() {
                       <div>
                         <h3 className="text-lg font-extrabold text-slate-900">{cls.name}</h3>
                         <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
-                          {CATEGORY_LABELS[cls.category] ?? cls.category}
+                          {cls.category?.label ?? "-"}
                         </span>
                       </div>
                     </div>

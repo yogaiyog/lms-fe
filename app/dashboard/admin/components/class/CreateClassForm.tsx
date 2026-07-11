@@ -5,8 +5,14 @@ import { type Curriculum, type TutorSlot } from "@/lib/api";
 import { X } from "lucide-react";
 
 type Props = {
-  createType: "BATCH" | "PRIVATE" | "MAKEUP" | "OFFLINE";
-  onCreateTypeChange: (v: "BATCH" | "PRIVATE" | "MAKEUP" | "OFFLINE") => void;
+  createType: "BATCH" | "PRIVATE" | "MAKEUP" | "TRIAL";
+  onCreateTypeChange: (v: "BATCH" | "PRIVATE" | "MAKEUP" | "TRIAL") => void;
+  createIsOnline: boolean;
+  onCreateIsOnlineChange: (v: boolean) => void;
+  createLocation: string;
+  onCreateLocationChange: (v: string) => void;
+  createName: string;
+  onCreateNameChange: (v: string) => void;
   createCategory: string;
   onCreateCategoryChange: (v: string) => void;
   createCurriculumId: string;
@@ -40,6 +46,9 @@ type Props = {
 
 export default function CreateClassForm({
   createType, onCreateTypeChange,
+  createIsOnline, onCreateIsOnlineChange,
+  createLocation, onCreateLocationChange,
+  createName, onCreateNameChange,
   createCategory, onCreateCategoryChange,
   createCurriculumId, onCreateCurriculumIdChange,
   createTutorIds, onCreateTutorIdsChange,
@@ -69,15 +78,21 @@ export default function CreateClassForm({
           <select value={createCategory} onChange={(e) => { onCreateCategoryChange(e.target.value); onCreateCurriculumIdChange(""); }}
             className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
           >
-            <option value="JUNIOR_I">Kelas 1-3 SD (Junior I)</option>
-            <option value="JUNIOR_II">Kelas 4-6 SD (Junior II)</option>
-            <option value="JUNIOR_III">Kelas 7-9 SMP (Junior III)</option>
+            <option value="Kelas 1">Kelas 1 SD</option>
+            <option value="Kelas 2">Kelas 2 SD</option>
+            <option value="Kelas 3">Kelas 3 SD</option>
+            <option value="Kelas 4">Kelas 4 SD</option>
+            <option value="Kelas 5">Kelas 5 SD</option>
+            <option value="Kelas 6">Kelas 6 SD</option>
+            <option value="Kelas 7">Kelas 7 SMP</option>
+            <option value="Kelas 8">Kelas 8 SMP</option>
+            <option value="Kelas 9">Kelas 9 SMP</option>
           </select>
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-slate-700">Tipe Kelas</label>
           <div className="flex gap-2">
-            {(["BATCH", "PRIVATE", "MAKEUP", "OFFLINE"] as const).map((t) => (
+            {(["BATCH", "PRIVATE", "MAKEUP", "TRIAL"] as const).map((t) => (
               <button key={t} type="button"
                 onClick={() => {
                   onCreateTypeChange(t);
@@ -90,11 +105,43 @@ export default function CreateClassForm({
                     : "border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300"
                 }`}
               >
-                {t === "BATCH" ? "Batch" : t === "PRIVATE" ? "Private" : t === "MAKEUP" ? "Make Up" : "Offline"}
+                {t === "BATCH" ? "Batch" : t === "PRIVATE" ? "Private" : t === "MAKEUP" ? "Make Up" : "Trial"}
               </button>
             ))}
           </div>
         </div>
+        <div>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Metode</label>
+          <div className="flex gap-2">
+            <button type="button" onClick={() => onCreateIsOnlineChange(true)}
+              className={`flex-1 rounded-xl border-2 px-3 py-2.5 text-sm font-bold transition-colors ${
+                createIsOnline
+                  ? "border-blue-500 bg-blue-50 text-blue-700"
+                  : "border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300"
+              }`}
+            >
+              Online
+            </button>
+            <button type="button" onClick={() => onCreateIsOnlineChange(false)}
+              className={`flex-1 rounded-xl border-2 px-3 py-2.5 text-sm font-bold transition-colors ${
+                !createIsOnline
+                  ? "border-blue-500 bg-blue-50 text-blue-700"
+                  : "border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300"
+              }`}
+            >
+              Offline
+            </button>
+          </div>
+        </div>
+        {!createIsOnline && (
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-slate-700">Lokasi <span className="text-red-500">*</span></label>
+            <input type="text" value={createLocation} onChange={(e) => onCreateLocationChange(e.target.value)}
+              placeholder="Masukkan alamat / lokasi kelas"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" required
+            />
+          </div>
+        )}
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-slate-700">Kurikulum <span className="text-red-500">*</span></label>
           <select value={createCurriculumId} onChange={(e) => onCreateCurriculumIdChange(e.target.value)}
@@ -107,16 +154,14 @@ export default function CreateClassForm({
           </select>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Batch</label>
-          <div className="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500">
-            {createType === "BATCH" ? (createBatchPreview !== null ? createBatchPreview : "Otomatis") : createType === "OFFLINE" ? "—" : "—"}
-          </div>
-          <p className="mt-1 text-[10px] text-slate-400">Nama kelas: <strong>{selectedCurriculum ? (
-            createType === "MAKEUP" ? `Make Up - ${selectedCurriculum.name}`
-            : createType === "PRIVATE" ? `${selectedCurriculum.name} - Private`
-            : createType === "OFFLINE" ? `${selectedCurriculum.name} - Offline`
-            : `${selectedCurriculum.name} - Batch ${createBatchPreview ?? "?"}`
-          ) : "—"}</strong></p>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Nama Kelas <span className="text-red-500">*</span></label>
+          <input type="text" value={createName} onChange={(e) => onCreateNameChange(e.target.value)}
+            placeholder="Nama kelas akan otomatis terisi"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" required
+          />
+          {createType === "BATCH" && (
+            <p className="mt-1 text-[10px] text-slate-400">Batch: {createBatchPreview !== null ? createBatchPreview : "..."}</p>
+          )}
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-slate-700">
@@ -204,10 +249,13 @@ export default function CreateClassForm({
                           {fmt(hour)}-{fmt(hour + 1)}
                         </td>
                         {SLOT_DAYS.map((day) => {
-                          const slot = tutorSlots.find((s) => s.dayOfWeek === day && s.startTime === fmt(hour) && !s.isFilled);
+                          const allowMultiClass = process.env.NEXT_PUBLIC_ALLOW_MULTI_CLASS === "true";
+                          const slot = tutorSlots.find((s) => s.dayOfWeek === day && s.startTime === fmt(hour) && (allowMultiClass || !s.isFilled));
                           const rangeOk = isInRange(day, hour);
                           const dayOff = tutorDayoffs.includes(SLOT_DAYS.indexOf(day));
                           const isSelected = selectedSlots.some((s) => s.dayOfWeek === day && s.startTime === fmt(hour));
+
+                          const isFilled = slot?.isFilled ?? false;
 
                           if (!rangeOk || dayOff) {
                             return <td key={day} className="border-b border-slate-200 bg-slate-100 px-1 py-2 text-center text-[10px] text-slate-300">&mdash;</td>;
@@ -216,10 +264,15 @@ export default function CreateClassForm({
                             return <td key={day} className="border-b border-slate-200 bg-slate-50 px-1 py-2 text-center text-[10px] text-slate-300">&mdash;</td>;
                           }
 
+                          const cellBg = isSelected
+                            ? "bg-blue-200 text-blue-800 font-semibold"
+                            : isFilled && allowMultiClass
+                              ? "bg-amber-100 text-amber-700 hover:bg-amber-200"
+                              : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100";
+
                           return (
                             <td key={day}
-                              className={`border-b border-slate-200 px-1 py-2 text-center text-[10px] transition cursor-pointer
-                                ${isSelected ? "bg-blue-200 text-blue-800 font-semibold" : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"}`}
+                              className={`border-b border-slate-200 px-1 py-2 text-center text-[10px] transition cursor-pointer ${cellBg}`}
                               onClick={() => {
                                 const maxSlots = createType === "MAKEUP" ? 1 : 2;
                                 if (isSelected) {
@@ -229,7 +282,7 @@ export default function CreateClassForm({
                                 }
                               }}
                             >
-                              {isSelected ? "✓" : "Pilih"}
+                              {isSelected ? "✓" : isFilled && allowMultiClass ? "Isi" : "Pilih"}
                             </td>
                           );
                         })}

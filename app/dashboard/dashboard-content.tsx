@@ -15,7 +15,6 @@ import {
   type Topic,
   type AssessmentSet,
 } from "@/lib/api";
-
 type StudentWithDetails = StudentProfile & {
   enrollments: Enrollment[];
   schedules: Schedule[];
@@ -119,6 +118,10 @@ export default function DashboardContent() {
       router.replace("/dashboard/student");
       return;
     }
+    if (session.user.role === "PARENT") {
+      router.replace("/dashboard/parent");
+      return;
+    }
     loadData();
   }, [router]);
 
@@ -139,7 +142,7 @@ export default function DashboardContent() {
         phone: form.phone,
         nickname: form.nickname,
         birthDate: new Date(form.birthDate).toISOString(),
-        category: form.category,
+        categoryId: null,
       });
 
       setShowAddStudent(false);
@@ -184,9 +187,10 @@ export default function DashboardContent() {
     setCreateError("");
     try {
       const fd = new FormData(e.currentTarget);
+      const cat = (await api.categories.list()).find((c) => c.name === fd.get("category"));
       await api.curriculums.create({
         name: fd.get("name") as string,
-        category: fd.get("category") as string,
+        categoryIds: cat ? [cat.id] : [],
         assessmentSetId: (fd.get("assessmentSetId") as string) || null,
       });
       setCreateCurriculumOpen(false);
@@ -205,6 +209,7 @@ export default function DashboardContent() {
       await api.topics.create({
         curriculumId: selectedCurriculumId,
         title: fd.get("title") as string,
+        imageUrl: (fd.get("imageUrl") as string) || null,
         materialLink: (fd.get("materialLink") as string) || null,
         exampleProjectLink: (fd.get("exampleProjectLink") as string) || null,
         goals: (fd.get("goals") as string) || null,
@@ -349,7 +354,7 @@ export default function DashboardContent() {
                       </div>
                     </div>
                     <span className="rounded-full bg-frosted-blue-50 px-3 py-1 text-xs font-medium text-frosted-blue-600">
-                      {CATEGORY_LABELS[student.category]}
+                      {student.category?.label ?? "-"}
                     </span>
                   </div>
 
@@ -491,7 +496,7 @@ export default function DashboardContent() {
                       <div className="flex items-center justify-between">
                         <div>
                           <h3 className="text-sm font-bold text-gray-800">{c.name}</h3>
-                          <p className="text-[10px] text-gray-400">{CATEGORY_LABELS[c.category] ?? c.category} &middot; {c.topics.length} topik</p>
+                          <p className="text-[10px] text-gray-400">{c.categories?.map((cat) => CATEGORY_LABELS[cat.category.name] ?? cat.category.name).join(", ") ?? ""} &middot; {c.topics.length} topik</p>
                         </div>
                         {c.assessmentSet && (
                           <span className="rounded-full bg-frosted-blue-50 px-2 py-0.5 text-[10px] font-medium text-frosted-blue-600">

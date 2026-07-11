@@ -67,7 +67,7 @@ export default function BadgesTab({ theme, studentBadges, certificates, enrollme
       )}
 
       {/* Badges */}
-      <div>
+      {/* <div>
         <h2 className={`mb-3 flex items-center gap-1.5 text-sm font-bold ${theme.text}`}>
           <Star size={16} /> Badges
         </h2>
@@ -91,7 +91,7 @@ export default function BadgesTab({ theme, studentBadges, certificates, enrollme
             ))}
           </div>
         )}
-      </div>
+      </div> */}
 
       <CertificatePreviewModal
         open={!!previewEnrollment}

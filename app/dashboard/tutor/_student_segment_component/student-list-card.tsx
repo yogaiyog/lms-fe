@@ -26,7 +26,7 @@ export default function StudentListCard({
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className={`font-extrabold ${theme.text}`}>{student.nickname || student.fullName}</h3>
             <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
-              {CATEGORY_LABELS[student.category] ?? student.category}
+              {student.category?.label ?? "-"}
             </span>
           </div>
           <p className={`text-xs mt-0.5 ${theme.textMuted}`}>

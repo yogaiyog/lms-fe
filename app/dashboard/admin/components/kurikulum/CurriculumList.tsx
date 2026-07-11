@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { api, type Curriculum, type AssessmentSet } from "@/lib/api";
+import { useState, useEffect, type FormEvent } from "react";
+import { api, type Category, type Curriculum, type AssessmentSet } from "@/lib/api";
 import { CATEGORY_LABELS } from "../../constants";
 
 type Props = {
@@ -14,6 +14,12 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
   const [showCreate, setShowCreate] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategoryNames, setSelectedCategoryNames] = useState<string[]>([]);
+
+  useEffect(() => {
+    api.categories.list().then(setCategories).catch(() => {});
+  }, []);
 
   async function onCreate(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -21,16 +27,24 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
     setError("");
     try {
       const fd = new FormData(e.currentTarget);
+      const ids = categories.filter((c) => selectedCategoryNames.includes(c.name)).map((c) => c.id);
       await api.curriculums.create({
         name: fd.get("name") as string,
-        category: fd.get("category") as string,
+        categoryIds: ids,
         assessmentSetId: (fd.get("assessmentSetId") as string) || null,
       });
       setShowCreate(false);
+      setSelectedCategoryNames([]);
       onRefresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal");
     } finally { setSaving(false); }
+  }
+
+  function toggleCategory(name: string) {
+    setSelectedCategoryNames((prev) =>
+      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
+    );
   }
 
   return (
@@ -50,9 +64,15 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
               <div key={c.id} className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/50 px-4 py-3">
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold text-slate-800">{c.name}</p>
+                  <div className="mb-1 flex flex-wrap gap-1">
+                    {c.categories?.map((cat) => (
+                      <span key={cat.category.id} className="rounded-lg bg-blue-100 px-2.5 py-0.5 text-[11px] font-semibold text-blue-700">
+                        {CATEGORY_LABELS[cat?.category?.name] ?? cat?.category?.name ?? ""}
+                      </span>
+                    ))}
+                  </div>
                   <p className="text-xs text-slate-400">
-                    {CATEGORY_LABELS[c.category] ?? c.category}
-                    {" — "}{c.topics.length} topik
+                    {c.topics.length} topik
                     {c.assessmentSet && <> &middot; {c.assessmentSet.name}</>}
                   </p>
                 </div>
@@ -85,14 +105,24 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
               </div>
               <div className="mb-3">
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Kategori</label>
-                <select name="category" required
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-                >
-                  <option value="JUNIOR_I">Kelas 1-3 SD</option>
-                  <option value="JUNIOR_II">Kelas 4-6 SD</option>
-                  <option value="JUNIOR_III">Kelas 7-9 SMP</option>
-                </select>
+                <label className="mb-1 block text-sm font-semibold text-slate-700">Kategori <span className="text-red-500">*</span></label>
+                <div className="flex max-h-48 flex-wrap gap-1.5 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 p-2.5">
+                  {categories.map((cat) => {
+                    const isSelected = selectedCategoryNames.includes(cat.name);
+                    return (
+                      <button key={cat.id} type="button" onClick={() => toggleCategory(cat.name)}
+                        className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+                          isSelected
+                            ? "bg-blue-600 text-white shadow-sm"
+                            : "border border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:text-blue-700"
+                        }`}
+                      >
+                        {cat.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                {selectedCategoryNames.length === 0 && <p className="mt-1 text-[10px] text-slate-400">Pilih minimal 1 kategori</p>}
               </div>
               <div className="mb-4">
                 <label className="mb-1 block text-sm font-semibold text-slate-700">Set Penilaian</label>
@@ -104,7 +134,7 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
                 </select>
               </div>
               {error && <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-700">{error}</div>}
-              <button type="submit" disabled={saving}
+              <button type="submit" disabled={saving || selectedCategoryNames.length === 0}
                 className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700 disabled:opacity-50"
               >
                 {saving ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Simpan"}

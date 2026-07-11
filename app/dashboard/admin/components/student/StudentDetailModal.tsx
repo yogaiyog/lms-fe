@@ -1,19 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { X, User, Mail, GraduationCap, BookOpen, Calendar, Zap, ArrowRight, Plus, Pencil, Loader2, FileText } from "lucide-react";
-import { api, type StudentProfile, type Enrollment, type Curriculum, type Class } from "@/lib/api";
+import { useEffect, useState } from "react";
+import { X, User, Mail, GraduationCap, BookOpen, Calendar, Zap, ArrowRight, Plus, Pencil, Loader2, FileText, FileCheck } from "lucide-react";
+import { api, type StudentProfile, type Enrollment, type Curriculum, type Class, type Certificate } from "@/lib/api";
 import CertificatePreviewModal from "../../../shared/CertificatePreviewModal";
-
-const CATEGORY_LABELS: Record<string, string> = {
-  JUNIOR_I: "Kelas 1-3 SD",
-  JUNIOR_II: "Kelas 4-6 SD",
-  JUNIOR_III: "Kelas 7-9 SMP",
-};
 
 type Props = {
   student: StudentProfile;
   enrollments: Enrollment[];
+  certificates: Certificate[];
   loading: boolean;
   curriculums: Curriculum[];
   classes: Class[];
@@ -23,7 +18,7 @@ type Props = {
 };
 
 export default function StudentDetailModal({
-  student, enrollments, loading, curriculums, classes,
+  student, enrollments, certificates, loading, curriculums, classes,
   onImpersonate, onClose, onRefreshEnrollments,
 }: Props) {
   const [showForm, setShowForm] = useState(false);
@@ -33,6 +28,13 @@ export default function StudentDetailModal({
   const [formTotalMeetPurchased, setFormTotalMeetPurchased] = useState("");
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [previewEnrollment, setPreviewEnrollment] = useState<Enrollment | null>(null);
+  const [localCertificates, setLocalCertificates] = useState<Certificate[]>(certificates);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      setLocalCertificates(certificates);
+    });
+  }, [certificates, student.id]);
 
   const isEdit = !!editingEnrollment;
   const selectedCurriculum = curriculums.find((c) => c.id === formCurriculumId);
@@ -41,6 +43,9 @@ export default function StudentDetailModal({
   const meetError = !isEdit && maxMeet > 0 && meetValue > maxMeet
     ? `Kurikulum hanya memiliki ${maxMeet} pertemuan`
     : "";
+
+  const isCertificateSent = (enr: Enrollment) =>
+    localCertificates.some((cert) => cert.studentId === enr.studentId && cert.curriculumId === enr.curriculumId);
 
   function openAddForm() {
     setEditingEnrollment(null);
@@ -74,16 +79,21 @@ export default function StudentDetailModal({
     setFormSubmitting(true);
     try {
       if (isEdit) {
-        await api.enrollments.update(editingEnrollment!.id, {
+        const updateData: Record<string, unknown> = {
           ...(formClassId !== editingEnrollment!.classId ? { classId: formClassId || null } : {}),
-          ...(totalMeetPurchased !== undefined ? { totalMeetPurchased } : {}),
-        });
+        };
+        if (totalMeetPurchased !== undefined) {
+          updateData.totalMeetPurchased = totalMeetPurchased;
+          updateData.verified = true;
+        }
+        await api.enrollments.update(editingEnrollment!.id, updateData);
       } else {
         await api.enrollments.create({
           studentId: student.id,
           curriculumId: formCurriculumId,
           classId: formClassId || undefined,
           totalMeetPurchased,
+          verified: totalMeetPurchased ? true : undefined,
         });
       }
       closeForm();
@@ -123,7 +133,7 @@ export default function StudentDetailModal({
               <div className="mt-2 flex flex-wrap gap-3">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700">
                   <GraduationCap size={12} />
-                  {CATEGORY_LABELS[student.category] ?? student.category}
+                  {student.category?.label ?? "-"}
                 </span>
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">
                   <Zap size={12} />
@@ -202,6 +212,9 @@ export default function StudentDetailModal({
                   {!isEdit && maxMeet > 0 && (
                     <p className="mt-1 text-[11px] text-slate-400">Maksimal {maxMeet} pertemuan (sesuai kurikulum)</p>
                   )}
+                  {isEdit && (
+                    <p className="mt-1 text-[11px] text-blue-500">Mengisi nilai akan memverifikasi enrollment ini.</p>
+                  )}
                 </div>
                 {meetError && (
                   <p className="text-xs font-semibold text-red-500">{meetError}</p>
@@ -246,6 +259,15 @@ export default function StudentDetailModal({
                           <p className="text-xs font-semibold text-slate-700">
                             {enr.meetUsages?.length ?? 0} / {enr.totalMeetPurchased} sesi digunakan
                           </p>
+                          {enr.verified ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700">
+                              Terverifikasi
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                              Menunggu Verifikasi
+                            </span>
+                          )}
                           {(() => {
                             const c = curriculums.find((c) => c.id === enr.curriculumId);
                             return c?.topics.length ? (
@@ -258,10 +280,16 @@ export default function StudentDetailModal({
                             ) : null;
                           })()}
                         </div>
+                        {!isCertificateSent(enr)? (
                         <button onClick={() => setPreviewEnrollment(enr)}
                           className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-green-600">
                           <FileText size={14} />
                         </button>
+                        ):  <button onClick={() => setPreviewEnrollment(enr)}
+                          className="rounded-lg p-1.5 text-green-400 transition bg-green-100 hover:bg-slate-100 hover:text-slate-600">
+                          <FileCheck size={14} />
+                        </button>}
+                   
                         <button onClick={() => openEditForm(enr)}
                           className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-blue-600">
                           <Pencil size={14} />
@@ -292,6 +320,13 @@ export default function StudentDetailModal({
         enrollment={previewEnrollment}
         studentName={student.fullName}
         mode="admin"
+        initialSent={previewEnrollment ? isCertificateSent(previewEnrollment) : false}
+        onSent={(certificate) => {
+          setLocalCertificates((prev) => {
+            if (prev.some((cert) => cert.id === certificate.id)) return prev;
+            return [certificate, ...prev];
+          });
+        }}
         onClose={() => setPreviewEnrollment(null)}
       />
       </div>

@@ -22,6 +22,8 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
 
   return (
     <div className="space-y-6">
+
+      
       <div>
         <h1 className={`text-xl sm:text-2xl font-extrabold tracking-tight ${theme.text}`}>
           Halo, {user?.studentProfile?.fullName ?? "Student"}! 👋
@@ -29,24 +31,22 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
         <p className={`mt-0.5 text-xs sm:text-sm ${theme.textMuted}`}>Selamat datang kembali di dashboard kamu.</p>
       </div>
 
-      <Card theme={theme} className="p-4 sm:p-6 bg-gradient-to-br from-blue-600 to-blue-700 border-0">
-        <div className="flex items-center justify-around text-center text-white">
-          <div>
-            <p className="text-xl sm:text-2xl font-extrabold">{user?.studentProfile?.totalXp ?? 0}</p>
-            <p className="text-[9px] sm:text-[10px] text-blue-100 font-semibold uppercase tracking-wide">Total XP</p>
+            {announcements.length > 0 && (
+        <Card theme={theme} className="p-4 sm:p-6">
+          <h3 className={`font-bold text-sm sm:text-base mb-3 ${theme.text}`}>Pengumuman</h3>
+          <div className="space-y-2">
+            {announcements.map((a) => (
+              <div key={a.id} className={`rounded-xl p-3 ${theme.dark ? "bg-slate-800" : "bg-amber-50"}`}>
+                <p className={`text-xs font-bold ${theme.text}`}>{a.title}</p>
+                <p className={`mt-0.5 text-xs sm:text-sm ${theme.textMuted}`}>{a.content}</p>
+                <p className={`mt-1.5 text-[10px] ${theme.textMuted}`}>
+                  {a.tutor?.fullName ?? "Tutor"} — {new Date(a.createdAt).toLocaleDateString("id-ID")}
+                </p>
+              </div>
+            ))}
           </div>
-          <div className="h-8 sm:h-10 w-px bg-white/20" />
-          <div>
-            <p className="text-xl sm:text-2xl font-extrabold">{user?.studentProfile?.currentStreak ?? 0}</p>
-            <p className="text-[9px] sm:text-[10px] text-blue-100 font-semibold uppercase tracking-wide">Streak</p>
-          </div>
-          <div className="h-8 sm:h-10 w-px bg-white/20" />
-          <div>
-            <p className="text-xl sm:text-2xl font-extrabold">{totalMeetLeft}</p>
-            <p className="text-[9px] sm:text-[10px] text-blue-100 font-semibold uppercase tracking-wide">Sisa Pertemuan</p>
-          </div>
-        </div>
-      </Card>
+        </Card>
+      )}
 
       <div>
         <p className={`mb-3 text-xs sm:text-sm font-semibold ${theme.textMuted}`}>Jadwal minggu ini</p>
@@ -141,22 +141,7 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
         </Card>
       )}
 
-      {announcements.length > 0 && (
-        <Card theme={theme} className="p-4 sm:p-6">
-          <h3 className={`font-bold text-sm sm:text-base mb-3 ${theme.text}`}>Pengumuman</h3>
-          <div className="space-y-2">
-            {announcements.map((a) => (
-              <div key={a.id} className={`rounded-xl p-3 ${theme.dark ? "bg-slate-800" : "bg-amber-50"}`}>
-                <p className={`text-xs font-bold ${theme.text}`}>{a.title}</p>
-                <p className={`mt-0.5 text-xs sm:text-sm ${theme.textMuted}`}>{a.content}</p>
-                <p className={`mt-1.5 text-[10px] ${theme.textMuted}`}>
-                  {a.tutor?.fullName ?? "Tutor"} — {new Date(a.createdAt).toLocaleDateString("id-ID")}
-                </p>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
+
     </div>
   );
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { User, ChevronLeft, FileText } from "lucide-react";
-import type { StudentProfile, StudentBadge } from "@/lib/api";
+import { ChevronLeft, FileText, Camera } from "lucide-react";
+import type { StudentProfile, StudentBadge, SavedReport } from "@/lib/api";
 import { api } from "@/lib/api";
 import type { Theme, ClassWithEnrollments, AttendanceWithDetails, AssessmentSummary, GeneratedReport } from "./_student_segment_component/types";
 import { Card } from "./_student_segment_component/components";
@@ -14,6 +14,8 @@ import BadgeList from "./_student_segment_component/badge-list";
 import AssessmentList from "./_student_segment_component/assessment-list";
 import ReportPickerModal from "./_student_segment_component/report-picker-modal";
 import ReportViewerModal from "./_student_segment_component/report-viewer-modal";
+import GalleryUploadModal from "./_student_segment_component/gallery-upload-modal";
+import GalleryViewModal from "./_student_segment_component/gallery-view-modal";
 
 export default function TutorStudentsSegment({
   theme, classes, students,
@@ -30,13 +32,15 @@ export default function TutorStudentsSegment({
   const [assessments, setAssessments] = useState<AssessmentSummary[]>([]);
   const [selectedAttendanceIds, setSelectedAttendanceIds] = useState<string[]>([]);
   const [generatedReport, setGeneratedReport] = useState<GeneratedReport | null>(null);
-  const [savedReports, setSavedReports] = useState<any[]>([]);
+  const [savedReports, setSavedReports] = useState<SavedReport[]>([]);
   const [showSavedReports, setShowSavedReports] = useState(false);
   const [savingReport, setSavingReport] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showReportViewModal, setShowReportViewModal] = useState(false);
-  const [reportViewData, setReportViewData] = useState<any | null>(null);
+  const [reportViewData, setReportViewData] = useState<GeneratedReport | null>(null);
   const [reportViewTitle, setReportViewTitle] = useState("Laporan Dibuat");
+  const [showGalleryModal, setShowGalleryModal] = useState(false);
+  const [showGalleryView, setShowGalleryView] = useState(false);
 
   const enrolledStudentIds = new Set<string>();
   const classMap = new Map<string, ClassWithEnrollments>();
@@ -100,7 +104,7 @@ export default function TutorStudentsSegment({
   async function handleAttendanceSave(attendanceId: string, data: { status: string; notes: string | null }) {
     try {
       await api.attendances.update(attendanceId, { status: data.status, notes: data.notes });
-      setAttendances(prev => prev.map(a => a.id === attendanceId ? { ...a, status: data.status as any, notes: data.notes ?? undefined } : a));
+      setAttendances(prev => prev.map(a => a.id === attendanceId ? { ...a, status: data.status as AttendanceWithDetails["status"], notes: data.notes ?? undefined } : a));
       setGeneratedReport(null);
     } catch (e) {
       console.error(e);
@@ -147,19 +151,19 @@ export default function TutorStudentsSegment({
     }
     const scorePercentage = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
 
-    const aspectMap = new Map<string, { totalScore: number; totalMaxScore: number; count: number; description: string | null }>();
+    const aspectMap = new Map<string, { totalScore: number; totalMaxScore: number; count: number; description: string | null; icon: string | null }>();
     try {
       const scheduleIds = [...new Set(selectedAttendances.map((a) => a.schedule?.id).filter(Boolean) as string[])];
       const reports = await Promise.allSettled(scheduleIds.map((sid) => api.reports.getScheduleReport(sid)));
       for (const result of reports) {
         if (result.status !== "fulfilled") continue;
-        const report: any = result.value;
+        const report = result.value as { students?: { student?: { id: string }; aspectAnalysis?: { aspectTitle: string; score: number; maxScore: number; aspectDescription?: string | null; icon?: string | null }[] }[] };
         for (const student of (report?.students ?? [])) {
           if (student.student?.id !== selectedStudent.id) continue;
           for (const item of (student.aspectAnalysis ?? [])) {
             const existing = aspectMap.get(item.aspectTitle);
             if (existing) { existing.totalScore += item.score; existing.totalMaxScore += item.maxScore; existing.count++; }
-            else { aspectMap.set(item.aspectTitle, { totalScore: item.score, totalMaxScore: item.maxScore, count: 1, description: item.aspectDescription ?? null }); }
+            else { aspectMap.set(item.aspectTitle, { totalScore: item.score, totalMaxScore: item.maxScore, count: 1, description: item.aspectDescription ?? null, icon: item.icon ?? null }); }
           }
         }
       }
@@ -168,7 +172,7 @@ export default function TutorStudentsSegment({
     const aspectSummaries = [...aspectMap].map(([title, d]) => {
       const avgPct = d.totalMaxScore > 0 ? (d.totalScore / d.totalMaxScore) * 100 : 0;
       return {
-        aspectTitle: title, aspectDescription: d.description,
+        aspectTitle: title, aspectDescription: d.description, icon: d.icon,
         avgScore: d.totalScore / d.count, avgMaxScore: d.totalMaxScore / d.count, avgPercentage: avgPct, count: d.count,
         narrative: avgPct >= 50
           ? `${selectedStudent.nickname || selectedStudent.fullName} memiliki kelebihan di ${title}${d.description ? ` yaitu ${d.description}` : ""}`
@@ -200,7 +204,7 @@ export default function TutorStudentsSegment({
       totalScore, maxScore, scorePercentage, statusCounts, topics,
       topStrengths: strengths, topWeakness,
       assessmentScores: aspectSummaries.map((a) => ({
-        aspectTitle: a.aspectTitle, aspectDescription: a.aspectDescription,
+        aspectTitle: a.aspectTitle, aspectDescription: a.aspectDescription, icon: a.icon,
         avgScore: a.avgScore, avgMaxScore: a.avgMaxScore, avgPercentage: a.avgPercentage, count: a.count,
       })),
       notes, projectLinks,
@@ -229,7 +233,7 @@ export default function TutorStudentsSegment({
     try { await api.savedReports.delete(id); setSavedReports((prev) => prev.filter((r) => r.id !== id)); } catch { /* noop */ }
   }
 
-  function loadSavedReport(report: any) {
+  function loadSavedReport(report: SavedReport) {
     setReportViewData(report.data);
     setReportViewTitle(report.title);
     setShowSavedReports(false);
@@ -287,12 +291,18 @@ export default function TutorStudentsSegment({
               <BadgeList theme={theme} badges={badges} />
 
               {assessments.length > 0 && (
-                <AssessmentList assessments={assessments} theme={theme} onSave={handleAssessmentSave} />
+                <AssessmentList assessments={assessments} theme={theme} onSave={handleAssessmentSave} studentId={selectedStudent.id} />
               )}
 
-              <button onClick={() => setShowReportModal(true)} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-blue-700 transition">
-                <FileText size={18} /> Laporan
-              </button>
+              <div className="flex gap-3">
+                <button onClick={() => setShowReportModal(true)} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-blue-700 transition">
+                  <FileText size={18} /> Laporan
+                </button>
+                <button onClick={() => setShowGalleryView(true)}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-emerald-700 transition">
+                  <Camera size={18} /> Gallery
+                </button>
+              </div>
 
               {attendances.length === 0 && badges.length === 0 && (
                 <div className="py-8 text-center">
@@ -326,6 +336,24 @@ export default function TutorStudentsSegment({
                   onClose={() => setShowReportViewModal(false)}
                   onSave={reportViewTitle === "Laporan Dibuat" ? saveCurrentReport : undefined}
                   saving={savingReport}
+                />
+              )}
+
+              {showGalleryModal && selectedStudent && (
+                <GalleryUploadModal
+                  open={showGalleryModal}
+                  studentId={selectedStudent.id}
+                  theme={theme}
+                  onClose={() => setShowGalleryModal(false)}
+                />
+              )}
+
+              {showGalleryView && selectedStudent && (
+                <GalleryViewModal
+                  open={showGalleryView}
+                  studentId={selectedStudent.id}
+                  theme={theme}
+                  onClose={() => setShowGalleryView(false)}
                 />
               )}
             </div>

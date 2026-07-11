@@ -16,6 +16,7 @@ import {
   saveSession,
   getStoredSession,
   type AuthUser,
+  type Category,
   type Class,
   type Curriculum,
   type Enrollment,
@@ -23,6 +24,8 @@ import {
   type StudentProfile,
   type TutorSlot,
   type AssessmentSet,
+  type Certificate,
+  type ParentProfile,
 } from "@/lib/api";
 import { CATEGORY_LABELS } from "../constants";
 
@@ -34,7 +37,7 @@ export type StudentItem = {
   fullName: string;
   nickname: string;
   email?: string;
-  category: string;
+  category?: Category | null;
   parentName?: string;
 };
 
@@ -51,16 +54,19 @@ export function useAdminDashboard() {
   const [curriculumSegment, setCurriculumSegment] = useState<"list" | "topics" | "assessments">("list");
   const [loading, setLoading] = useState(true);
 
-  const [createType, setCreateType] = useState<"BATCH" | "PRIVATE" | "MAKEUP" | "OFFLINE">("BATCH");
+  const [createType, setCreateType] = useState<"BATCH" | "PRIVATE" | "MAKEUP" | "TRIAL">("BATCH");
+  const [createIsOnline, setCreateIsOnline] = useState(true);
+  const [createLocation, setCreateLocation] = useState("");
+  const [createName, setCreateName] = useState("");
   const [createCurriculumId, setCreateCurriculumId] = useState("");
-  const [createCategory, setCreateCategory] = useState("JUNIOR_I");
+  const [createCategory, setCreateCategory] = useState("Kelas 1");
   const [createTutorIds, setCreateTutorIds] = useState<string[]>([]);
   const [tutorSegment, setTutorSegment] = useState<"list" | "add">("list");
   const [tutors, setTutors] = useState<TutorOption[]>([]);
   const [tutorsFull, setTutorsFull] = useState<{ id: string; fullName: string; phone: string; email?: string; bio?: string | null }[]>([]);
   const [registering, setRegistering] = useState(false);
   const [registerError, setRegisterError] = useState("");
-  const [studentsFull, setStudentsFull] = useState<{ id: string; userId: string; fullName: string; nickname: string; email?: string; category: string; parentName?: string }[]>([]);
+  const [studentsFull, setStudentsFull] = useState<{ id: string; userId: string; fullName: string; nickname: string; email?: string; category?: Category | null; parentName?: string }[]>([]);
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState("");
   const [createStartDate, setCreateStartDate] = useState("");
@@ -135,9 +141,7 @@ export function useAdminDashboard() {
           api.tutorProfiles.list() as Promise<TutorOption[]>,
           api.curriculums.list(),
           api.tutorProfiles.list() as Promise<{ id: string; fullName: string; phone: string; user?: { email: string }; bio?: string | null }[]>,
-          api.studentProfiles.list() as Promise<
-            { id: string; fullName: string; nickname: string; category: string; user?: { email: string }; parent?: { fullName: string } }[]
-          >,
+          api.studentProfiles.list(),
           api.assessmentSets.list(),
         ]);
         setClasses(cls);
@@ -147,7 +151,7 @@ export function useAdminDashboard() {
         setAssessmentSets(assSets);
         setTutorsFull(fullTutors.map((t) => ({ id: t.id, fullName: t.fullName, phone: t.phone, email: t.user?.email, bio: t.bio })));
         setStudentsFull(
-          (studentProfiles as { id: string; fullName: string; nickname: string; category: string; user?: { id: string; email: string }; parent?: { fullName: string } }[]).map((s) => ({
+          studentProfiles.map((s) => ({
             id: s.id, userId: s.user?.id ?? s.id, fullName: s.fullName, nickname: s.nickname,
             email: s.user?.email, category: s.category,
             parentName: s.parent?.fullName,
@@ -163,7 +167,7 @@ export function useAdminDashboard() {
   }, [router]);
 
   const filteredCurriculums = useMemo(
-    () => curriculums.filter((c) => c.category === createCategory),
+    () => curriculums.filter((c) => c.categories?.some((cat) => cat.category.name === createCategory)),
     [curriculums, createCategory],
   );
 
@@ -172,22 +176,25 @@ export function useAdminDashboard() {
     setSlotsLoading(true);
     Promise.all(createTutorIds.map((id) => api.tutorSlots.list(id)))
       .then((results) => {
-        const slotMap = new Map<string, TutorSlot>();
+        const slotMap = new Map<string, TutorSlot & { count: number }>();
         const allDayoffs = new Set<number>();
+        const tutorCount = results.length;
         for (const res of results) {
           for (const d of res.dayoffs) allDayoffs.add(d);
           for (const s of res.slots) {
             const key = `${s.dayOfWeek}|${s.startTime}`;
             if (!slotMap.has(key)) {
-              slotMap.set(key, { ...s });
+              slotMap.set(key, { ...s, count: 1 });
             } else {
               const existing = slotMap.get(key)!;
+              existing.count++;
               if (s.isFilled) existing.isFilled = true;
               if (s.isDayoff) existing.isDayoff = true;
             }
           }
         }
-        setTutorSlots(Array.from(slotMap.values()));
+        const merged = Array.from(slotMap.values()).filter((s) => s.count === tutorCount);
+        setTutorSlots(merged);
         setTutorDayoffs(Array.from(allDayoffs));
         setSelectedSlots([]);
       })
@@ -218,7 +225,25 @@ export function useAdminDashboard() {
   useEffect(() => {
     if (!createCurriculumId) { setUnassignedEnrollments([]); return; }
     api.enrollments.listUnassignedByCurriculum(createCurriculumId).then((list) => {
-      if (Array.isArray(list)) setUnassignedEnrollments(list as any);
+      if (Array.isArray(list)) {
+        const mapped: { id: string; studentId: string; curriculumId: string; student: { id: string; fullName: string; category: string; nickname: string; user?: { email: string } } }[] = [];
+        for (const e of list) {
+          if (!e.student) continue;
+          mapped.push({
+            id: e.id,
+            studentId: e.studentId,
+            curriculumId: e.curriculumId,
+            student: {
+              id: e.student.id,
+              fullName: e.student.fullName,
+              category: e.student.category?.name ?? "",
+              nickname: e.student.nickname,
+              user: e.student.user ? { email: e.student.user.email } : undefined,
+            },
+          });
+        }
+        setUnassignedEnrollments(mapped);
+      }
     }).catch(() => setUnassignedEnrollments([]));
   }, [createCurriculumId]);
 
@@ -236,12 +261,24 @@ export function useAdminDashboard() {
     return matches.reduce((max, c) => Math.max(max, c.batch), 0) + 1;
   }, [selectedCurriculum, classes]);
 
+  useEffect(() => {
+    if (!selectedCurriculum) { setCreateName(""); return; }
+    const name = createType === "MAKEUP"
+      ? `Make Up - ${selectedCurriculum.name}`
+      : createType === "PRIVATE"
+        ? `${selectedCurriculum.name} - Private`
+        : createType === "TRIAL"
+          ? `${selectedCurriculum.name} - Trial`
+          : `${selectedCurriculum.name} - Batch ${createBatchPreview ?? "?"}`;
+    setCreateName(name);
+  }, [createType, selectedCurriculum, createBatchPreview]);
+
   const classColumnHelper = createColumnHelper<Class>();
   const classColumns = useMemo(() => [
     classColumnHelper.accessor("name", { header: "Nama Kelas", enableColumnFilter: false }),
     classColumnHelper.accessor("category", {
       header: "Kategori",
-      cell: (info) => CATEGORY_LABELS[info.getValue()] ?? info.getValue(),
+      cell: (info) => info.getValue<{ label?: string } | null>()?.label ?? "-",
       enableColumnFilter: false,
     }),
     classColumnHelper.accessor((row) => row.tutors?.map((t) => t.fullName).join(", ") ?? "", { id: "tutors", header: "Tutor", enableColumnFilter: false }),
@@ -382,19 +419,22 @@ export function useAdminDashboard() {
         ? `Make Up - ${selectedCurriculum!.name}`
         : createType === "PRIVATE"
           ? `${selectedCurriculum!.name} - Private`
-          : createType === "OFFLINE"
-            ? `${selectedCurriculum!.name} - Offline`
+          : createType === "TRIAL"
+            ? `${selectedCurriculum!.name} - Trial`
             : `${selectedCurriculum!.name} - Batch ${createBatchPreview}`;
       const topics = selectedCurriculum!.topics;
       const scheduleData = generateScheduleSlots(topics, selectedSlots, createStartDate, createType);
       const startDateISO = new Date(createStartDate).toISOString();
+      const cat = (await api.categories.list()).find((c) => c.name === createCategory);
       const newClass = await api.classes.create({
-        name: autoName,
+        name: createName || autoName,
         type: createType,
-        category: createCategory,
+        categoryId: cat?.id,
         tutorIds: createTutorIds,
         curriculumId: createCurriculumId,
         startDate: startDateISO,
+        isOnline: createIsOnline,
+        location: createIsOnline ? null : (createLocation || null),
       });
       await Promise.all(scheduleData.map((s) =>
         api.schedules.create({ ...s, classId: newClass.id }),
@@ -409,7 +449,7 @@ export function useAdminDashboard() {
         }));
       }
       setCreateCurriculumId("");
-      setCreateCategory("JUNIOR_I");
+      setCreateCategory("Kelas 1");
       setCreateTutorIds([]);
       setCreateStartDate("");
       setSelectedSlots([]);
@@ -469,10 +509,10 @@ export function useAdminDashboard() {
         dayOfWeek: s.dayOfWeek, startTime: s.startTime, endTime: s.endTime,
       }));
       const unassignedStudents = unassignedList
-        .map((e: any) => map[e.studentId])
+        .map((e: { studentId: string }) => map[e.studentId])
         .filter(Boolean) as StudentProfile[];
       setDetailStudents(unassignedStudents.filter((s) => {
-        if (s.category !== fullClass.category) return false;
+        if (s.category?.id !== fullClass.category?.id) return false;
         if (enrolledIds.has(s.id)) return false;
         if (classSlots.length === 0) return true;
         return !classSlots.some((slot) =>
@@ -549,7 +589,7 @@ export function useAdminDashboard() {
         .map((e: { studentId: string }) => map[e.studentId])
         .filter(Boolean) as StudentProfile[];
       setDetailStudents(unassignedStudents.filter((s) => {
-        if (s.category !== _updated.category) return false;
+        if (s.category?.id !== _updated.category?.id) return false;
         if (enrolledIds.has(s.id)) return false;
         if (classSlots.length === 0) return true;
         return !classSlots.some((slot) =>
@@ -673,20 +713,31 @@ export function useAdminDashboard() {
 
   const [selectedStudent, setSelectedStudent] = useState<StudentProfile | null>(null);
   const [selectedStudentEnrollments, setSelectedStudentEnrollments] = useState<Enrollment[]>([]);
+  const [selectedStudentCertificates, setSelectedStudentCertificates] = useState<Certificate[]>([]);
   const [studentDetailLoading, setStudentDetailLoading] = useState(false);
+  const [studentSegment, setStudentSegment] = useState<"list" | "enrollment" | "parent">("list");
+
+  const [allEnrollments, setAllEnrollments] = useState<Enrollment[]>([]);
+  const [allEnrollmentsLoading, setAllEnrollmentsLoading] = useState(false);
+  const [allParents, setAllParents] = useState<ParentProfile[]>([]);
+  const [allParentsLoading, setAllParentsLoading] = useState(false);
 
   async function handleSelectStudent(student: StudentItem) {
     setStudentDetailLoading(true);
     try {
-      const [profile, enrollments] = await Promise.all([
+      const [profile, enrollments, certificates] = await Promise.all([
         api.studentProfiles.get(student.id),
         api.enrollments.listByStudent(student.id),
+        api.certificates.listByStudent(student.id),
       ]);
       setSelectedStudent(profile);
       setSelectedStudentEnrollments(enrollments);
+      setSelectedStudentCertificates(certificates);
+      setStudentSegment("enrollment");
     } catch {
       setSelectedStudent(null);
       setSelectedStudentEnrollments([]);
+      setSelectedStudentCertificates([]);
     } finally {
       setStudentDetailLoading(false);
     }
@@ -706,11 +757,37 @@ export function useAdminDashboard() {
     setStudentDetailLoading(true);
     try {
       const enrollments = await api.enrollments.listByStudent(selectedStudent.id);
+      const certificates = await api.certificates.listByStudent(selectedStudent.id);
       setSelectedStudentEnrollments(enrollments);
+      setSelectedStudentCertificates(certificates);
     } catch {
       showToast("Gagal memuat ulang enrollment", "error");
     } finally {
       setStudentDetailLoading(false);
+    }
+  }
+
+  async function fetchAllEnrollments() {
+    setAllEnrollmentsLoading(true);
+    try {
+      const list = await api.enrollments.list();
+      setAllEnrollments(list);
+    } catch {
+      showToast("Gagal memuat enrollment", "error");
+    } finally {
+      setAllEnrollmentsLoading(false);
+    }
+  }
+
+  async function fetchAllParents() {
+    setAllParentsLoading(true);
+    try {
+      const list = await api.parentProfiles.list();
+      setAllParents(list);
+    } catch {
+      showToast("Gagal memuat data orang tua", "error");
+    } finally {
+      setAllParentsLoading(false);
     }
   }
 
@@ -723,6 +800,8 @@ export function useAdminDashboard() {
     refreshCurriculumData,
     classes, requests, tutors, tutorsFull, registering, registerError,
     createType, setCreateType,
+    createIsOnline, setCreateIsOnline, createLocation, setCreateLocation,
+    createName, setCreateName,
     createCategory, setCreateCategory,
     createCurriculumId, setCreateCurriculumId,
     createTutorIds, setCreateTutorIds,
@@ -751,12 +830,14 @@ export function useAdminDashboard() {
     handleRegisterTutor, logout, handleImpersonate, handleSelectStudent,
     selectedStudent, setSelectedStudent,
     selectedStudentEnrollments, setSelectedStudentEnrollments,
+    selectedStudentCertificates, setSelectedStudentCertificates,
     studentDetailLoading, refreshStudentEnrollments,
     studentsFull,
+    studentSegment, setStudentSegment,
+    allEnrollments, allEnrollmentsLoading, fetchAllEnrollments,
+    allParents, allParentsLoading, fetchAllParents,
     createSelectedStudentIds, setCreateSelectedStudentIds,
     createAvailableStudents, getSlotsConflictReason,
     curriculumEnrolledStudentIds,
   };
 }
-
-

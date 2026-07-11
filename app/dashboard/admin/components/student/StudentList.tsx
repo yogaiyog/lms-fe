@@ -8,19 +8,13 @@ type StudentItem = {
   fullName: string;
   nickname: string;
   email?: string;
-  category: string;
+  category?: { id: string; name: string; label: string } | null;
   parentName?: string;
 };
 
 type Props = {
   students: StudentItem[];
   onSelect: (student: StudentItem) => void;
-};
-
-const CATEGORY_LABELS: Record<string, string> = {
-  JUNIOR_I: "Kelas 1-3 SD",
-  JUNIOR_II: "Kelas 4-6 SD",
-  JUNIOR_III: "Kelas 7-9 SMP",
 };
 
 export default function StudentList({ students, onSelect }: Props) {
@@ -63,7 +57,7 @@ export default function StudentList({ students, onSelect }: Props) {
                   <td className="px-3 py-3 text-slate-600">{s.email ?? "—"}</td>
                   <td className="px-3 py-3">
                     <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">
-                      {CATEGORY_LABELS[s.category] ?? s.category}
+                      {s.category?.label ?? "-"}
                     </span>
                   </td>
                   <td className="px-3 py-3 text-slate-600">{s.parentName ?? "—"}</td>

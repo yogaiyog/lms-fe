@@ -60,7 +60,14 @@ export default function ApproveRejectModal({
               className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" required
             >
               <option value="">-- Pilih kelas --</option>
-              {classes.filter((c) => c.category === request.category && c.isActive).map((c) => (
+              {classes.filter((c) => {
+                const gradeMap: Record<string, string[]> = {
+                  JUNIOR_I: ["Kelas 1", "Kelas 2", "Kelas 3"],
+                  JUNIOR_II: ["Kelas 4", "Kelas 5", "Kelas 6"],
+                  JUNIOR_III: ["Kelas 7", "Kelas 8", "Kelas 9"],
+                };
+                return gradeMap[request.category]?.includes(c.category?.name ?? "") && c.isActive;
+              }).map((c) => (
                 <option key={c.id} value={c.id}>{c.name} ({c.tutors?.map((t) => t.fullName).join(", ")})</option>
               ))}
             </select>

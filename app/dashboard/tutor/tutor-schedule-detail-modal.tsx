@@ -1,7 +1,10 @@
 "use client";
 
-import { X, User, ChevronRight, Star } from "lucide-react";
+import { useState } from "react";
+import { X, User, ChevronRight, Star, Camera, Check, Loader2 } from "lucide-react";
 import type { Attendance, Schedule, AssessmentAspect } from "@/lib/api";
+import { api } from "@/lib/api";
+import GalleryUploadModal from "./_student_segment_component/gallery-upload-modal";
 
 const DAY_LABELS: Record<string, string> = {
   MONDAY: "Senin", TUESDAY: "Selasa", WEDNESDAY: "Rabu",
@@ -38,6 +41,7 @@ export default function TutorScheduleDetailModal({
   onProjectLinkChange,
   onSaveAssessment,
   onMarkDone,
+  onUpdateAttendance,
 }: {
   theme: Theme;
   detailSchedule: Schedule;
@@ -59,11 +63,15 @@ export default function TutorScheduleDetailModal({
   onProjectLinkChange: (value: string) => void;
   onSaveAssessment: (attendanceId: string) => void;
   onMarkDone: (schedule: Schedule) => void;
+  onUpdateAttendance?: (attendanceId: string, status: string) => Promise<void>;
 }) {
+  const [galleryStudentId, setGalleryStudentId] = useState<string | null>(null);
+  const [editingStatus, setEditingStatus] = useState<string | null>(null);
+  const [statusSaving, setStatusSaving] = useState<string | null>(null);
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
       <div className="fixed inset-0 bg-black/40" onClick={onClose} />
-      <div className={`relative w-full max-w-2xl rounded-t-3xl ${theme.card} p-6 shadow-2xl sm:rounded-3xl max-h-[85vh] overflow-y-auto`}>
+      <div className={`relative w-full max-w-2xl rounded-t-3xl ${theme.card} p-4 sm:p-6 shadow-2xl sm:rounded-3xl max-h-dvh sm:max-h-[95vh] overflow-y-auto`}>
         <div className="mb-5 flex items-start justify-between">
           <div>
             <h2 className={`text-lg font-extrabold ${theme.text}`}>
@@ -93,7 +101,7 @@ export default function TutorScheduleDetailModal({
               const rowBg = theme.dark ? "bg-slate-800" : "bg-slate-50";
               return (
                 <div key={att.id} className={`rounded-xl ${rowBg} overflow-hidden`}>
-                  <div className="flex items-center justify-between px-4 py-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3">
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
                         att.status === "PRESENT" ? "bg-emerald-100" :
@@ -113,38 +121,69 @@ export default function TutorScheduleDetailModal({
                         {att.notes && <p className={`text-xs ${theme.textMuted}`}>{att.notes}</p>}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
-                        att.status === "PRESENT" ? "bg-emerald-100 text-emerald-700" :
-                        att.status === "ABSENT" ? "bg-red-100 text-red-700" :
-                        att.status === "LATE" ? "bg-amber-100 text-amber-700" :
-                        att.status === "SICK" ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-700"
-                      }`}>
-                        {att.status === "PRESENT" ? "Hadir" :
-                         att.status === "ABSENT" ? "Tidak Hadir" :
-                         att.status === "LATE" ? "Terlambat" :
-                         att.status === "SICK" ? "Sakit" : "Izin"}
-                      </span>
-                      {att.assessment ? (
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button onClick={() => setGalleryStudentId(att.studentId)}
+                        className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-1 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 transition-colors">
+                        <Camera size={14} /> Upload
+                      </button>
+                      <div className="flex items-center flex-wrap gap-1.5">
+                      {editingStatus === att.id ? (
                         <div className="flex items-center gap-1">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-bold text-blue-700">
-                            {att.assessment.percentage != null ? `${att.assessment.percentage}%` : `${att.assessment.totalScore ?? 0}/${maxScore}`}
-                          </span>
-                          <button onClick={() => onStartAssessment(att.id)}
-                            className="inline-flex items-center gap-1 rounded-full bg-slate-200 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 hover:bg-slate-300 transition-colors">
-                            Edit
-                          </button>
+                          <select value={att.status} onChange={async (e) => {
+                            const newStatus = e.target.value;
+                            setStatusSaving(att.id);
+                            try {
+                              if (onUpdateAttendance) {
+                                await onUpdateAttendance(att.id, newStatus);
+                              } else {
+                                await api.attendances.update(att.id, { status: newStatus });
+                              }
+                            } catch {} finally {
+                              setStatusSaving(null);
+                              setEditingStatus(null);
+                            }
+                          }}
+                            className="rounded-xl border border-slate-200 bg-white px-2 py-1 text-xs font-bold outline-none focus:border-blue-400">
+                            <option value="PRESENT">Hadir</option>
+                            <option value="LATE">Terlambat</option>
+                            <option value="ABSENT">Tidak Hadir</option>
+                            <option value="SICK">Sakit</option>
+                            <option value="PERMISSION">Izin</option>
+                          </select>
+                          {statusSaving === att.id && <Loader2 size={12} className="animate-spin text-slate-400" />}
                         </div>
-                      ) : att.status !== "ABSENT" && (
-                        <button onClick={() => onStartAssessment(att.id)}
-                          className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-bold text-amber-700 hover:bg-amber-200 transition-colors">
-                          <Star size={11} /> Nilai
+                      ) : (
+                        <button onClick={() => setEditingStatus(att.id)}
+                          className={`inline-flex items-center gap-1 rounded-xl px-3 py-1 text-xs font-bold transition-colors ${
+                            att.status === "PRESENT" ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200" :
+                            att.status === "LATE" ? "bg-amber-100 text-amber-700 hover:bg-amber-200" :
+                            att.status === "ABSENT" ? "bg-red-100 text-red-700 hover:bg-red-200" :
+                            att.status === "SICK" ? "bg-blue-100 text-blue-700 hover:bg-blue-200" :
+                            "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                          }`}>
+                          <Check size={11} />
+                          {att.status === "PRESENT" ? "Hadir" :
+                           att.status === "LATE" ? "Terlambat" :
+                           att.status === "ABSENT" ? "Tidak Hadir" :
+                           att.status === "SICK" ? "Sakit" : "Izin"}
                         </button>
                       )}
+                      {att.assessment ? (
+                        <button onClick={() => onStartAssessment(att.id)}
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700 hover:bg-blue-200 transition-colors">
+                          {att.assessment.percentage != null ? `${att.assessment.percentage}%` : `${att.assessment.totalScore ?? 0}/${maxScore}`} · Edit
+                        </button>
+                      ) : (att.status === "PRESENT" || att.status === "LATE") && (
+                        <button onClick={() => onStartAssessment(att.id)}
+                          className="inline-flex items-center gap-1 rounded-xl bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700 hover:bg-amber-200 transition-colors">
+                          <Star size={13} /> Nilai
+                        </button>
+                      )}
+                      </div>
                       {(att.assessment && att.assessment.scores && att.assessment.scores.length > 0) && (
                         <button onClick={() => onToggleExpand(att.studentId)}
-                          className={`rounded-lg p-1 transition-colors ${theme.textMuted} hover:bg-blue-100 hover:text-blue-600`}>
-                          <ChevronRight size={16} className={`transition-transform ${isExpanded ? "rotate-90" : ""}`} />
+                          className={`rounded-lg p-1.5 transition-colors ${theme.textMuted} hover:bg-blue-100 hover:text-blue-600`}>
+                          <ChevronRight size={18} className={`transition-transform ${isExpanded ? "rotate-90" : ""}`} />
                         </button>
                       )}
                     </div>
@@ -237,6 +276,15 @@ export default function TutorScheduleDetailModal({
           </div>
         )}
       </div>
+
+      {galleryStudentId && (
+        <GalleryUploadModal
+          open={!!galleryStudentId}
+          studentId={galleryStudentId}
+          theme={theme}
+          onClose={() => setGalleryStudentId(null)}
+        />
+      )}
     </div>
   );
 }

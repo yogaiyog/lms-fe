@@ -1,19 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Edit2, Save, Percent } from "lucide-react";
+import { Edit2, Save, Percent, Camera } from "lucide-react";
 import type { Theme, AssessmentSummary } from "./types";
 import { Card } from "./components";
+import GalleryUploadModal from "./gallery-upload-modal";
 
 export default function AssessmentList({
-  assessments, theme, onSave,
+  assessments, theme, onSave, studentId,
 }: {
   assessments: AssessmentSummary[];
   theme: Theme;
   onSave: (index: number, data: { percentage: number; comment: string | null; scores: { id: string; score: number; notes: string | null }[] }) => Promise<void>;
+  studentId?: string;
 }) {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [form, setForm] = useState<{ percentage: number; comment: string; scores: { id: string; score: number; notes: string | null }[] }>({ percentage: 0, comment: "", scores: [] });
+  const [showGallery, setShowGallery] = useState(false);
 
   async function handleSave(i: number) {
     await onSave(i, { percentage: form.percentage, comment: form.comment || null, scores: form.scores });
@@ -85,11 +88,17 @@ export default function AssessmentList({
                 <span className={`text-xs font-bold ${theme.text}`}>
                   {new Date(a.date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
                 </span>
-                <div className="flex items-center gap-2">
-                  <span className={`text-sm font-extrabold ${a.percentage >= 70 ? "text-emerald-600" : a.percentage >= 50 ? "text-amber-600" : "text-red-600"}`}>
-                    {a.percentage}%
-                  </span>
-                  <button
+                  <div className="flex items-center gap-2">
+                    <span className={`text-sm font-extrabold ${a.percentage >= 70 ? "text-emerald-600" : a.percentage >= 50 ? "text-amber-600" : "text-red-600"}`}>
+                      {a.percentage}%
+                    </span>
+                    {studentId && (
+                      <button onClick={() => setShowGallery(true)}
+                        className="text-xs text-emerald-600 flex items-center gap-1">
+                        <Camera size={12} /> Gallery
+                      </button>
+                    )}
+                    <button
                     onClick={() => {
                       setEditingIndex(i);
                       setForm({
@@ -126,6 +135,15 @@ export default function AssessmentList({
           );
         })}
       </div>
+
+      {studentId && (
+        <GalleryUploadModal
+          open={showGallery}
+          studentId={studentId}
+          theme={theme}
+          onClose={() => setShowGallery(false)}
+        />
+      )}
     </Card>
   );
 }

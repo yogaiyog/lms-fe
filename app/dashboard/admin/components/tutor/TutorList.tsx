@@ -10,9 +10,10 @@ type TutorItem = {
 
 type Props = {
   tutors: TutorItem[];
+  onSelect: (tutor: TutorItem) => void;
 };
 
-export default function TutorList({ tutors }: Props) {
+export default function TutorList({ tutors, onSelect }: Props) {
   return (
     <div className="rounded-3xl border border-slate-200 bg-white shadow-sm">
       {tutors.length === 0 ? (
@@ -30,7 +31,8 @@ export default function TutorList({ tutors }: Props) {
             </thead>
             <tbody>
               {tutors.map((t) => (
-                <tr key={t.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
+                <tr key={t.id} onClick={() => onSelect(t)}
+                  className="border-b border-slate-100 last:border-0 cursor-pointer hover:bg-blue-50">
                   <td className="px-3 py-3 font-semibold text-slate-900">{t.fullName}</td>
                   <td className="px-3 py-3 text-slate-600">{t.email ?? "—"}</td>
                   <td className="px-3 py-3 text-slate-600">{t.phone}</td>

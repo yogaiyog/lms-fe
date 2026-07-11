@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { api, type SavedReport } from "@/lib/api";
 import { X, FileText, CheckSquare } from "lucide-react";
 import type { Theme, AttendanceWithDetails } from "./types";
 import { ATTENDANCE_LABELS } from "./components";
@@ -13,12 +14,12 @@ export default function ReportPickerModal({
   theme: Theme;
   attendances: AttendanceWithDetails[];
   selectedAttendanceIds: string[];
-  savedReports: any[];
+  savedReports: SavedReport[];
   showSavedReports: boolean;
   onToggleAttendance: (id: string) => void;
   onGenerateReport: () => void;
   onToggleSavedReports: () => void;
-  onLoadSavedReport: (report: any) => void;
+  onLoadSavedReport: (report: SavedReport) => void;
   onDeleteSavedReport: (id: string) => void;
   onClose: () => void;
   onFetchSavedReports: () => void;

@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "LMS Coding",
   description: "Platform belajar coding untuk anak-anak Indonesia",
+  icons: [{ rel: "icon", url: "/logo.jpeg" }, { rel: "shortcut icon", url: "/favicon.ico" }],
 };
 
 export const viewport: Viewport = {

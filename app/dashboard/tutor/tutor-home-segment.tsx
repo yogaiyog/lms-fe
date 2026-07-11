@@ -22,6 +22,7 @@ type Theme = {
 type ClassWithSchedules = {
   id: string;
   name: string;
+  isOnline?: boolean;
   schedules: Schedule[];
   enrollments?: { id: string; studentId: string }[];
   curriculum?: Curriculum | null;
@@ -141,6 +142,7 @@ export default function TutorHomeSegment({
             const isSoon = cd && !isCountdownZero && cd.days === 0 && cd.hours < 2;
             const scheduleClass = classes.find((c) => c.id === schedule.classId);
             const scheduleCurriculumId = scheduleClass?.curriculum?.id;
+            const isOnlineClass = scheduleClass?.isOnline !== false;
             return (
               <Card key={schedule.id} theme={theme} className="p-4 sm:p-5">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3">
@@ -298,7 +300,7 @@ export default function TutorHomeSegment({
                             <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                           </svg>
                         </button>
-                        {schedule.meetLink && (
+                        {schedule.meetLink && isOnlineClass && (
                           <a href={schedule.meetLink} target="_blank" rel="noopener noreferrer"
                             className="inline-flex items-center gap-1 rounded-xl bg-blue-600 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-blue-700 transition-colors">
                             <Video size={10} /> Meet
@@ -306,7 +308,7 @@ export default function TutorHomeSegment({
                         )}
                       </div>
                     )}
-                    {!schedule.isDone && (isOngoing || (cd && !isCountdownZero)) && schedule.meetLink && (
+                    {!schedule.isDone && (isOngoing || (cd && !isCountdownZero)) && schedule.meetLink && isOnlineClass && (
                       <a href={schedule.meetLink} target="_blank" rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 rounded-xl bg-blue-600 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-blue-700 transition-colors">
                         <Video size={10} /> Meet

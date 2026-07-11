@@ -59,6 +59,8 @@ export type ParentProfile = {
   userId: string;
   fullName: string;
   phone: string;
+  user?: { id: string; email: string };
+  students?: StudentProfile[];
 };
 
 export type StudentProfile = {
@@ -69,7 +71,8 @@ export type StudentProfile = {
   nickname: string;
   birthDate: string;
   avatarUrl?: string | null;
-  category: "JUNIOR_I" | "JUNIOR_II" | "JUNIOR_III";
+  category?: Category | null;
+  categoryId?: string | null;
   totalXp: number;
   currentStreak: number;
   lastActive?: string | null;
@@ -96,6 +99,7 @@ export type Enrollment = {
   joinedAt: string;
   totalMeetPurchased: number;
   totalMeetLeft: number;
+  verified?: boolean;
   meetUsages?: MeetUsage[];
   class: Class | null;
   curriculum?: Curriculum;
@@ -107,14 +111,15 @@ export type Enrollment = {
 export type Class = {
   id: string;
   name: string;
-  type: "BATCH" | "PRIVATE" | "MAKEUP" | "OFFLINE";
-  category: string;
+  type: "BATCH" | "PRIVATE" | "MAKEUP" | "TRIAL";
+  categoryId?: string | null;
+  category?: Category | null;
   tutorIds?: string[];
   curriculumId?: string | null;
   batch: number;
   startDate: string;
   isActive: boolean;
-  isOffline?: boolean;
+  isOnline?: boolean;
   location?: string | null;
   schedules?: Schedule[];
   tutors?: TutorProfile[];
@@ -172,20 +177,46 @@ export type Certificate = {
   updatedAt: string;
 };
 
+export type Category = {
+  id: string;
+  name: string;
+  label: string;
+};
+
+export type CurriculumCategory = {
+  curriculumId: string;
+  categoryId: string;
+  category: Category;
+};
+
 export type Curriculum = {
   id: string;
-  category: string;
   name: string;
+  categories?: CurriculumCategory[];
   topics: Topic[];
   assessmentSetId?: string | null;
   assessmentSet?: AssessmentSet | null;
   certificates?: Certificate[];
 };
 
+export type ImageRecord = {
+  id: string;
+  url: string;
+  filename: string;
+  mimeType: string;
+  size: number;
+  entityType: string;
+  entityId: string | null;
+  uploadedBy: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type Topic = {
   id: string;
   curriculumId?: string | null;
   title: string;
+  imageUrl?: string | null;
   materialLink?: string | null;
   exampleProjectLink?: string | null;
   goals?: string | null;
@@ -273,6 +304,7 @@ export type AssessmentAspect = {
   assessmentSetId: string;
   title: string;
   description?: string | null;
+  icon?: string | null;
   minScore: number;
   maxScore: number;
   order: number;
@@ -293,14 +325,32 @@ export type AttendanceAssessmentScore = {
 export type AttendanceAssessment = {
   id: string;
   attendanceId: string;
-  totalScore?: number | null;
-  percentage?: number | null;
-  mentorComment?: string | null;
-  projectLink?: string | null;
+  totalScore: number | null;
+  percentage: number | null;
+  projectLink: string | null;
+  mentorComment: string | null;
   scores?: AttendanceAssessmentScore[];
-  attendance?: Attendance;
   createdAt: string;
   updatedAt: string;
+};
+
+export type SavedReport = {
+  id: string;
+  studentId: string;
+  title: string;
+  data: any;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Gallery = {
+  id: string;
+  studentId: string;
+  imageUrl: string;
+  caption?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  student?: StudentProfile;
 };
 
 const storageKeys = {
@@ -434,6 +484,46 @@ async function authenticatedRequest<T>(
   }
 }
 
+export async function uploadImage(
+  file: File,
+  entityType: string,
+  entityId?: string | null,
+): Promise<ImageRecord> {
+  const session = getStoredSession();
+  if (!session) throw new Error("Silakan login dulu");
+
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("entityType", entityType);
+  if (entityId) fd.append("entityId", entityId);
+
+  const url = `${API_BASE_URL}/api/v1/upload/image?_t=${Date.now()}`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${session.accessToken}` },
+    body: fd,
+  });
+
+  const payload = await res.json();
+  if (!res.ok) throw new Error(payload.message ?? "Upload gagal");
+  return payload.data;
+}
+
+export async function checkEmail(email: string): Promise<boolean> {
+  const res = await fetch(`${API_BASE_URL}/api/v1/auth/check-email?email=${encodeURIComponent(email)}`);
+  const payload = await res.json();
+  if (!res.ok) return true;
+  return payload.data?.available ?? true;
+}
+
+export const images = {
+  async listByEntityType(entityType: string, entityId?: string | null) {
+    const params = new URLSearchParams({ entityType });
+    if (entityId) params.set("entityId", entityId);
+    return authenticatedRequest<ImageRecord[]>(`/api/v1/upload/images?${params}`);
+  },
+};
+
 export const api = {
   auth: {
     async registerParent(payload: {
@@ -488,20 +578,67 @@ export const api = {
       });
       clearSession();
     },
+    async forgotPassword(email: string) {
+      return request<{ success: boolean }>("/api/v1/auth/forgot-password", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
+    },
+    async resetPassword(token: string, password: string) {
+      return request<{ success: boolean }>("/api/v1/auth/reset-password", {
+        method: "POST",
+        body: JSON.stringify({ token, password }),
+      });
+    },
+    async verifyEmail(token: string) {
+      return request<{ success: boolean; message: string }>("/api/v1/auth/verify-email", {
+        method: "POST",
+        body: JSON.stringify({ token }),
+      });
+    },
+    async resendVerification(email: string) {
+      return request<{ success: boolean; message: string }>("/api/v1/auth/resend-verification", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
+    },
   },
   tutorProfiles: {
     async list() {
       return authenticatedRequest<TutorProfile[]>("/api/v1/tutor-profiles");
+    },
+    async update(id: string, payload: Record<string, unknown>) {
+      return authenticatedRequest<TutorProfile>(`/api/v1/tutor-profiles/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+      });
     },
   },
   parentProfiles: {
     async list() {
       return authenticatedRequest<ParentProfile[]>("/api/v1/parent-profiles");
     },
+    async update(id: string, payload: Record<string, unknown>) {
+      return authenticatedRequest<ParentProfile>(`/api/v1/parent-profiles/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+      });
+    },
+  },
+  users: {
+    async update(id: string, payload: Record<string, unknown>) {
+      return authenticatedRequest<{ id: string; email: string }>(`/api/v1/users/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+      });
+    },
   },
   studentProfiles: {
     async list() {
       return authenticatedRequest<StudentProfile[]>("/api/v1/student-profiles");
+    },
+    async listByParent(parentId: string) {
+      return authenticatedRequest<StudentProfile[]>(`/api/v1/student-profiles?parentId=${parentId}`);
     },
     async get(id: string) {
       return authenticatedRequest<StudentProfile>(`/api/v1/student-profiles/${id}`);
@@ -511,11 +648,11 @@ export const api = {
       email: string;
       password: string;
       fullName: string;
-      phone: string;
+      phone?: string;
       nickname: string;
       birthDate: string;
       avatarUrl?: string | null;
-      category: "JUNIOR_I" | "JUNIOR_II" | "JUNIOR_III";
+      categoryId?: string | null;
     }) {
       return authenticatedRequest<StudentProfile>("/api/v1/auth/register/student", {
         method: "POST",
@@ -540,7 +677,7 @@ export const api = {
     async listUnassignedByCurriculum(curriculumId: string) {
       return authenticatedRequest<Enrollment[]>(`/api/v1/academic/enrollments/unassigned/${curriculumId}`);
     },
-    async create(payload: { studentId: string; classId?: string; curriculumId: string; totalMeetPurchased?: number }) {
+    async create(payload: { studentId: string; classId?: string; curriculumId: string; totalMeetPurchased?: number; verified?: boolean }) {
       return authenticatedRequest<Enrollment>("/api/v1/academic/enrollments", {
         method: "POST",
         body: JSON.stringify(payload),
@@ -676,13 +813,13 @@ export const api = {
     async listByTutor(tutorId: string) {
       return authenticatedRequest<Class[]>(`/api/v1/academic/classes?tutorId=${tutorId}`);
     },
-    async create(payload: { name: string; type?: "BATCH" | "PRIVATE" | "MAKEUP" | "OFFLINE"; category: string; tutorIds: string[]; curriculumId?: string | null; startDate: string }) {
+    async create(payload: { name: string; type?: "BATCH" | "PRIVATE" | "MAKEUP" | "TRIAL"; categoryId?: string | null; tutorIds: string[]; curriculumId?: string | null; startDate: string; isOnline?: boolean; location?: string | null }) {
       return authenticatedRequest<Class>("/api/v1/academic/classes", {
         method: "POST",
         body: JSON.stringify(payload),
       });
     },
-    async update(id: string, payload: { name?: string; tutorIds?: string[]; isActive?: boolean; type?: "BATCH" | "PRIVATE" | "MAKEUP" | "OFFLINE" }) {
+    async update(id: string, payload: { name?: string; tutorIds?: string[]; isActive?: boolean; type?: "BATCH" | "PRIVATE" | "MAKEUP" | "TRIAL"; isOnline?: boolean; location?: string | null; categoryId?: string | null }) {
       return authenticatedRequest<Class>(`/api/v1/academic/classes/${id}`, {
         method: "PATCH",
         body: JSON.stringify(payload),
@@ -722,6 +859,11 @@ export const api = {
         body: JSON.stringify(payload),
       });
     },
+    async delete(id: string) {
+      return authenticatedRequest<void>(`/api/v1/academic/announcements/${id}`, {
+        method: "DELETE",
+      });
+    },
   },
   curriculums: {
     async list() {
@@ -730,16 +872,16 @@ export const api = {
     async get(id: string) {
       return authenticatedRequest<Curriculum>(`/api/v1/academic/curriculums/${id}`);
     },
-    async listByCategory(category: string) {
-      return authenticatedRequest<Curriculum[]>(`/api/v1/academic/curriculums?category=${category}`);
+    async listByCategory(categoryIds: string[]) {
+      return authenticatedRequest<Curriculum[]>(`/api/v1/academic/curriculums?categoryIds=${categoryIds.join(",")}`);
     },
-    async create(payload: { category: string; name: string; assessmentSetId?: string | null }) {
+    async create(payload: { categoryIds: string[]; name: string; assessmentSetId?: string | null }) {
       return authenticatedRequest<Curriculum>("/api/v1/academic/curriculums", {
         method: "POST",
         body: JSON.stringify(payload),
       });
     },
-    async update(id: string, payload: Partial<{ name: string; assessmentSetId: string | null }>) {
+    async update(id: string, payload: Partial<{ name: string; assessmentSetId: string | null; categoryIds: string[] }>) {
       return authenticatedRequest<Curriculum>(`/api/v1/academic/curriculums/${id}`, {
         method: "PATCH",
         body: JSON.stringify(payload),
@@ -758,6 +900,7 @@ export const api = {
     async create(payload: {
       curriculumId?: string | null;
       title: string;
+      imageUrl?: string | null;
       materialLink?: string | null;
       exampleProjectLink?: string | null;
       goals?: string | null;
@@ -771,6 +914,7 @@ export const api = {
     },
     async update(id: string, payload: Partial<{
       title: string;
+      imageUrl: string | null;
       materialLink: string | null;
       exampleProjectLink: string | null;
       goals: string | null;
@@ -861,6 +1005,11 @@ export const api = {
       });
     },
   },
+  categories: {
+    async list() {
+      return authenticatedRequest<Category[]>("/api/v1/academic/categories");
+    },
+  },
   assessmentAspects: {
     async listBySet(assessmentSetId: string) {
       return authenticatedRequest<AssessmentAspect[]>(`/api/v1/academic/assessment-aspects?assessmentSetId=${assessmentSetId}`);
@@ -869,6 +1018,7 @@ export const api = {
       assessmentSetId: string;
       title: string;
       description?: string | null;
+      icon?: string | null;
       minScore?: number;
       maxScore?: number;
       order?: number;
@@ -881,6 +1031,7 @@ export const api = {
     async update(id: string, payload: Partial<{
       title: string;
       description: string | null;
+      icon: string | null;
       minScore: number;
       maxScore: number;
       order: number;
@@ -973,10 +1124,10 @@ export const api = {
   },
   savedReports: {
     async list() {
-      return authenticatedRequest<any[]>("/api/v1/academic/saved-reports");
+      return authenticatedRequest<SavedReport[]>("/api/v1/academic/saved-reports");
     },
     async listByStudent(studentId: string) {
-      return authenticatedRequest<any[]>(`/api/v1/academic/saved-reports/student/${studentId}`);
+      return authenticatedRequest<SavedReport[]>(`/api/v1/academic/saved-reports/student/${studentId}`);
     },
     async create(payload: { studentId: string; title: string; data: any }) {
       return authenticatedRequest<{ id: string; createdAt: string }>("/api/v1/academic/saved-reports", {
@@ -986,6 +1137,31 @@ export const api = {
     },
     async delete(id: string) {
       return authenticatedRequest<{ success: boolean }>(`/api/v1/academic/saved-reports/${id}`, {
+        method: "DELETE",
+      });
+    },
+  },
+  galleries: {
+    async list() {
+      return authenticatedRequest<Gallery[]>("/api/v1/galleries");
+    },
+    async listByStudent(studentId: string) {
+      return authenticatedRequest<Gallery[]>(`/api/v1/galleries/student/${studentId}`);
+    },
+    async create(payload: { studentId: string; imageUrl: string; caption?: string }) {
+      return authenticatedRequest<Gallery>("/api/v1/galleries", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    },
+    async update(id: string, payload: { imageUrl?: string; caption?: string }) {
+      return authenticatedRequest<Gallery>(`/api/v1/galleries/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+      });
+    },
+    async delete(id: string) {
+      return authenticatedRequest<void>(`/api/v1/galleries/${id}`, {
         method: "DELETE",
       });
     },

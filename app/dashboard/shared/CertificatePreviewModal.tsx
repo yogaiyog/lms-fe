@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Download, Printer, X } from "lucide-react";
-import { api, type Enrollment } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { CheckCircle2, Download, Printer, X } from "lucide-react";
+import { api, type Enrollment, type Certificate } from "@/lib/api";
 
 type PreviewMode = "admin" | "student";
 
@@ -11,6 +12,8 @@ type Props = {
   enrollment: Enrollment | null;
   studentName: string;
   mode: PreviewMode;
+  initialSent?: boolean;
+  onSent?: (certificate: Certificate) => void;
   onClose: () => void;
 };
 
@@ -19,8 +22,11 @@ export default function CertificatePreviewModal({
   enrollment,
   studentName,
   mode,
+  initialSent = false,
+  onSent,
   onClose,
 }: Props) {
+  const router = useRouter();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [pdfFileName, setPdfFileName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -37,7 +43,7 @@ export default function CertificatePreviewModal({
       if (cancelled) return;
       setLoading(true);
       setError("");
-      setSent(false);
+      setSent(initialSent);
       setPdfUrl(null);
       setPdfFileName("");
     });
@@ -78,7 +84,7 @@ export default function CertificatePreviewModal({
         objectUrlRef.current = null;
       }
     };
-  }, [open, enrollment, studentName]);
+  }, [open, enrollment, studentName, initialSent]);
 
   function handleDownload() {
     if (!pdfUrl) return;
@@ -95,16 +101,22 @@ export default function CertificatePreviewModal({
     iframe?.contentWindow?.print();
   }
 
+  function handleOpenPage() {
+    if (!enrollment) return;
+    router.push(`/certificate/preview?enrollmentId=${enrollment.id}&mode=${mode}`);
+  }
+
   async function handleSendToDashboard() {
     if (!enrollment || sending || sent) return;
     setSending(true);
     try {
       const certNumber = `CERT-${Date.now()}`;
-      await api.certificates.create({
+      const certificate = await api.certificates.create({
         studentId: enrollment.studentId,
         curriculumId: enrollment.curriculumId,
         certificateNumber: certNumber,
       });
+      onSent?.(certificate);
       setSent(true);
     } catch {
       alert("Gagal mengirim sertifikat ke dashboard student");
@@ -125,7 +137,7 @@ export default function CertificatePreviewModal({
           </button>
         </div>
 
-        <div className="flex-1 p-4">
+        <div className="flex-1 min-h-0 p-4">
           {error ? (
             <div className="flex h-full items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white/70">
               <div className="flex flex-col items-center gap-3 text-center">
@@ -149,7 +161,7 @@ export default function CertificatePreviewModal({
             <iframe
               id="certificate-preview-frame"
               src={pdfUrl ?? undefined}
-              className="h-full w-full rounded-2xl border border-slate-200 bg-white"
+              className="h-full min-h-[72vh] w-full rounded-2xl border border-slate-200 bg-white"
               title="Pratinjau Sertifikat"
             />
           )}
@@ -162,16 +174,22 @@ export default function CertificatePreviewModal({
           >
             Tutup
           </button>
-          <button
-            onClick={handlePrint}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-sm font-bold text-blue-600 shadow-sm ring-1 ring-blue-600/30 transition hover:bg-blue-50"
-          >
-            <Printer size={15} />
-            Cetak
-          </button>
-          <button
-            onClick={handleDownload}
-            disabled={!pdfUrl}
+        <button
+          onClick={handlePrint}
+          className="inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-sm font-bold text-blue-600 shadow-sm ring-1 ring-blue-600/30 transition hover:bg-blue-50"
+        >
+          <Printer size={15} />
+          Cetak
+        </button>
+        <button
+          onClick={handleOpenPage}
+          className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-50"
+        >
+          Buka di Halaman
+        </button>
+        <button
+          onClick={handleDownload}
+          disabled={!pdfUrl}
             className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700 disabled:opacity-50"
           >
             <Download size={15} />
@@ -187,8 +205,12 @@ export default function CertificatePreviewModal({
             </button>
           )}
           {sent && (
-            <span className="inline-flex items-center gap-1.5 rounded-xl bg-green-100 px-4 py-2 text-sm font-bold text-green-700">
-              Terkirim
+            <span
+              className="inline-flex items-center justify-center rounded-xl bg-green-100 px-3 py-2 text-green-700 ring-1 ring-green-200"
+              title="asdasdasd"
+              aria-label="Terkirim"
+            >
+              <CheckCircle2 size={16} />
             </span>
           )}
         </div>

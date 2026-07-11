@@ -12,7 +12,7 @@ export type Theme = {
 export type ClassWithEnrollments = {
   id: string;
   name: string;
-  category: string;
+  category?: import("@/lib/api").Category | null | string;
   curriculum?: { id: string; name: string } | null;
   enrollments?: { id: string; studentId: string; totalMeetPurchased?: number | null; totalMeetLeft?: number | null }[];
 };
@@ -48,6 +48,7 @@ export type AttendanceWithDetails = Attendance & {
 export type AspectSummary = {
   aspectTitle: string;
   aspectDescription: string | null;
+  icon?: string | null;
   avgScore: number;
   avgMaxScore: number;
   avgPercentage: number;
@@ -58,6 +59,7 @@ export type AspectSummary = {
 export type AssessmentScore = {
   aspectTitle: string;
   aspectDescription: string | null;
+  icon?: string | null;
   avgScore: number;
   avgMaxScore: number;
   avgPercentage: number;

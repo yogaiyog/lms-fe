@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, type FormEvent } from "react";
+import * as LucideIcons from "lucide-react";
 import { api, type AssessmentSet, type AssessmentAspect } from "@/lib/api";
 
 type Props = {
@@ -22,12 +23,25 @@ export default function AssessmentSetManagement({ assessmentSets, onRefresh }: P
   const [detailError, setDetailError] = useState("");
 
   const [showAddAspect, setShowAddAspect] = useState(false);
+  const [editingAspectId, setEditingAspectId] = useState<string | null>(null);
   const [aspectTitle, setAspectTitle] = useState("");
   const [aspectDesc, setAspectDesc] = useState("");
+  const [aspectIcon, setAspectIcon] = useState("");
   const [aspectMin, setAspectMin] = useState(1);
   const [aspectMax, setAspectMax] = useState(5);
   const [aspectOrder, setAspectOrder] = useState(0);
   const [aspectSaving, setAspectSaving] = useState(false);
+  const [showIconPicker, setShowIconPicker] = useState(false);
+  const [editIconAspectId, setEditIconAspectId] = useState<string | null>(null);
+
+  const ASPECT_ICONS = [
+    "Star", "Trophy", "Award", "Brain", "Lightbulb", "Code2", "Puzzle",
+    "Clock", "MessageCircle", "FolderCheck", "Users", "Presentation",
+    "TrendingUp", "Palette", "Music", "PenLine", "Ruler", "Calculator",
+    "Heart", "Zap", "Target", "Eye", "Feather", "Sparkles", "Flame",
+    "Droplet", "Sun", "Moon", "Shield", "BookOpen", "Compass", "Crown",
+    "Gem", "Key", "Link", "Lock", "Map", "Search", "Settings",
+  ] as const;
 
   useEffect(() => {
     if (!detailSet) return;
@@ -67,20 +81,57 @@ export default function AssessmentSetManagement({ assessmentSets, onRefresh }: P
         assessmentSetId: detailSet.id,
         title: aspectTitle.trim(),
         description: aspectDesc.trim() || null,
+        icon: aspectIcon || null,
         minScore: aspectMin,
         maxScore: aspectMax,
         order: aspectOrder,
       });
       setDetailAspects((prev) => [...prev, created].sort((a, b) => a.order - b.order));
-      setAspectTitle("");
-      setAspectDesc("");
-      setAspectMin(1);
-      setAspectMax(5);
-      setAspectOrder(detailAspects.length);
+      resetAspectForm();
       setShowAddAspect(false);
     } catch {
       setDetailError("Gagal menambah aspek");
     } finally { setAspectSaving(false); }
+  }
+
+  async function updateAspect() {
+    if (!editingAspectId || !aspectTitle.trim()) return;
+    setAspectSaving(true);
+    try {
+      const updated = await api.assessmentAspects.update(editingAspectId, {
+        title: aspectTitle.trim(),
+        description: aspectDesc.trim() || null,
+        icon: aspectIcon || null,
+        minScore: aspectMin,
+        maxScore: aspectMax,
+        order: aspectOrder,
+      });
+      setDetailAspects((prev) => prev.map((a) => a.id === updated.id ? updated : a).sort((a, b) => a.order - b.order));
+      resetAspectForm();
+      setEditingAspectId(null);
+      setShowAddAspect(false);
+    } catch {
+      setDetailError("Gagal mengupdate aspek");
+    } finally { setAspectSaving(false); }
+  }
+
+  function resetAspectForm() {
+    setAspectTitle("");
+    setAspectDesc("");
+    setAspectIcon("");
+    setAspectMin(1);
+    setAspectMax(5);
+    setAspectOrder(0);
+  }
+
+  async function updateAspectIcon(aspect: AssessmentAspect, icon: string) {
+    try {
+      const updated = await api.assessmentAspects.update(aspect.id, { icon: icon || null });
+      setDetailAspects((prev) => prev.map((a) => a.id === updated.id ? { ...a, icon: updated.icon } : a));
+    } catch {
+      setDetailError("Gagal mengupdate icon");
+    }
+    setEditIconAspectId(null);
   }
 
   async function deleteAspect(id: string) {
@@ -91,6 +142,13 @@ export default function AssessmentSetManagement({ assessmentSets, onRefresh }: P
     } catch {
       setDetailError("Gagal menghapus aspek");
     }
+  }
+
+  function IconPreview({ icon, size = 16 }: { icon?: string | null; size?: number }) {
+    if (!icon) return <span className="text-slate-300">—</span>;
+    const LucideIcon = (LucideIcons as any)[icon];
+    if (!LucideIcon) return <span className="text-slate-300">—</span>;
+    return <LucideIcon size={size} />;
   }
 
   async function onCreate(e: FormEvent<HTMLFormElement>) {
@@ -200,17 +258,15 @@ export default function AssessmentSetManagement({ assessmentSets, onRefresh }: P
               <textarea value={detailDesc} onChange={(e) => { setDetailDesc(e.target.value); setDetailDirty(true); }} rows={3}
                 className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
             </div>
-
             <div className="mb-4">
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-sm font-semibold text-slate-700">Aspek ({detailAspects.length})</span>
                 <button onClick={() => {
-                  setShowAddAspect(!showAddAspect);
+                  if (showAddAspect) { setShowAddAspect(false); setEditingAspectId(null); return; }
+                  resetAspectForm();
                   setAspectOrder(detailAspects.length);
-                  setAspectTitle("");
-                  setAspectDesc("");
-                  setAspectMin(1);
-                  setAspectMax(5);
+                  setEditingAspectId(null);
+                  setShowAddAspect(true);
                 }}
                   className="rounded-lg bg-emerald-50 px-3 py-1 text-[11px] font-bold text-emerald-700 transition hover:bg-emerald-100"
                 >
@@ -220,6 +276,9 @@ export default function AssessmentSetManagement({ assessmentSets, onRefresh }: P
 
               {showAddAspect && (
                 <div className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50/50 p-3 text-sm">
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-700">{editingAspectId ? "Edit Aspek" : "Tambah Aspek"}</span>
+                  </div>
                   <div className="mb-2">
                     <label className="mb-0.5 block text-xs font-semibold text-slate-600">Judul</label>
                     <input value={aspectTitle} onChange={(e) => setAspectTitle(e.target.value)} autoFocus
@@ -229,6 +288,60 @@ export default function AssessmentSetManagement({ assessmentSets, onRefresh }: P
                     <label className="mb-0.5 block text-xs font-semibold text-slate-600">Deskripsi</label>
                     <input value={aspectDesc} onChange={(e) => setAspectDesc(e.target.value)}
                       className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-blue-400" />
+                  </div>
+                  <div className="mb-2">
+                    <label className="mb-0.5 block text-xs font-semibold text-slate-600">Icon</label>
+                    <div className="relative">
+                      <button type="button" onClick={() => setShowIconPicker(true)}
+                        className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition hover:border-blue-400"
+                      >
+                        {aspectIcon ? (
+                          <><IconPreview icon={aspectIcon} size={16} /><span className="text-slate-700">{aspectIcon}</span></>
+                        ) : (
+                          <span className="text-slate-400">Pilih icon</span>
+                        )}
+                      </button>
+                      {showIconPicker && (
+                        <div className="absolute left-0 top-full z-50 mt-1 w-[320px] rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
+                          <div className="mb-2 flex items-center justify-between">
+                            <span className="text-xs font-semibold text-slate-600">Pilih Icon</span>
+                            <button onClick={() => { setShowIconPicker(false); setEditIconAspectId(null); }}
+                              className="rounded p-0.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                            >
+                              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                          <div className="flex max-h-48 flex-wrap gap-1 overflow-y-auto">
+                            {ASPECT_ICONS.map((name) => {
+                              const LucideIcon = (LucideIcons as any)[name];
+                              if (!LucideIcon) return null;
+                              return (
+                                <button key={name} type="button" onClick={() => {
+                                  if (editIconAspectId) {
+                                    const aspect = detailAspects.find((a) => a.id === editIconAspectId);
+                                    if (aspect) updateAspectIcon(aspect, name);
+                                  } else {
+                                    setAspectIcon(name);
+                                  }
+                                  setShowIconPicker(false);
+                                  setEditIconAspectId(null);
+                                }}
+                                  className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs transition hover:bg-blue-100 ${
+                                    (editIconAspectId ? detailAspects.find((a) => a.id === editIconAspectId)?.icon : aspectIcon) === name
+                                      ? "bg-blue-100 text-blue-700 ring-2 ring-blue-300" : "text-slate-500 hover:text-slate-700"
+                                  }`}
+                                  title={name}
+                                >
+                                  <LucideIcon size={16} />
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="mb-2 grid grid-cols-3 gap-2">
                     <div>
@@ -248,15 +361,15 @@ export default function AssessmentSetManagement({ assessmentSets, onRefresh }: P
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => setShowAddAspect(false)}
+                    <button onClick={() => { resetAspectForm(); setEditingAspectId(null); setShowAddAspect(false); }}
                       className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
                     >
                       Batal
                     </button>
-                    <button onClick={addAspect} disabled={!aspectTitle.trim() || aspectSaving}
+                    <button onClick={editingAspectId ? updateAspect : addAspect} disabled={!aspectTitle.trim() || aspectSaving}
                       className="flex-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-emerald-700 disabled:opacity-50"
                     >
-                      {aspectSaving ? "..." : "Simpan"}
+                      {aspectSaving ? "..." : editingAspectId ? "Update" : "Simpan"}
                     </button>
                   </div>
                 </div>
@@ -266,11 +379,14 @@ export default function AssessmentSetManagement({ assessmentSets, onRefresh }: P
                 <p className="text-xs text-slate-400">Belum ada aspek</p>
               ) : (
                 <div className="space-y-1.5">
-                  {detailAspects.map((a, i) => (
+                  {detailAspects.map((a) => (
                     <div key={a.id} className="flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-2">
-                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-blue-50 text-[10px] font-bold text-blue-700">
-                        {i + 1}
-                      </span>
+                      <button onClick={() => { setEditIconAspectId(a.id); setShowIconPicker(true); }}
+                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-blue-50 text-[10px] font-bold text-blue-700 transition hover:bg-blue-100"
+                        title="Ganti icon"
+                      >
+                        <IconPreview icon={a.icon} size={14} />
+                      </button>
                       <div className="min-w-0 flex-1">
                         <p className="text-xs font-semibold text-slate-800">{a.title}</p>
                         <p className="text-[10px] text-slate-400">{a.description ?? "—"}</p>
@@ -278,6 +394,23 @@ export default function AssessmentSetManagement({ assessmentSets, onRefresh }: P
                       <span className="shrink-0 text-[10px] text-slate-500">
                         {a.minScore}-{a.maxScore}
                       </span>
+                      <button onClick={() => {
+                        setEditingAspectId(a.id);
+                        setAspectTitle(a.title);
+                        setAspectDesc(a.description ?? "");
+                        setAspectIcon(a.icon ?? "");
+                        setAspectMin(a.minScore);
+                        setAspectMax(a.maxScore);
+                        setAspectOrder(a.order);
+                        setShowAddAspect(true);
+                      }}
+                        className="shrink-0 rounded-lg p-1 text-slate-300 transition hover:bg-amber-50 hover:text-amber-500"
+                        title="Edit aspek"
+                      >
+                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                        </svg>
+                      </button>
                       <button onClick={() => deleteAspect(a.id)}
                         className="shrink-0 rounded-lg p-1 text-slate-300 transition hover:bg-red-50 hover:text-red-500"
                       >

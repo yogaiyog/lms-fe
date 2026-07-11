@@ -718,6 +718,20 @@ export default function TutorDashboard() {
           onProjectLinkChange={setProjectLink}
           onSaveAssessment={saveAssessment}
           onMarkDone={markScheduleDone}
+          onUpdateAttendance={async (attendanceId, status) => {
+            const deletingStatuses = ["ABSENT", "PERMISSION", "SICK"];
+            if (deletingStatuses.includes(status)) {
+              const att = detailAttendances.find((a) => a.id === attendanceId);
+              if (att?.assessment?.id) {
+                const scores = att.assessment.scores ?? [];
+                await Promise.all(scores.map((s) => api.attendanceAssessmentScores.delete(s.id).catch(() => {})));
+                await api.attendanceAssessments.delete(att.assessment.id).catch(() => {});
+              }
+            }
+            await api.attendances.update(attendanceId, { status });
+            const attendances = await api.attendances.listBySchedule(detailSchedule!.id);
+            setDetailAttendances(attendances);
+          }}
         />
       )}
     </div>

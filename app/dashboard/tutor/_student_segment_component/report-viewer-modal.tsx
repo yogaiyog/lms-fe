@@ -1,14 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, X, ThumbsUp, Save, CalendarCheck2, Trophy, Percent, Award, CheckCircle2, AlertTriangle, BookOpen, Brain, Code2, Lightbulb, Puzzle, Clock, MessageCircle, FolderCheck, Users, Presentation, TrendingUp, Quote } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { ChevronLeft, X, ThumbsUp, Save, CalendarCheck2, Trophy, Percent, Award, CheckCircle2, AlertTriangle, BookOpen, Brain, Code2, Lightbulb, Puzzle, Clock, MessageCircle, FolderCheck, Users, Presentation, TrendingUp, Quote, Star, Palette, PenLine, Ruler, Calculator, Heart, Zap, Target, Eye, Feather, Sparkles, Flame, Droplet, Sun, Moon, Shield, Gem, Key, Search, Compass, Crown, Link, Lock, Map, Settings } from "lucide-react";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts";
 
 type Theme = { dark: boolean; bg: string; card: string; border: string; text: string; textMuted: string };
 
-type Aspect = { aspectTitle: string; aspectDescription?: string | null; narrative: string };
+type Aspect = { aspectTitle: string; aspectDescription?: string | null; icon?: string | null; narrative: string };
 type AssessmentScoreItem = {
   aspectTitle: string;
+  aspectDescription?: string | null;
+  icon?: string | null;
   avgScore: number;
   avgMaxScore: number;
   avgPercentage: number;
@@ -63,23 +66,29 @@ const scoreColor = (pct: number) => {
   return { bar: "#EF4444", bg: "#FEE2E2", text: "#B91C1C" };
 };
 
-const ASPECT_ICONS: Record<string, typeof Brain> = {
-  kreativitas: Lightbulb,
-  creativity: Lightbulb,
-  code: Code2,
-  kode: Code2,
-  konsep: Brain,
-  pemahaman: Brain,
-  mandiri: Users,
-  kemandirian: Users,
-  problem: Puzzle,
-  "problem solving": Puzzle,
-  waktu: Clock,
-  partisipasi: MessageCircle,
-  kerapian: FolderCheck,
-  kolaborasi: Users,
-  presentasi: Presentation,
+const BUILTIN_ICON_MAP: Record<string, LucideIcon> = {
+  Star, Trophy, Award, Brain, Lightbulb, Code2, Puzzle, Clock,
+  MessageCircle, FolderCheck, Users, Presentation, TrendingUp,
+  Palette, PenLine, Ruler, Calculator, Heart, Zap, Target, Eye,
+  Feather, Sparkles, Flame, Droplet, Sun, Moon, Shield, BookOpen,
+  Compass, Crown, Gem, Key, Link, Lock, Map, Search, Settings,
 };
+
+function hashSeed(seed: string) {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i += 1) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
+const FALLBACK_ICONS = Object.values(BUILTIN_ICON_MAP).filter((v, i, a) => a.indexOf(v) === i);
+
+function resolveIcon(iconName?: string | null, seed?: string): LucideIcon {
+  if (iconName && BUILTIN_ICON_MAP[iconName]) return BUILTIN_ICON_MAP[iconName];
+  if (seed) return FALLBACK_ICONS[hashSeed(seed) % FALLBACK_ICONS.length];
+  return Brain;
+}
 
 export default function ReportViewerModal({
   theme, data, title, onBack, onClose, onSave, saving,
@@ -237,7 +246,7 @@ export default function ReportViewerModal({
               <div className="space-y-3">
                 {data.assessmentScores.map((s) => {
                   const c = scoreColor(s.avgPercentage);
-                  const Icon = ASPECT_ICONS[s.aspectTitle.toLowerCase()] ?? Brain;
+                  const Icon = resolveIcon(s.icon, s.aspectTitle);
                   return (
                     <div key={s.aspectTitle}>
                       <div className="mb-1.5 flex items-center gap-2.5">
@@ -317,7 +326,7 @@ export default function ReportViewerModal({
                 {data.notes!.map((n, i: number) => (
                   <div key={i} className="relative z-10">
                     <p className={`text-sm leading-relaxed italic ${textCls}`}>
-                      "{n.comment}"
+                      &quot;{n.comment}&quot;
                     </p>
                     <div className="mt-3 flex items-center gap-2.5">
                       <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold text-white">

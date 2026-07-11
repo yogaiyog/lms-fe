@@ -61,22 +61,39 @@ export default function ClassDetailModal({
 
       for (const s of futureSchedules) {
         const dayIdx = DAY_NAMES.indexOf(s.dayOfWeek);
+        const dateStr = s.date
+          ? new Date(s.date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })
+          : "";
+        const timeStr = `${dateStr} ${s.dayOfWeek} ${s.startTime}-${s.endTime}`;
 
         if (res.dayoffs.includes(dayIdx)) {
-          conflicts.push(`${s.dayOfWeek} ${s.startTime}-${s.endTime} (hari off)`);
+          conflicts.push(`${timeStr} (hari libur)`);
           continue;
         }
 
-        const matchingSlot = res.slots.find(
+        const existingSlot = res.slots.find(
           (slot) =>
             slot.dayOfWeek === s.dayOfWeek &&
-            slot.startTime <= s.startTime &&
-            slot.endTime >= s.endTime &&
-            !slot.isFilled,
+            slot.startTime < s.endTime &&
+            slot.endTime > s.startTime,
         );
 
+        if (!existingSlot) {
+          conflicts.push(`${timeStr} (jadwal tidak tersedia)`);
+          continue;
+        }
+
+        if (existingSlot.isFilled && process.env.NEXT_PUBLIC_ALLOW_MULTI_CLASS !== "true") {
+          conflicts.push(`${timeStr} (slot terisi kelas lain)`);
+          continue;
+        }
+
+        const matchingSlot = process.env.NEXT_PUBLIC_ALLOW_MULTI_CLASS === "true"
+          ? existingSlot
+          : (existingSlot.isFilled ? undefined : existingSlot);
+
         if (!matchingSlot) {
-          conflicts.push(`${s.dayOfWeek} ${s.startTime}-${s.endTime}`);
+          conflicts.push(`${timeStr}`);
         }
       }
 
@@ -135,7 +152,7 @@ export default function ClassDetailModal({
           </div>
           <div className="rounded-xl bg-slate-50 p-3">
             <span className="block font-semibold text-slate-700">Kategori</span>
-            {CATEGORY_LABELS[detailClass.category] ?? detailClass.category}
+            {detailClass.category?.label ?? "-"}
           </div>
           <div className="rounded-xl bg-slate-50 p-3">
             <span className="block font-semibold text-slate-700">Batch</span>

@@ -1,8 +1,9 @@
 "use client";
 
-import { BookOpen, Calendar, Clock, User, Video, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { BookOpen, Calendar, Clock, User, Video, ChevronRight, Trash2 } from "lucide-react";
 import Link from "next/link";
-import type { Schedule, Topic, Announcement } from "@/lib/api";
+import { api, type Schedule, type Topic, type Announcement } from "@/lib/api";
 
 const DAY_LABELS: Record<string, string> = {
   MONDAY: "Senin", TUESDAY: "Selasa", WEDNESDAY: "Rabu",
@@ -27,7 +28,8 @@ type Theme = {
 type ClassWithDetails = {
   id: string;
   name: string;
-  category: string;
+  isOnline?: boolean;
+  category?: import("@/lib/api").Category | null;
   enrollments?: { id: string; studentId: string }[];
   schedules: Schedule[];
   announcements: Announcement[];
@@ -59,6 +61,26 @@ export default function TutorClassesSegment({
   onStartEditSchedule: (schedule: Schedule, classId: string) => void;
   onOpenAnnounceForm: (classId: string) => void;
 }) {
+  const [deletingAnn, setDeletingAnn] = useState<string | null>(null);
+  const [localAnnouncements, setLocalAnnouncements] = useState<Record<string, Announcement[]>>({});
+
+  async function handleDeleteAnn(ann: Announcement, classId: string) {
+    if (!confirm("Hapus pengumuman ini?")) return;
+    setDeletingAnn(ann.id);
+    try {
+      await api.announcements.delete(ann.id);
+      setLocalAnnouncements((prev) => ({
+        ...prev,
+        [classId]: (prev[classId] ?? []).filter((a) => a.id !== ann.id),
+      }));
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Gagal menghapus";
+      alert(msg);
+    } finally {
+      setDeletingAnn(null);
+    }
+  }
+
   if (classes.length === 0) {
     return (
       <Card theme={theme} className="p-12 flex flex-col items-center text-center border-dashed">
@@ -81,7 +103,7 @@ export default function TutorClassesSegment({
               <div>
                 <h3 className={`text-lg font-extrabold ${theme.text}`}>{cls.name}</h3>
                 <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
-                  {CATEGORY_LABELS[cls.category] ?? cls.category}
+                  {cls.category?.label ?? "-"}
                 </span>
               </div>
             </div>
@@ -99,18 +121,30 @@ export default function TutorClassesSegment({
                 + Pengumuman
               </button>
             </div>
-            {cls.announcements.length > 0 ? (
+            {(() => {
+              const clsAnnouncements = localAnnouncements[cls.id] ?? cls.announcements;
+              return clsAnnouncements.length > 0 ? (
               <div className="space-y-2">
-                {cls.announcements.map((ann) => (
+                {clsAnnouncements.map((ann) => (
                   <div key={ann.id} className={`rounded-xl px-3 py-2.5 ${theme.dark ? "bg-slate-800" : "bg-slate-50"}`}>
-                    <p className={`text-sm font-bold ${theme.text}`}>{ann.title}</p>
-                    <p className={`mt-0.5 text-xs ${theme.textMuted}`}>{ann.content}</p>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className={`text-sm font-bold ${theme.text}`}>{ann.title}</p>
+                        <p className={`mt-0.5 text-xs ${theme.textMuted}`}>{ann.content}</p>
+                      </div>
+                      <button onClick={() => handleDeleteAnn(ann, cls.id)}
+                        disabled={deletingAnn === ann.id}
+                        className="shrink-0 rounded-lg p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors disabled:opacity-50">
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
             ) : (
               <p className={`text-sm ${theme.textMuted}`}>Belum ada pengumuman</p>
-            )}
+            );
+            })()}
           </div>
 
           {cls.schedules.length > 0 && (
@@ -146,7 +180,7 @@ export default function TutorClassesSegment({
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        {schedule.meetLink && !isPast && (
+                        {schedule.meetLink && !isPast && cls.isOnline !== false && (
                           <a href={schedule.meetLink} target="_blank" rel="noopener noreferrer"
                             className="inline-flex items-center gap-1.5 rounded-xl bg-blue-100 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-200 transition-colors">
                             <Video size={14} /> Meet

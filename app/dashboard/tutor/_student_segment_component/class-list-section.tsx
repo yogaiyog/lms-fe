@@ -22,18 +22,20 @@ export default function ClassListSection({
         {classes.map((cls) => {
           const enrollment = (cls.enrollments ?? []).find((e) => e.studentId === studentId);
           return (
-            <div key={cls.id} className={`rounded-xl px-3 py-2.5 ${theme.dark ? "bg-slate-800" : "bg-slate-50"}`}>
-              <div className="flex items-center justify-between">
-                <p className={`text-sm font-bold ${theme.text}`}>{cls.name}</p>
-                <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
-                  {CATEGORY_LABELS[cls.category] ?? cls.category}
-                </span>
+            <div key={cls.id}>
+              <div className={`rounded-xl px-3 py-2.5 ${theme.dark ? "bg-slate-800" : "bg-slate-50"}`}>
+                <div className="flex items-center justify-between">
+                  <p className={`text-sm font-bold ${theme.text}`}>{cls.name}</p>
+                  <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+                    {(cls.category && typeof cls.category === "object" ? cls.category.label : CATEGORY_LABELS[cls.category as string]) ?? "-"}
+                  </span>
+                </div>
+                {enrollment && (
+                  <p className={`text-xs mt-1 ${theme.textMuted}`}>
+                    Sisa pertemuan: {enrollment.totalMeetLeft ?? "?"} / {enrollment.totalMeetPurchased ?? "?"}
+                  </p>
+                )}
               </div>
-              {enrollment && (
-                <p className={`text-xs mt-1 ${theme.textMuted}`}>
-                  Sisa pertemuan: {enrollment.totalMeetLeft ?? "?"} / {enrollment.totalMeetPurchased ?? "?"}
-                </p>
-              )}
             </div>
           );
         })}
