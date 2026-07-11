@@ -61,7 +61,9 @@ export default function AdminDashboard() {
           {h.mainMenu === "classes" && h.segment === "classes" && (
             <ClassesTable table={h.classTable} globalFilter={h.classGlobalFilter}
               onGlobalFilterChange={h.setClassGlobalFilter} onRowClick={h.openClassDetail}
-              onToggleActive={h.handleToggleClassActive} />
+              onToggleActive={h.handleToggleClassActive}
+              onDelete={h.handleDeleteClass}
+              tab={h.classTab} onTabChange={h.setClassTab} />
           )}
 
           {h.mainMenu === "classes" && h.segment === "requests" && (

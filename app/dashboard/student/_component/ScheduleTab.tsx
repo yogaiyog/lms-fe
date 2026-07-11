@@ -35,7 +35,9 @@ export default function ScheduleTab({ theme, schedules, classes, attendances }: 
     return classes.find((c) => c.id === schedule.classId);
   }
 
-  const sorted = [...schedules].sort((a, b) => a.date.localeCompare(b.date));
+  const activeClassIds = new Set(classes.filter((c) => c.isActive !== false).map((c) => c.id));
+
+  const sorted = [...schedules].filter((s) => activeClassIds.has(s.classId)).sort((a, b) => a.date.localeCompare(b.date));
 
   const grouped: Record<string, Schedule[]> = {};
   for (const s of sorted) {

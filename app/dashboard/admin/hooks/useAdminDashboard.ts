@@ -136,6 +136,7 @@ export function useAdminDashboard() {
 
   const [classGlobalFilter, setClassGlobalFilter] = useState("");
   const [classSorting, setClassSorting] = useState<SortingState>([]);
+  const [classTab, setClassTab] = useState<"active" | "inactive">("active");
   const [reqGlobalFilter, setReqGlobalFilter] = useState("");
   const [reqSorting, setReqSorting] = useState<SortingState>([]);
 
@@ -328,8 +329,13 @@ export function useAdminDashboard() {
     }),
   ], [classColumnHelper]);
 
+  const tableClasses = useMemo(
+    () => classes.filter((c) => classTab === "active" ? c.isActive !== false : c.isActive === false),
+    [classes, classTab],
+  );
+
   const classTable = useReactTable({
-    data: classes,
+    data: tableClasses,
     columns: classColumns,
     state: { sorting: classSorting, globalFilter: classGlobalFilter },
     onSortingChange: setClassSorting,
@@ -849,6 +855,15 @@ export function useAdminDashboard() {
     }
   }
 
+  async function handleDeleteClass(cls: Class) {
+    try {
+      await api.classes.delete(cls.id);
+      window.location.reload();
+    } catch {
+      showToast("Gagal menghapus kelas", "error");
+    }
+  }
+
   async function refreshCurriculumData() {
     try {
       const [currics, assSets] = await Promise.all([
@@ -963,7 +978,7 @@ export function useAdminDashboard() {
     filteredCurriculums, selectedCurriculum, createBatchPreview,
     tutorSlots, tutorDayoffs, slotsLoading, selectedSlots, setSelectedSlots,
     SLOT_DAYS, SLOT_DAY_LABELS, SLOT_HOURS, fmt, isInRange,
-    classGlobalFilter, setClassGlobalFilter, classTable,
+    classGlobalFilter, setClassGlobalFilter, classTable, classTab, setClassTab,
     reqGlobalFilter, setReqGlobalFilter, reqTable,
     detailClass, setDetailClass,
     detailClassName, setDetailClassName,
@@ -991,7 +1006,7 @@ export function useAdminDashboard() {
     handleRegisterStudent, handleCreateParent,
     handleArchiveStudent, handleRestoreStudent, handleDeleteStudent,
     handleArchiveParent, handleRestoreParent, handleDeleteParent,
-    handleToggleClassActive,
+    handleToggleClassActive, handleDeleteClass,
     allEnrollments, allEnrollmentsLoading, fetchAllEnrollments,
     allParents, allParentsLoading, fetchAllParents,
     createSelectedStudentIds, setCreateSelectedStudentIds,

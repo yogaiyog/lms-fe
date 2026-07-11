@@ -19,6 +19,8 @@ type Props = {
 export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules, countdowns, allClasses, announcements }: Props) {
   const now = new Date();
   const todayDay = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"][now.getDay()];
+  const activeClassIds = new Set(allClasses.filter((c) => c.isActive !== false).map((c) => c.id));
+  const activeWeekSchedules = weekSchedules.filter((s) => activeClassIds.has(s.classId));
 
   return (
     <div className="space-y-6">
@@ -51,7 +53,7 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
       <div>
         <p className={`mb-3 text-xs sm:text-sm font-semibold ${theme.textMuted}`}>Jadwal minggu ini</p>
 
-        {weekSchedules.length === 0 ? (
+        {activeWeekSchedules.length === 0 ? (
           <Card theme={theme} className="p-8 sm:p-12 flex flex-col items-center text-center border-dashed">
             <span className="text-4xl sm:text-5xl mb-3">📅</span>
             <h3 className={`font-bold text-sm sm:text-base ${theme.text}`}>Tidak ada jadwal minggu ini</h3>
@@ -59,7 +61,7 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
           </Card>
         ) : (
           <div className="space-y-3">
-            {weekSchedules.map((schedule) => {
+            {activeWeekSchedules.map((schedule) => {
               const cd = countdowns[schedule.id];
               const isCountdownZero = cd && cd.days === 0 && cd.hours === 0 && cd.minutes === 0 && cd.seconds === 0;
               const isOngoing = isCountdownZero && !schedule.isDone;

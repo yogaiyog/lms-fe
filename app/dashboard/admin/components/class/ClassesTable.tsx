@@ -10,6 +10,9 @@ type Props = {
   onGlobalFilterChange: (v: string) => void;
   onRowClick: (cls: Class) => void;
   onToggleActive?: (cls: Class) => void;
+  onDelete?: (cls: Class) => void;
+  tab: "active" | "inactive";
+  onTabChange: (tab: "active" | "inactive") => void;
 };
 
 function ScheduleCell({ schedules: raw }: { schedules: Schedule[] | undefined | null }) {
@@ -57,14 +60,24 @@ function ScheduleCell({ schedules: raw }: { schedules: Schedule[] | undefined | 
   );
 }
 
-export default function ClassesTable({ table, globalFilter, onGlobalFilterChange, onRowClick, onToggleActive }: Props) {
+export default function ClassesTable({ table, globalFilter, onGlobalFilterChange, onRowClick, onToggleActive, onDelete, tab, onTabChange }: Props) {
   return (
     <div className="rounded-3xl border border-slate-200 bg-white shadow-sm">
-      <div className="px-4 pt-4">
+      <div className="flex items-center gap-4 px-4 pt-4">
         <input value={globalFilter} onChange={(e) => onGlobalFilterChange(e.target.value)}
           placeholder="Cari kelas..."
-          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+          className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
         />
+        <div className="flex shrink-0 gap-1 rounded-xl bg-slate-100 p-1">
+          <button onClick={() => onTabChange("active")}
+            className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-colors ${tab === "active" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}>
+            Aktif
+          </button>
+          <button onClick={() => onTabChange("inactive")}
+            className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-colors ${tab === "inactive" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}>
+            Nonaktif
+          </button>
+        </div>
       </div>
       {table.getRowModel().rows.length === 0 ? (
         <div className="p-6 text-center"><p className="text-slate-500">Belum ada kelas</p></div>
@@ -101,17 +114,25 @@ export default function ClassesTable({ table, globalFilter, onGlobalFilterChange
                     <ScheduleCell schedules={row.original.schedules} />
                   </td>
                   <td className="px-3 py-3 text-center" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-center gap-1">
                     {row.original.isActive ? (
                       <button onClick={() => onToggleActive?.(row.original)}
                         className="rounded-lg px-2.5 py-1 text-[10px] font-bold text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors">
                         Nonaktifkan
                       </button>
                     ) : (
-                      <button onClick={() => onToggleActive?.(row.original)}
-                        className="rounded-lg px-2.5 py-1 text-[10px] font-bold text-emerald-600 hover:bg-emerald-50 transition-colors">
-                        Aktifkan
-                      </button>
+                      <>
+                        <button onClick={() => onToggleActive?.(row.original)}
+                          className="rounded-lg px-2.5 py-1 text-[10px] font-bold text-emerald-600 hover:bg-emerald-50 transition-colors">
+                          Aktifkan
+                        </button>
+                        <button onClick={() => { if (confirm("Yakin hapus kelas ini? Semua jadwal dan pengumuman akan ikut terhapus.")) onDelete?.(row.original); }}
+                          className="rounded-lg px-2.5 py-1 text-[10px] font-bold text-red-500 hover:bg-red-50 transition-colors">
+                          Hapus
+                        </button>
+                      </>
                     )}
+                    </div>
                   </td>
                 </tr>
               ))}

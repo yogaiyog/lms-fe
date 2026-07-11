@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { BookOpen, Calendar, Clock, User, Video, ChevronRight, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { api, type Schedule, type Topic, type Announcement } from "@/lib/api";
@@ -28,6 +28,7 @@ type Theme = {
 type ClassWithDetails = {
   id: string;
   name: string;
+  isActive?: boolean;
   isOnline?: boolean;
   category?: import("@/lib/api").Category | null;
   enrollments?: { id: string; studentId: string }[];
@@ -63,6 +64,7 @@ export default function TutorClassesSegment({
 }) {
   const [deletingAnn, setDeletingAnn] = useState<string | null>(null);
   const [localAnnouncements, setLocalAnnouncements] = useState<Record<string, Announcement[]>>({});
+  const activeClasses = useMemo(() => classes.filter((c) => c.isActive !== false), [classes]);
 
   async function handleDeleteAnn(ann: Announcement, classId: string) {
     if (!confirm("Hapus pengumuman ini?")) return;
@@ -81,7 +83,7 @@ export default function TutorClassesSegment({
     }
   }
 
-  if (classes.length === 0) {
+  if (activeClasses.length === 0) {
     return (
       <Card theme={theme} className="p-12 flex flex-col items-center text-center border-dashed">
         <span className="text-5xl mb-4">📚</span>
@@ -93,7 +95,7 @@ export default function TutorClassesSegment({
 
   return (
     <div className="space-y-6">
-      {classes.map((cls) => (
+      {activeClasses.map((cls) => (
         <Card key={cls.id} theme={theme} className="p-6 sm:p-7">
           <div className="flex items-start justify-between flex-wrap gap-3 mb-5">
             <div className="flex items-center gap-3">

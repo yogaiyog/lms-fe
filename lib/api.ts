@@ -858,6 +858,11 @@ export const api = {
         body: JSON.stringify(payload),
       });
     },
+    async delete(id: string) {
+      return authenticatedRequest<{ id: string }>(`/api/v1/academic/classes/${id}`, {
+        method: "DELETE",
+      });
+    },
   },
   schedules: {
     async list() {

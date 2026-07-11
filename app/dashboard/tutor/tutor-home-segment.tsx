@@ -23,6 +23,7 @@ type ClassWithSchedules = {
   id: string;
   name: string;
   type?: string;
+  isActive?: boolean;
   isOnline?: boolean;
   schedules: Schedule[];
   enrollments?: { id: string; studentId: string }[];
@@ -57,6 +58,7 @@ function getThisWeekSchedules(classes: ClassWithSchedules[]) {
   const { monday, sunday } = getWeekRange();
   const result: ({ className: string; classId: string } & Schedule)[] = [];
   for (const cls of classes) {
+    if (cls.isActive === false) continue;
     for (const s of cls.schedules) {
       const d = new Date(s.date);
       if (d >= monday && d <= sunday) {
