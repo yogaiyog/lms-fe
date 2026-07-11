@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build",
-    "start": "serve out",
+    "start": "next start",
     "preview": "serve out",
     "cap:sync": "cap sync",
     "cap:add:android": "cap add android",
