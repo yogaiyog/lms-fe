@@ -199,15 +199,36 @@ export default function TutorScheduleDetailModal({
                           <div key={asp.id} className="flex items-center justify-between">
                             <p className={`text-xs font-medium ${theme.text}`}>{asp.title}</p>
                             <div className="flex items-center gap-2">
-                              <input type="number" min={asp.minScore} max={asp.maxScore}
-                                value={assessmentScores[asp.id] ?? asp.minScore}
-                                onChange={(e) => {
-                                  const val = Number(e.target.value);
-                                  if (val >= asp.minScore && val <= asp.maxScore) {
-                                    onScoreChange(asp.id, val);
-                                  }
+                              <div className="flex items-center gap-1">
+                                <button type="button" onClick={() => {
+                                  const cur = assessmentScores[asp.id] ?? asp.minScore;
+                                  if (cur > asp.minScore) onScoreChange(asp.id, cur - 1);
                                 }}
-                                className="w-14 rounded-lg border border-slate-200 bg-white px-2 py-1 text-center text-xs font-bold text-blue-700 outline-none focus:border-blue-400" />
+                                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-sm font-bold text-slate-600 hover:bg-slate-100 active:bg-slate-200 transition-colors disabled:opacity-30"
+                                  disabled={(assessmentScores[asp.id] ?? asp.minScore) <= asp.minScore}>
+                                  −
+                                </button>
+                                <input type="number" min={asp.minScore} max={asp.maxScore}
+                                  value={assessmentScores[asp.id] ?? asp.minScore}
+                                  onFocus={(e) => e.target.select()}
+                                  onChange={(e) => {
+                                    const raw = e.target.value;
+                                    if (raw === "") return;
+                                    const val = Number(raw);
+                                    if (!isNaN(val) && val >= asp.minScore && val <= asp.maxScore) {
+                                      onScoreChange(asp.id, val);
+                                    }
+                                  }}
+                                  className="w-12 rounded-lg border border-slate-200 bg-white px-1 py-1 text-center text-xs font-bold text-blue-700 outline-none focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                                <button type="button" onClick={() => {
+                                  const cur = assessmentScores[asp.id] ?? asp.minScore;
+                                  if (cur < asp.maxScore) onScoreChange(asp.id, cur + 1);
+                                }}
+                                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-sm font-bold text-slate-600 hover:bg-slate-100 active:bg-slate-200 transition-colors disabled:opacity-30"
+                                  disabled={(assessmentScores[asp.id] ?? asp.minScore) >= asp.maxScore}>
+                                  +
+                                </button>
+                              </div>
                               <span className={`text-xs ${theme.textMuted}`}>/ {asp.maxScore}</span>
                             </div>
                           </div>

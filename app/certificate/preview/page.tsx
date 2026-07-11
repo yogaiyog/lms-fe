@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Download, Printer, X } from "lucide-react";
 import { api } from "@/lib/api";
 
 type PreviewMode = "admin" | "student";
 
-export default function CertificatePreviewPage() {
+function CertificatePreviewContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const enrollmentId = searchParams.get("enrollmentId");
@@ -211,5 +211,13 @@ export default function CertificatePreviewPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function CertificatePreviewPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-slate-50"><span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" /></div>}>
+      <CertificatePreviewContent />
+    </Suspense>
   );
 }

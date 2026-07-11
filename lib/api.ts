@@ -1121,6 +1121,26 @@ export const api = {
       const ids = attendanceIds.join(",");
       return authenticatedRequest<{ success: boolean; data: any }>(`/api/v1/academic/reports/student/${studentId}/report-summary?attendanceIds=${ids}`);
     },
+    async generatePdf(data: any): Promise<Blob> {
+      const session = getStoredSession();
+      if (!session) throw new Error("Silakan login dulu");
+
+      const response = await fetch(`${API_BASE_URL}/api/v1/academic/reports/generate-pdf`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ message: "Gagal membuat PDF laporan" }));
+        throw new Error(error.message ?? "Gagal membuat PDF laporan");
+      }
+
+      return response.blob();
+    },
   },
   savedReports: {
     async list() {

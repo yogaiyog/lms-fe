@@ -11,7 +11,7 @@
     "cap:add:android": "cap add android",
     "cap:add:ios": "cap add ios",
     "lint": "eslint",
-    "db:reset":"npx prisma migrate reset --force && npx prisma db seed"
+    "db:reset": "npx prisma migrate reset --force && npx prisma db seed"
   },
   "dependencies": {
     "@capacitor/android": "^6.2.1",
@@ -25,6 +25,7 @@
     "recharts": "^3.9.2"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^6.1.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20.19.43",

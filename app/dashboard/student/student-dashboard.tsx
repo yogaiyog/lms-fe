@@ -235,13 +235,13 @@ export default function StudentDashboard() {
                 totalMeetLeft={totalMeetLeft}
                 weekSchedules={weekSchedules}
                 countdowns={countdowns}
-                selectedClass={selectedClass}
+                allClasses={allClasses}
                 announcements={announcements}
               />
             )}
 
             {segment === "schedule" && (
-              <ScheduleTab theme={theme} schedules={filteredSchedules} classes={allClasses} attendances={attendances} />
+              <ScheduleTab theme={theme} schedules={schedules} classes={allClasses} attendances={attendances} />
             )}
             {segment === "reports" && (
               <ReportTab theme={theme} studentId={user?.studentProfile?.id} />

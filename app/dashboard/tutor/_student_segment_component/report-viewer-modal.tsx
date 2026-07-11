@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import type { LucideIcon } from "lucide-react";
-import { ChevronLeft, X, ThumbsUp, Save, CalendarCheck2, Trophy, Percent, Award, CheckCircle2, AlertTriangle, BookOpen, Brain, Code2, Lightbulb, Puzzle, Clock, MessageCircle, FolderCheck, Users, Presentation, TrendingUp, Quote, Star, Palette, PenLine, Ruler, Calculator, Heart, Zap, Target, Eye, Feather, Sparkles, Flame, Droplet, Sun, Moon, Shield, Gem, Key, Search, Compass, Crown, Link, Lock, Map, Settings } from "lucide-react";
+import { ChevronLeft, X, ThumbsUp, Save, CalendarCheck2, Trophy, Percent, Award, CheckCircle2, AlertTriangle, BookOpen, Brain, Code2, Lightbulb, Puzzle, Clock, MessageCircle, FolderCheck, Users, Presentation, TrendingUp, Quote, Star, Palette, PenLine, Ruler, Calculator, Heart, Zap, Target, Eye, Feather, Sparkles, Flame, Droplet, Sun, Moon, Shield, Gem, Key, Search, Compass, Crown, Link, Lock, Map, Settings, Download } from "lucide-react";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts";
+import { api } from "@/lib/api";
 
 type Theme = { dark: boolean; bg: string; card: string; border: string; text: string; textMuted: string };
 
@@ -102,6 +103,29 @@ export default function ReportViewerModal({
   saving?: boolean;
 }) {
   const [saveTitle, setSaveTitle] = useState("");
+  const [downloading, setDownloading] = useState(false);
+
+  async function handleDownloadPdf() {
+    setDownloading(true);
+    try {
+      const blob = await api.reports.generatePdf(data);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const name = (data.student?.fullName || "siswa").toLowerCase().replace(/\s+/g, "-");
+      a.download = `laporan-${name}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Gagal download PDF");
+    } finally {
+      setDownloading(false);
+    }
+  }
+
+
   const total = data.selectedCount;
   const presentPct = total > 0 ? Math.round((data.statusCounts.PRESENT / total) * 100) : 0;
   const latePct = total > 0 ? Math.round((data.statusCounts.LATE / total) * 100) : 0;
@@ -113,7 +137,17 @@ export default function ReportViewerModal({
   const mutedCls = theme.textMuted;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 p-4 pt-10">
+    <>
+    <style>{`
+      @media print {
+        body > *:not([data-report-modal]) { display: none !important; }
+        [data-report-modal] { position: static !important; background: none !important; overflow: visible !important; padding: 0 !important; }
+        [data-report-modal] > div { max-width: 100% !important; box-shadow: none !important; border: none !important; }
+        [data-report-modal] .no-print { display: none !important; }
+        [data-report-modal] button, [data-report-modal] input, [data-report-modal] textarea, [data-report-modal] select { display: none !important; }
+      }
+    `}</style>
+    <div data-report-modal className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 p-4 pt-10">
       <div className={`relative w-full max-w-2xl rounded-3xl border ${theme.border} ${theme.card} shadow-xl mb-10`}>
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
@@ -122,9 +156,19 @@ export default function ReportViewerModal({
               <ChevronLeft size={18} /> Kembali
             </button>
           ) : <div />}
-          <button onClick={onClose} className={`rounded-xl p-1.5 transition ${theme.dark ? "hover:bg-slate-700" : "hover:bg-slate-200"}`}>
-            <X size={18} className={textCls} />
-          </button>
+          <div className="flex items-center gap-2 no-print">
+            <button
+              onClick={handleDownloadPdf}
+              disabled={downloading}
+              className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 transition disabled:opacity-50`}
+            >
+              <Download size={14} />
+              {downloading ? "Mengunduh..." : "PDF"}
+            </button>
+            <button onClick={onClose} className={`rounded-xl p-1.5 transition ${theme.dark ? "hover:bg-slate-700" : "hover:bg-slate-200"}`}>
+              <X size={18} className={textCls} />
+            </button>
+          </div>
         </div>
 
         {/* Body */}
@@ -406,5 +450,6 @@ export default function ReportViewerModal({
         </div>
       </div>
     </div>
+    </>
   );
 }

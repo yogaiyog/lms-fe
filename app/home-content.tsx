@@ -62,7 +62,7 @@ export default function HomeContent() {
         </div>
 
         <p className="mt-8 text-xs text-slate-400">
-          Belajar itu menyenangkan! 🎯
+          {process.env.NEXT_PUBLIC_COMPANY_SLOGAN2 || "Explore, Imagine, Creativity and Fun Lerning"}
         </p>
       </div>
     </div>

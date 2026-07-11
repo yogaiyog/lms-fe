@@ -4,7 +4,7 @@ import { Calendar, Clock, Video } from "lucide-react";
 import Card from "./Card";
 import { DAY_LABELS } from "./types";
 import type { Theme } from "./types";
-import type { Schedule, Announcement } from "@/lib/api";
+import type { Schedule, Announcement, Class } from "@/lib/api";
 
 type Props = {
   theme: Theme;
@@ -12,11 +12,11 @@ type Props = {
   totalMeetLeft: number;
   weekSchedules: Schedule[];
   countdowns: Record<string, { days: number; hours: number; minutes: number; seconds: number }>;
-  selectedClass: { name?: string } | null;
+  allClasses: Class[];
   announcements: Announcement[];
 };
 
-export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules, countdowns, selectedClass, announcements }: Props) {
+export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules, countdowns, allClasses, announcements }: Props) {
   const now = new Date();
   const todayDay = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"][now.getDay()];
 
@@ -40,7 +40,7 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
                 <p className={`text-xs font-bold ${theme.text}`}>{a.title}</p>
                 <p className={`mt-0.5 text-xs sm:text-sm ${theme.textMuted}`}>{a.content}</p>
                 <p className={`mt-1.5 text-[10px] ${theme.textMuted}`}>
-                  {a.tutor?.fullName ?? "Tutor"} — {new Date(a.createdAt).toLocaleDateString("id-ID")}
+                  {allClasses.find((c) => c.id === a.classId)?.name ?? "Kelas"} — {a.tutor?.fullName ?? "Tutor"} — {new Date(a.createdAt).toLocaleDateString("id-ID")}
                 </p>
               </div>
             ))}
@@ -73,7 +73,7 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
                         <Calendar size={18} className={isOngoing ? "text-emerald-600" : isSoon ? "text-amber-600" : schedule.isDone ? "text-slate-400" : cd ? "text-blue-600" : "text-slate-400"} />
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className={`text-[10px] font-semibold uppercase tracking-wide ${theme.textMuted}`}>{selectedClass?.name}</p>
+                        <p className={`text-[10px] font-semibold uppercase tracking-wide ${theme.textMuted}`}>{allClasses.find((c) => c.id === schedule.classId)?.name ?? "Kelas"}</p>
                         <h3 className={`text-sm font-bold ${theme.text}`}>
                           {DAY_LABELS[schedule.dayOfWeek] ?? schedule.dayOfWeek}, {new Date(schedule.date).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}
                         </h3>
@@ -133,7 +133,7 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
         )}
       </div>
 
-      {!selectedClass && (
+      {allClasses.length === 0 && (
         <Card theme={theme} className="p-8 sm:p-12 flex flex-col items-center text-center border-dashed">
           <span className="text-4xl sm:text-5xl mb-3">📭</span>
           <h3 className={`font-bold text-sm sm:text-base ${theme.text}`}>Belum ada kelas</h3>
