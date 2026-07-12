@@ -19,10 +19,10 @@ const DAY_LABELS: Record<string, string> = {
 const DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
 const HOURS = Array.from({ length: 13 }, (_, i) => i + 9);
 function fmt(h: number) { return `${String(h).padStart(2, "0")}:00`; }
-function isInRange(day: string, hour: number) {
+function isInRange(day: string, hour: number, restrictWeekdayMorning: boolean) {
   const idx = DAYS.indexOf(day);
   if (hour < 9 || hour >= 21) return false;
-  if (idx < 5 && hour < 15) return false;
+  if (restrictWeekdayMorning && idx < 5 && hour < 15) return false;
   return true;
 }
 
@@ -42,6 +42,7 @@ export default function TutorDetailModal({ tutor, onClose, onSaved }: Props) {
 
   const [slots, setSlots] = useState<TutorSlot[]>([]);
   const [dayoffs, setDayoffs] = useState<number[]>([]);
+  const [restrictWeekdayMorning, setRestrictWeekdayMorning] = useState(false);
   const [slotsLoading, setSlotsLoading] = useState(true);
   const [toggling, setToggling] = useState<string | null>(null);
 
@@ -49,6 +50,7 @@ export default function TutorDetailModal({ tutor, onClose, onSaved }: Props) {
     api.tutorSlots.list(tutor.id).then((res) => {
       setSlots(res.slots);
       setDayoffs(res.dayoffs);
+      setRestrictWeekdayMorning(res.restrictWeekdayMorning ?? false);
     }).catch(() => {}).finally(() => setSlotsLoading(false));
   }, [tutor.id]);
 
@@ -68,6 +70,7 @@ export default function TutorDetailModal({ tutor, onClose, onSaved }: Props) {
       const res = await api.tutorSlots.list(tutor.id);
       setSlots(res.slots);
       setDayoffs(res.dayoffs);
+      setRestrictWeekdayMorning(res.restrictWeekdayMorning ?? false);
     } catch {} finally {
       setToggling(null);
     }
@@ -162,7 +165,7 @@ export default function TutorDetailModal({ tutor, onClose, onSaved }: Props) {
                         </td>
                         {DAYS.map((day) => {
                           const slot = getSlot(day, hour);
-                          const inRange = isInRange(day, hour);
+                          const inRange = isInRange(day, hour, restrictWeekdayMorning);
                           const dayOff = isDayoff(day);
                           const key = `${day}-${hour}`;
                           const isToggling = toggling === key;

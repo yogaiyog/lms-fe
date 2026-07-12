@@ -972,7 +972,7 @@ export const api = {
   },
   tutorSlots: {
     async list(tutorId: string) {
-      return authenticatedRequest<{ slots: TutorSlot[]; dayoffs: number[] }>(`/api/v1/academic/tutor-slots/${tutorId}`);
+      return authenticatedRequest<{ slots: TutorSlot[]; dayoffs: number[]; restrictWeekdayMorning: boolean }>(`/api/v1/academic/tutor-slots/${tutorId}`);
     },
     async toggle(tutorId: string, dayOfWeek: string, startTime: string) {
       return authenticatedRequest<void>(`/api/v1/academic/tutor-slots/${tutorId}/toggle`, {

@@ -25,10 +25,10 @@ function fmt(h: number) {
   return `${String(h).padStart(2, "0")}:00`;
 }
 
-function isInRange(day: string, hour: number) {
+function isInRange(day: string, hour: number, restrictWeekdayMorning: boolean) {
   const idx = DAYS.indexOf(day);
   if (hour < 9 || hour >= 21) return false;
-  if (idx < 5 && hour < 15) return false;
+  if (restrictWeekdayMorning && idx < 5 && hour < 15) return false;
   return true;
 }
 
@@ -37,6 +37,7 @@ export default function SlotGrid() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [slots, setSlots] = useState<TutorSlot[]>([]);
   const [dayoffs, setDayoffs] = useState<number[]>([]);
+  const [restrictWeekdayMorning, setRestrictWeekdayMorning] = useState(false);
   const [loading, setLoading] = useState(true);
   const [toggling, setToggling] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -60,6 +61,7 @@ export default function SlotGrid() {
         const res = await api.tutorSlots.list(me.tutorProfile.id);
         setSlots(res.slots);
         setDayoffs(res.dayoffs);
+        setRestrictWeekdayMorning(res.restrictWeekdayMorning ?? false);
       } catch {
         clearSession();
         router.replace("/login");
@@ -87,6 +89,7 @@ export default function SlotGrid() {
       const res = await api.tutorSlots.list(user.tutorProfile.id);
       setSlots(res.slots);
       setDayoffs(res.dayoffs);
+      setRestrictWeekdayMorning(res.restrictWeekdayMorning ?? false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal toggle slot");
     } finally {
@@ -172,7 +175,7 @@ export default function SlotGrid() {
                   </td>
                   {DAYS.map((day) => {
                     const slot = getSlot(day, hour);
-                    const inRange = isInRange(day, hour);
+                    const inRange = isInRange(day, hour, restrictWeekdayMorning);
                     const dayOff = isDayoff(day);
                     const key = `${day}-${hour}`;
                     const isToggling = toggling === key;
