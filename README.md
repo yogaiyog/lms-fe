@@ -36,6 +36,77 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 
-build android 
+## Build Android APK (Capacitor)
 
-cd /Users/yoga/LMS/frontend && npm run build && npx cap sync && cd android && ./gradlew assembleDebug
+### Prasyarat
+
+- Android Studio
+- Java JDK 17+
+- Android SDK (API 34+)
+- Gradle (bundled via `gradlew`)
+
+Set environment variables di shell:
+```bash
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools
+```
+
+### Build APK Debug
+
+```bash
+# Set Java 17 (wajib, system default Java 25 tidak kompatibel)
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home
+
+# 1. Build Next.js → static export ke out/
+BUILD_FOR_CAPACITOR=true npm run build
+
+# 2. Sync file web ke project Android
+npx cap sync android
+
+# 3. Build APK debug
+cd android && ./gradlew assembleDebug
+
+# 4. Hasil APK
+# android/app/build/outputs/apk/debug/app-debug.apk (~5 MB)
+```
+
+### Build APK Release
+
+```bash
+# Set Java 17
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home
+
+# 1. Build Next.js → static export ke out/
+BUILD_FOR_CAPACITOR=true npm run build
+
+# 2. Sync file web ke project Android
+npx cap sync android
+
+# 3. Build APK release (signed + minified)
+cd android && ./gradlew assembleRelease
+
+# 4. Hasil APK
+# android/app/build/outputs/apk/release/app-release.apk (~2.5 MB)
+```
+
+> **Note:** Release APK lebih kecil karena R8/ProGuard minify + hapus debug symbols.
+
+### Install ke device/emulator
+
+```bash
+# Debug APK
+adb install android/app/build/outputs/apk/debug/app-debug.apk
+
+# Release APK
+adb install android/app/build/outputs/apk/release/app-release.apk
+
+# Atau buka Android Studio → Run langsung
+npx cap open android
+```
+
+### Update Capacitor
+
+```bash
+npm install @capacitor/cli@latest @capacitor/core@latest @capacitor/android@latest
+npx cap sync android
+```
