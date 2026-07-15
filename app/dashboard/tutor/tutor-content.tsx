@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Home, BookOpen, Clock, Moon, Sun,
   LogOut, X, Menu, FileText, User,
@@ -11,14 +12,12 @@ import {
   clearSession,
   getStoredSession,
   type AuthUser,
-  type Class,
   type Schedule,
-  type Announcement,
   type Topic,
-  type StudentProfile,
   type Attendance,
   type AssessmentAspect,
 } from "@/lib/api";
+import { useTutorDashboard } from "@/hooks/useTutorDashboard";
 import Link from "next/link";
 import TutorHomeSegment from "./tutor-home-segment";
 import TutorClassesSegment from "./tutor-classes-segment";
@@ -35,16 +34,10 @@ const NAV_ITEMS = [
 
 const MOBILE_NAV = ["home", "classes", "students", "attendance"] as const;
 
-type ClassWithDetails = Class & {
-  schedules: Schedule[];
-  announcements: Announcement[];
-};
-
 export default function TutorDashboard() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [classes, setClasses] = useState<ClassWithDetails[]>([]);
-  const [students, setStudents] = useState<StudentProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [segment, setSegment] = useState<"home" | "classes" | "students" | "attendance">("home");
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -107,46 +100,6 @@ export default function TutorDashboard() {
           router.replace("/dashboard");
           return;
         }
-        const classList = await api.classes.listByTutor(me.tutorProfile.id);
-        const classesWithDetails = await Promise.all(
-          classList.map(async (cls) => {
-            const [schedules, announcements] = await Promise.all([
-              api.schedules.listByClass(cls.id),
-              api.announcements.listByClass(cls.id),
-            ]);
-            return { ...cls, schedules, announcements };
-          })
-        );
-        setClasses(classesWithDetails);
-        const studentList = await api.studentProfiles.list();
-        setStudents(studentList);
-        const now = new Date();
-        const day = now.getDay();
-        const monday = new Date(now);
-        monday.setDate(now.getDate() + (day === 0 ? -6 : 1 - day));
-        monday.setHours(0, 0, 0, 0);
-        const sunday = new Date(monday);
-        sunday.setDate(monday.getDate() + 6);
-        sunday.setHours(23, 59, 59, 999);
-        const weekScheduleIds = classesWithDetails.flatMap((cls) =>
-          cls.schedules.filter((s) => {
-            const d = new Date(s.date);
-            return !s.isDone && d >= monday && d <= sunday;
-          }).map((s) => s.id)
-        );
-        if (weekScheduleIds.length > 0) {
-          const filled = new Set<string>();
-          await Promise.all(weekScheduleIds.map(async (sid) => {
-            try {
-              const atts = await api.attendances.listBySchedule(sid);
-              const cls = classesWithDetails.find((c) => c.schedules.some((s) => s.id === sid));
-              if (!cls) return;
-              const enrollmentCount = (cls.enrollments ?? []).length;
-              if (enrollmentCount > 0 && atts.length >= enrollmentCount) filled.add(sid);
-            } catch {}
-          }));
-          setAttendanceFilledIds(filled);
-        }
       } catch {
         clearSession();
         router.replace("/login");
@@ -155,6 +108,10 @@ export default function TutorDashboard() {
       }
     })();
   }, [router]);
+
+  const tutorProfileId = user?.tutorProfile?.id;
+
+  const { classes, students, isLoading: dataLoading } = useTutorDashboard(tutorProfileId);
 
   async function logout() {
     await api.auth.logout();
@@ -172,13 +129,8 @@ export default function TutorDashboard() {
 
   async function markScheduleDone(schedule: Schedule) {
     try {
-      const updated = await api.schedules.update(schedule.id, { isDone: true });
-      setClasses((prev) =>
-        prev.map((cls) => ({
-          ...cls,
-          schedules: cls.schedules.map((s) => (s.id === updated.id ? updated : s)),
-        }))
-      );
+      await api.schedules.update(schedule.id, { isDone: true });
+      queryClient.invalidateQueries({ queryKey: ["tutor-schedules", tutorProfileId] });
       setDetailSchedule(null);
     } catch (e) {
       console.error("Failed to mark schedule done", e);
@@ -298,13 +250,8 @@ export default function TutorDashboard() {
       }
       if (editMeetLink !== editingSchedule.meetLink) payload.meetLink = editMeetLink;
       if (Object.keys(payload).length > 0) {
-        const updated = await api.schedules.update(editingSchedule.id, payload);
-        setClasses((prev) =>
-          prev.map((cls) => ({
-            ...cls,
-            schedules: cls.schedules.map((s) => (s.id === updated.id ? updated : s)),
-          }))
-        );
+        await api.schedules.update(editingSchedule.id, payload);
+        queryClient.invalidateQueries({ queryKey: ["tutor-schedules", tutorProfileId] });
       }
       setForceOngoingIds((prev) => {
         const next = new Set(prev);
@@ -326,14 +273,10 @@ export default function TutorDashboard() {
     setAnnounceSaving(true);
     setAnnounceError("");
     try {
-      const created = await api.announcements.create({
+      await api.announcements.create({
         classId: announceClass, tutorId: user.tutorProfile.id, title: announceTitle, content: announceContent,
       });
-      setClasses((prev) =>
-        prev.map((cls) =>
-          cls.id === announceClass ? { ...cls, announcements: [...cls.announcements, created] } : cls
-        )
-      );
+      queryClient.invalidateQueries({ queryKey: ["tutor-announcements", tutorProfileId] });
       setAnnounceClass(null);
       setAnnounceTitle("");
       setAnnounceContent("");
@@ -439,7 +382,7 @@ export default function TutorDashboard() {
     }
   }
 
-  if (loading) {
+  if (loading || dataLoading) {
     return (
       <div className={`flex min-h-screen items-center justify-center ${theme.bg}`}>
         <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />

@@ -5,17 +5,11 @@ import { useRouter } from "next/navigation";
 import type { RoadmapItem } from "@/components/roadmap";
 import {
   api,
-  clearSession,
   getStoredSession,
   type AuthUser,
   type Class,
-  type Schedule,
-  type Attendance,
-  type Enrollment,
-  type Announcement,
-  type StudentBadge,
-  type Certificate,
 } from "@/lib/api";
+import { useStudentDashboard } from "@/hooks/useStudentDashboard";
 import type { Theme, Segment } from "./_component/types";
 import Sidebar from "./_component/Sidebar";
 import MobileDrawer from "./_component/MobileDrawer";
@@ -37,15 +31,7 @@ export default function StudentDashboard() {
   const [dark, setDark] = useState(false);
 
   const [myClass, setMyClass] = useState<Class | null>(null);
-  const [allClasses, setAllClasses] = useState<Class[]>([]);
   const [selectedClassId, setSelectedClassId] = useState<string>("");
-  const [schedules, setSchedules] = useState<Schedule[]>([]);
-  const [attendances, setAttendances] = useState<Attendance[]>([]);
-  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [studentBadges, setStudentBadges] = useState<StudentBadge[]>([]);
-  const [certificates, setCertificates] = useState<Certificate[]>([]);
-  const [totalMeetLeft, setTotalMeetLeft] = useState(0);
   const [countdowns, setCountdowns] = useState<Record<string, { days: number; hours: number; minutes: number; seconds: number }>>({});
 
   const theme: Theme = {
@@ -67,53 +53,32 @@ export default function StudentDashboard() {
       if (session.user.role === "ADMIN") { router.replace("/dashboard/admin"); return; }
       router.replace("/dashboard"); return;
     }
-    (async () => {
-      try {
-        setUser(session.user);
-        if (!session.user.studentProfile) { return; }
-        const studentId = session.user.studentProfile.id;
-
-        const [allEnrollments, allBadges, allAttendances, allCertificates] = await Promise.all([
-          api.enrollments.listByStudent(studentId),
-          api.studentBadges.listByStudent(studentId),
-          api.attendances.listByStudent(studentId),
-          api.certificates.listByStudent(studentId),
-        ]);
-
-        setEnrollments(allEnrollments);
-        setCertificates(allCertificates);
-
-        const activeEnrollments = allEnrollments.filter((e) => e.classId);
-        if (activeEnrollments.length === 0) { setLoading(false); return; }
-
-        setTotalMeetLeft(activeEnrollments.reduce((sum, e) => sum + (e.totalMeetLeft ?? 0), 0));
-
-        const classes = await Promise.all(
-          activeEnrollments.map((e) => api.classes.get(e.classId!).catch(() => null))
-        );
-        const validClasses = classes.filter(Boolean) as Class[];
-        const allSchedules = await Promise.all(
-          activeEnrollments.map((e) => api.schedules.listByClass(e.classId!))
-        );
-        const allAnnouncements = await Promise.all(
-          activeEnrollments.map((e) => api.announcements.listByClass(e.classId!))
-        );
-
-        setAllClasses(validClasses);
-        setMyClass(validClasses[0]);
-        setSelectedClassId(validClasses[0]?.id ?? "");
-        setSchedules(allSchedules.flat());
-        setAttendances(allAttendances);
-        setAnnouncements(allAnnouncements.flat());
-        setStudentBadges(allBadges);
-      } catch {
-        clearSession();
-        router.replace("/login");
-      } finally {
-        setLoading(false);
-      }
-    })();
+    setUser(session.user);
+    setLoading(false);
   }, [router]);
+
+  const studentId = user?.studentProfile?.id;
+
+  const {
+    enrollments,
+    studentBadges,
+    attendances,
+    certificates,
+    allClasses,
+    schedules,
+    announcements,
+    savedReports,
+    galleries,
+    totalMeetLeft,
+    isLoading: dataLoading,
+  } = useStudentDashboard(studentId);
+
+  useEffect(() => {
+    if (allClasses.length > 0 && !myClass) {
+      setMyClass(allClasses[0]);
+      setSelectedClassId(allClasses[0]?.id ?? "");
+    }
+  }, [allClasses, myClass]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -209,7 +174,7 @@ export default function StudentDashboard() {
       };
     });
 
-  if (loading) {
+  if (loading || dataLoading) {
     return (
       <div className={`flex min-h-screen items-center justify-center ${theme.bg}`}>
         <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
@@ -244,7 +209,7 @@ export default function StudentDashboard() {
               <ScheduleTab theme={theme} schedules={schedules} classes={allClasses} attendances={attendances} />
             )}
             {segment === "reports" && (
-              <ReportTab theme={theme} studentId={user?.studentProfile?.id} />
+              <ReportTab theme={theme} studentId={user?.studentProfile?.id} savedReports={savedReports} galleries={galleries} />
             )}
             {segment === "enrollment" && (
               <EnrollmentTab theme={theme} classes={allClasses} enrollments={enrollments} schedules={schedules} studentId={user?.studentProfile?.id} totalMeetLeft={totalMeetLeft} />

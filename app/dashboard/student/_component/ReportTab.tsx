@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FileText, Camera } from "lucide-react";
 import Card from "./Card";
 import type { Theme } from "./types";
-import { api, type Gallery, type SavedReport } from "@/lib/api";
+import type { Gallery, SavedReport } from "@/lib/api";
+import { isNativePlatform, downloadFileCapacitor, downloadFileWeb } from "@/lib/capacitor-download";
 import ReportViewerModal from "../../tutor/_student_segment_component/report-viewer-modal";
 
 const TOPIC_COLORS = ["#22c55e", "#6366f1", "#0ea5e9", "#f59e0b", "#ec4899", "#8b5cf6", "#14b8a6", "#f97316"];
@@ -12,21 +13,13 @@ const TOPIC_COLORS = ["#22c55e", "#6366f1", "#0ea5e9", "#f59e0b", "#ec4899", "#8
 type Props = {
   theme: Theme;
   studentId?: string;
+  savedReports: SavedReport[];
+  galleries: Gallery[];
 };
 
-export default function ReportTab({ theme, studentId }: Props) {
-  const [reports, setReports] = useState<SavedReport[]>([]);
+export default function ReportTab({ theme, studentId, savedReports: reports, galleries }: Props) {
   const [viewing, setViewing] = useState<SavedReport | null>(null);
-  const [galleries, setGalleries] = useState<Gallery[]>([]);
   const [previewImage, setPreviewImage] = useState<Gallery | null>(null);
-
-  useEffect(() => {
-    if (!studentId) return;
-    api.savedReports.listByStudent(studentId).then((res) => {
-      setReports(res ?? []);
-    }).catch(() => {});
-    api.galleries.listByStudent(studentId).then(setGalleries).catch(() => {});
-  }, [studentId]);
 
   return (
     <div>
@@ -112,15 +105,18 @@ export default function ReportTab({ theme, studentId }: Props) {
             </button>
             <button onClick={async () => {
               try {
+                console.log("[gallery] Downloading:", previewImage.imageUrl);
                 const res = await fetch(previewImage.imageUrl);
                 const blob = await res.blob();
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = "gallery.jpg";
-                a.click();
-                URL.revokeObjectURL(url);
-              } catch {}
+                console.log("[gallery] Blob received, size:", blob.size);
+                if (isNativePlatform()) {
+                  await downloadFileCapacitor(blob, "gallery.jpg");
+                } else {
+                  downloadFileWeb(blob, "gallery.jpg");
+                }
+              } catch (err) {
+                console.error("[gallery] Download failed:", err);
+              }
             }}
               className="absolute top-3 right-14 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition">
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">

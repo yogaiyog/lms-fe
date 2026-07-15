@@ -4,6 +4,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Download, Printer, X } from "lucide-react";
 import { api } from "@/lib/api";
+import { isNativePlatform, downloadFileCapacitor, downloadFileWeb } from "@/lib/capacitor-download";
 
 type PreviewMode = "admin" | "student";
 
@@ -14,6 +15,7 @@ function CertificatePreviewContent() {
   const mode = (searchParams.get("mode") || "admin") as PreviewMode;
 
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [pdfFileName, setPdfFileName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -36,6 +38,7 @@ function CertificatePreviewContent() {
       setError("");
       setSent(false);
       setPdfUrl(null);
+      setPdfBlob(null);
       setPdfFileName("");
     });
 
@@ -68,6 +71,7 @@ function CertificatePreviewContent() {
           .replace(/[^a-z0-9-]/g, "");
 
         setPdfUrl(url);
+        setPdfBlob(blob);
         setPdfFileName(`${sanitizedName}.pdf`);
       } catch {
         if (!cancelled) setError("Gagal membuat sertifikat");
@@ -85,14 +89,19 @@ function CertificatePreviewContent() {
     };
   }, [enrollmentId]);
 
-  function handleDownload() {
-    if (!pdfUrl) return;
-    const a = document.createElement("a");
-    a.href = pdfUrl;
-    a.download = pdfFileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+  async function handleDownload() {
+    if (!pdfBlob) return;
+    try {
+      console.log("[cert-page] Starting download:", pdfFileName);
+      if (isNativePlatform()) {
+        await downloadFileCapacitor(pdfBlob, pdfFileName);
+      } else {
+        downloadFileWeb(pdfBlob, pdfFileName);
+      }
+    } catch (err) {
+      console.error("[cert-page] Download failed:", err);
+      alert("Gagal download sertifikat");
+    }
   }
 
   function handlePrint() {
@@ -189,7 +198,7 @@ function CertificatePreviewContent() {
         </button>
         <button
           onClick={handleDownload}
-          disabled={!pdfUrl}
+          disabled={!pdfBlob}
           className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700 disabled:opacity-50"
         >
           <Download size={15} />

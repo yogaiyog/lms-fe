@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Download, Printer, X } from "lucide-react";
 import { api, type Enrollment, type Certificate } from "@/lib/api";
+import { isNativePlatform, downloadFileCapacitor, downloadFileWeb } from "@/lib/capacitor-download";
 
 type PreviewMode = "admin" | "student";
 
@@ -28,6 +29,7 @@ export default function CertificatePreviewModal({
 }: Props) {
   const router = useRouter();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [pdfFileName, setPdfFileName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -45,6 +47,7 @@ export default function CertificatePreviewModal({
       setError("");
       setSent(initialSent);
       setPdfUrl(null);
+      setPdfBlob(null);
       setPdfFileName("");
     });
 
@@ -69,6 +72,7 @@ export default function CertificatePreviewModal({
           .replace(/[^a-z0-9-]/g, "");
 
         setPdfUrl(url);
+        setPdfBlob(blob);
         setPdfFileName(`${sanitizedName}.pdf`);
       } catch {
         if (!cancelled) setError("Gagal membuat sertifikat");
@@ -86,14 +90,19 @@ export default function CertificatePreviewModal({
     };
   }, [open, enrollment, studentName, initialSent]);
 
-  function handleDownload() {
-    if (!pdfUrl) return;
-    const a = document.createElement("a");
-    a.href = pdfUrl;
-    a.download = pdfFileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+  async function handleDownload() {
+    if (!pdfBlob) return;
+    try {
+      console.log("[cert] Starting download:", pdfFileName);
+      if (isNativePlatform()) {
+        await downloadFileCapacitor(pdfBlob, pdfFileName);
+      } else {
+        downloadFileWeb(pdfBlob, pdfFileName);
+      }
+    } catch (err) {
+      console.error("[cert] Download failed:", err);
+      alert("Gagal download sertifikat");
+    }
   }
 
   function handlePrint() {
@@ -189,7 +198,7 @@ export default function CertificatePreviewModal({
         </button>
         <button
           onClick={handleDownload}
-          disabled={!pdfUrl}
+          disabled={!pdfBlob}
             className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700 disabled:opacity-50"
           >
             <Download size={15} />

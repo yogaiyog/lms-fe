@@ -5,6 +5,7 @@ import type { LucideIcon } from "lucide-react";
 import { ChevronLeft, X, ThumbsUp, Save, CalendarCheck2, Trophy, Percent, Award, CheckCircle2, AlertTriangle, BookOpen, Brain, Code2, Lightbulb, Puzzle, Clock, MessageCircle, FolderCheck, Users, Presentation, TrendingUp, Quote, Star, Palette, PenLine, Ruler, Calculator, Heart, Zap, Target, Eye, Feather, Sparkles, Flame, Droplet, Sun, Moon, Shield, Gem, Key, Search, Compass, Crown, Link, Lock, Map, Settings, Download } from "lucide-react";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts";
 import { api } from "@/lib/api";
+import { isNativePlatform, downloadFileCapacitor, downloadFileWeb } from "@/lib/capacitor-download";
 
 type Theme = { dark: boolean; bg: string; card: string; border: string; text: string; textMuted: string };
 
@@ -108,17 +109,18 @@ export default function ReportViewerModal({
   async function handleDownloadPdf() {
     setDownloading(true);
     try {
+      console.log("[report] Generating PDF...");
       const blob = await api.reports.generatePdf(data);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
+      console.log("[report] PDF generated, size:", blob.size);
       const name = (data.student?.fullName || "siswa").toLowerCase().replace(/\s+/g, "-");
-      a.download = `laporan-${name}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      const fileName = `laporan-${name}.pdf`;
+      if (isNativePlatform()) {
+        await downloadFileCapacitor(blob, fileName);
+      } else {
+        downloadFileWeb(blob, fileName);
+      }
     } catch (err) {
+      console.error("[report] Download failed:", err);
       alert(err instanceof Error ? err.message : "Gagal download PDF");
     } finally {
       setDownloading(false);

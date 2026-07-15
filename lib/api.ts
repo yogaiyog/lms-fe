@@ -1,3 +1,5 @@
+import { Capacitor, CapacitorHttp } from "@capacitor/core";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:4000";
 
 type ApiSuccess<T> = {
@@ -410,6 +412,56 @@ export function clearSession() {
   window.sessionStorage.removeItem(storageKeys.user);
 }
 
+async function responseToPdfBlob(_response: Response): Promise<Blob> {
+  const buffer = await _response.arrayBuffer();
+  return new Blob([buffer], { type: "application/pdf" });
+}
+
+async function fetchPdfAsBlob(url: string, body: any, token: string): Promise<Blob> {
+  if (Capacitor.isNativePlatform()) {
+    console.log("[api] Using CapacitorHttp.request for PDF");
+    const result = await CapacitorHttp.request({
+      method: "POST",
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      data: body,
+      responseType: "blob",
+    });
+    console.log("[api] CapacitorHttp result data type:", typeof result.data, "isBase64:", typeof result.data === "string" && result.data.length > 100);
+    if (typeof result.data === "string" && result.data.length > 0) {
+      const binaryString = atob(result.data);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      const blob = new Blob([bytes], { type: "application/pdf" });
+      console.log("[api] PDF blob from CapacitorHttp base64, size:", blob.size);
+      return blob;
+    }
+    throw new Error("CapacitorHttp returned empty data");
+  }
+
+  console.log("[api] Using fetch for PDF (web)");
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: "Gagal membuat PDF" }));
+    throw new Error(error.message ?? "Gagal membuat PDF");
+  }
+
+  return response.blob();
+}
+
 async function request<T>(
   path: string,
   options: RequestInit = {},
@@ -765,21 +817,11 @@ export const api = {
       const session = getStoredSession();
       if (!session) throw new Error("Silakan login dulu");
 
-      const response = await fetch(`${API_BASE_URL}/api/v1/academic/certificates/generate-pdf`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.accessToken}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({ message: "Gagal membuat sertifikat PDF" }));
-        throw new Error(error.message ?? "Gagal membuat sertifikat PDF");
-      }
-
-      return response.blob();
+      return fetchPdfAsBlob(
+        `${API_BASE_URL}/api/v1/academic/certificates/generate-pdf`,
+        payload,
+        session.accessToken,
+      );
     },
     async generateAndDownload(payload: { name: string; course: string; date: string; certificateNumber: string; instructor: string; grade?: string }): Promise<void> {
       const session = getStoredSession();
@@ -1163,21 +1205,11 @@ export const api = {
       const session = getStoredSession();
       if (!session) throw new Error("Silakan login dulu");
 
-      const response = await fetch(`${API_BASE_URL}/api/v1/academic/reports/generate-pdf`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.accessToken}`,
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({ message: "Gagal membuat PDF laporan" }));
-        throw new Error(error.message ?? "Gagal membuat PDF laporan");
-      }
-
-      return response.blob();
+      return fetchPdfAsBlob(
+        `${API_BASE_URL}/api/v1/academic/reports/generate-pdf`,
+        data,
+        session.accessToken,
+      );
     },
   },
   savedReports: {
