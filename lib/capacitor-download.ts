@@ -1,8 +1,9 @@
-import { Capacitor } from "@capacitor/core";
+import { Capacitor, type PluginListenerHandle } from "@capacitor/core";
 import { Filesystem, Directory } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
+import { PdfViewer } from "@capawesome/capacitor-pdf-viewer";
 
-const TAG = "[capacitor-download]";
+const TAG = "[capacitor-pdf]";
 
 export function isNativePlatform() {
   return Capacitor.isNativePlatform();
@@ -61,4 +62,36 @@ export function downloadFileWeb(blob: Blob, fileName: string) {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+export async function writeBlobToCache(blob: Blob, fileName: string): Promise<string> {
+  if (blob.size === 0) throw new Error("Blob kosong, tidak bisa membuat file sementara");
+  const base64 = await blobToBase64(blob);
+  await Filesystem.writeFile({
+    path: fileName,
+    data: base64,
+    directory: Directory.Cache,
+    recursive: true,
+  });
+  const { uri } = await Filesystem.getUri({ path: fileName, directory: Directory.Cache });
+  console.log(TAG, "Cache file written:", uri);
+  return uri;
+}
+
+export async function openPdfViewerNative(
+  blob: Blob,
+  fileName: string,
+  title?: string,
+): Promise<void> {
+  console.log(TAG, "Opening native PDF viewer:", fileName);
+  const path = await writeBlobToCache(blob, fileName);
+  await PdfViewer.open({ path, title: title ?? fileName });
+}
+
+export function addPdfViewerClosedListener(listener: () => void): Promise<PluginListenerHandle> {
+  return PdfViewer.addListener("closed", listener);
+}
+
+export async function closePdfViewerNative(): Promise<void> {
+  await PdfViewer.close();
 }

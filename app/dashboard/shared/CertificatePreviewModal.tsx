@@ -4,7 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Download, Printer, X } from "lucide-react";
 import { api, type Enrollment, type Certificate } from "@/lib/api";
-import { isNativePlatform, downloadFileCapacitor, downloadFileWeb } from "@/lib/capacitor-download";
+import {
+  isNativePlatform,
+  downloadFileCapacitor,
+  downloadFileWeb,
+  openPdfViewerNative,
+  addPdfViewerClosedListener,
+} from "@/lib/capacitor-download";
 
 type PreviewMode = "admin" | "student";
 
@@ -28,6 +34,7 @@ export default function CertificatePreviewModal({
   onClose,
 }: Props) {
   const router = useRouter();
+  const native = isNativePlatform();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [pdfFileName, setPdfFileName] = useState("");
@@ -35,12 +42,27 @@ export default function CertificatePreviewModal({
   const [error, setError] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [viewerOpen, setViewerOpen] = useState(false);
   const objectUrlRef = useRef<string | null>(null);
+  const autoOpenedRef = useRef(false);
+
+  async function handleOpenNativeViewer() {
+    if (!pdfBlob || !pdfFileName) return;
+    try {
+      setViewerOpen(true);
+      await openPdfViewerNative(pdfBlob, pdfFileName, "Pratinjau Sertifikat");
+    } catch (err) {
+      console.error("[cert] Native viewer failed:", err);
+      setViewerOpen(false);
+      alert("Gagal membuka pratinjau PDF");
+    }
+  }
 
   useEffect(() => {
     if (!open || !enrollment) return;
 
     let cancelled = false;
+    autoOpenedRef.current = false;
     queueMicrotask(() => {
       if (cancelled) return;
       setLoading(true);
@@ -49,6 +71,7 @@ export default function CertificatePreviewModal({
       setPdfUrl(null);
       setPdfBlob(null);
       setPdfFileName("");
+      setViewerOpen(false);
     });
 
     (async () => {
@@ -62,18 +85,31 @@ export default function CertificatePreviewModal({
         });
         if (cancelled) return;
 
-        const url = URL.createObjectURL(blob);
-        if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
-        objectUrlRef.current = url;
-
         const sanitizedName = studentName
           .toLowerCase()
           .replace(/\s+/g, "-")
           .replace(/[^a-z0-9-]/g, "");
+        const fileName = `${sanitizedName}.pdf`;
 
-        setPdfUrl(url);
-        setPdfBlob(blob);
-        setPdfFileName(`${sanitizedName}.pdf`);
+        if (native) {
+          setPdfBlob(blob);
+          setPdfFileName(fileName);
+          if (!autoOpenedRef.current) {
+            autoOpenedRef.current = true;
+            setViewerOpen(true);
+            openPdfViewerNative(blob, fileName, "Pratinjau Sertifikat").catch((err) => {
+              console.error("[cert] Native viewer failed:", err);
+              setViewerOpen(false);
+            });
+          }
+        } else {
+          const url = URL.createObjectURL(blob);
+          if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
+          objectUrlRef.current = url;
+          setPdfUrl(url);
+          setPdfBlob(blob);
+          setPdfFileName(fileName);
+        }
       } catch {
         if (!cancelled) setError("Gagal membuat sertifikat");
       } finally {
@@ -88,7 +124,18 @@ export default function CertificatePreviewModal({
         objectUrlRef.current = null;
       }
     };
-  }, [open, enrollment, studentName, initialSent]);
+  }, [open, enrollment, studentName, initialSent, native]);
+
+  useEffect(() => {
+    if (!native) return;
+    let handle: { remove: () => Promise<void> } | null = null;
+    (async () => {
+      handle = await addPdfViewerClosedListener(() => setViewerOpen(false));
+    })();
+    return () => {
+      handle?.remove?.().catch(() => {});
+    };
+  }, [native]);
 
   async function handleDownload() {
     if (!pdfBlob) return;
@@ -159,12 +206,27 @@ export default function CertificatePreviewModal({
                 </button>
               </div>
             </div>
-          ) : loading && !pdfUrl ? (
+          ) : loading && !pdfUrl && !pdfBlob ? (
             <div className="flex h-full items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white/70">
               <div className="flex flex-col items-center gap-3 text-center">
                 <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
                 <p className="text-sm font-semibold text-slate-600">Sedang membuat PDF sertifikat...</p>
               </div>
+            </div>
+          ) : native ? (
+            <div className="flex h-full flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-slate-300 bg-white/70 text-center">
+              <p className="text-sm font-semibold text-slate-700">
+                {viewerOpen
+                  ? "Pratinjau PDF terbuka di penampil native."
+                  : "Pratinjau PDF siap dibuka."}
+              </p>
+              <button
+                onClick={handleOpenNativeViewer}
+                disabled={!pdfBlob}
+                className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700 disabled:opacity-50"
+              >
+                {viewerOpen ? "Buka Lagi" : "Buka Pratinjau PDF"}
+              </button>
             </div>
           ) : (
             <iframe
@@ -183,13 +245,15 @@ export default function CertificatePreviewModal({
           >
             Tutup
           </button>
-        <button
-          onClick={handlePrint}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-sm font-bold text-blue-600 shadow-sm ring-1 ring-blue-600/30 transition hover:bg-blue-50"
-        >
-          <Printer size={15} />
-          Cetak
-        </button>
+        {!native && (
+          <button
+            onClick={handlePrint}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-sm font-bold text-blue-600 shadow-sm ring-1 ring-blue-600/30 transition hover:bg-blue-50"
+          >
+            <Printer size={15} />
+            Cetak
+          </button>
+        )}
         <button
           onClick={handleOpenPage}
           className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-50"
