@@ -398,7 +398,7 @@ export default function TutorDashboard() {
           <div className="flex items-center gap-2 px-2 mb-8">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-600 text-white font-extrabold">T</div>
             <div>
-              <p className={`font-extrabold leading-tight ${theme.text}`}>Tutor</p>
+              <p className={`font-extrabold leading-tight ${theme.text}`}>{user?.tutorProfile?.fullName ?? user?.tutorProfile?.fullName}</p>
               <p className={`text-xs leading-tight ${theme.textMuted}`}>Dashboard</p>
             </div>
           </div>
@@ -438,7 +438,7 @@ export default function TutorDashboard() {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white font-extrabold text-sm">T</div>
-                  <p className={`font-extrabold ${theme.text}`}>Tutor</p>
+                  <p className={`font-extrabold ${theme.text}`}>{user?.tutorProfile?.fullName || "Tutor"} </p>
                 </div>
                 <button onClick={() => setDrawerOpen(false)} className={theme.textMuted}><X size={20} /></button>
               </div>
