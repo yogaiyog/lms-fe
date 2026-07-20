@@ -8,13 +8,21 @@ interface RoadPathProps {
   totalHeight: number;
   roadWidth: number;
   roadColor: string;
+  itemColors: string[];
   animated: boolean;
 }
 
-export function RoadPath({ pathD, viewBoxWidth, totalHeight, roadWidth, roadColor, animated }: RoadPathProps) {
+export function RoadPath({ pathD, viewBoxWidth, totalHeight, roadWidth, roadColor, itemColors, animated }: RoadPathProps) {
   if (!pathD) return null;
 
   const dashWidth = Math.max(roadWidth * 0.07, 3);
+
+  const gradientId = "roadGradient";
+
+  const reducedColors: string[] = [];
+  for (let i = 0; i < itemColors.length; i += 2) {
+    reducedColors.push(itemColors[i]);
+  }
 
   return (
     <svg
@@ -26,6 +34,15 @@ export function RoadPath({ pathD, viewBoxWidth, totalHeight, roadWidth, roadColo
       aria-hidden="true"
     >
       <defs>
+        <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+          {reducedColors.map((c, i) => (
+            <stop
+              key={i}
+              offset={`${(i / Math.max(reducedColors.length - 1, 1)) * 100}%`}
+              stopColor={c}
+            />
+          ))}
+        </linearGradient>
         <filter id="roadmap-road-shadow" x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="0" dy="6" stdDeviation="10" floodColor="#0f172a" floodOpacity="0.16" />
         </filter>
@@ -35,7 +52,7 @@ export function RoadPath({ pathD, viewBoxWidth, totalHeight, roadWidth, roadColo
       <motion.path
         d={pathD}
         fill="none"
-        stroke={roadColor}
+        stroke={`url(#${gradientId})`}
         strokeWidth={roadWidth}
         strokeLinecap="round"
         strokeLinejoin="round"

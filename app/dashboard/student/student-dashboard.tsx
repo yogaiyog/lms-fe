@@ -20,6 +20,7 @@ import ScheduleTab from "./_component/ScheduleTab";
 import ReportTab from "./_component/ReportTab";
 import EnrollmentTab from "./_component/EnrollmentTab";
 import RoadmapTab from "./_component/RoadmapTab";
+import LearningPathView from "./_component/LearningPathView";
 import BadgesTab from "./_component/BadgesTab";
 
 export default function StudentDashboard() {
@@ -32,6 +33,7 @@ export default function StudentDashboard() {
 
   const [myClass, setMyClass] = useState<Class | null>(null);
   const [selectedClassId, setSelectedClassId] = useState<string>("");
+  const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
   const [countdowns, setCountdowns] = useState<Record<string, { days: number; hours: number; minutes: number; seconds: number }>>({});
 
   const theme: Theme = {
@@ -43,7 +45,7 @@ export default function StudentDashboard() {
     textMuted: dark ? "text-slate-400" : "text-slate-500",
   };
 
-  const go = (p: Segment) => { setSegment(p); setDrawerOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const go = (p: Segment) => { setSegment(p); setDrawerOpen(false); setSelectedTopicId(null); window.scrollTo({ top: 0, behavior: "smooth" }); };
 
   useEffect(() => {
     const session = getStoredSession();
@@ -192,7 +194,7 @@ export default function StudentDashboard() {
         <div className="flex-1 md:ml-64 min-w-0">
           <Topbar theme={theme} segment={segment} onToggleDark={() => setDark((v) => !v)} onLogout={logout} onMenuClick={() => setDrawerOpen(true)} />
 
-          <main className="px-4 sm:px-8 py-6 pb-24 md:pb-10 max-w-6xl">
+          <main className="px-4 sm:px-8 py-1 pb-24 md:pb-10 max-w-6xl">
             {segment === "overview" && (
               <OverviewTab
                 theme={theme}
@@ -216,16 +218,36 @@ export default function StudentDashboard() {
             )}
 
             {segment === "roadmap" && (
-              <RoadmapTab
-                theme={theme}
-                selectedClass={selectedClass}
-                roadmapItems={roadmapItems}
-                roadmapSchedules={filteredSchedules}
-                allClasses={allClasses}
-                selectedClassId={selectedClassId}
-                onSelectClass={setSelectedClassId}
-                onGoSchedule={() => go("schedule")}
-              />
+              <div className="relative overflow-hidden rounded-2xl -mx-4 sm:-mx-8">
+                <div
+                  className="pointer-events-none absolute inset-0 bg-repeat opacity-15"
+                  style={{ backgroundImage: "url(/seamless.jpg)" }}
+                />
+                <div className="relative z-10 px-4 sm:px-8">
+                  {!selectedTopicId ? (
+                    <RoadmapTab
+                      theme={theme}
+                      selectedClass={selectedClass}
+                      roadmapItems={roadmapItems}
+                      roadmapSchedules={filteredSchedules}
+                      allClasses={allClasses}
+                      selectedClassId={selectedClassId}
+                      onSelectClass={setSelectedClassId}
+                      onTopicSelect={(topicId) => {
+                        setSelectedTopicId(topicId);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                    />
+                  ) : studentId ? (
+                    <LearningPathView
+                      theme={theme}
+                      studentId={studentId}
+                      selectedTopicId={selectedTopicId}
+                      onBack={() => setSelectedTopicId(null)}
+                    />
+                  ) : null}
+                </div>
+              </div>
             )}
 
             {segment === "badges" && (

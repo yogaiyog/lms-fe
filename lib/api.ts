@@ -219,6 +219,15 @@ export type ImageRecord = {
   updatedAt: string;
 };
 
+export type TopicTask = {
+  id: string;
+  code: string;
+  label: string;
+  url: string;
+  isCapstone: boolean;
+  order: number;
+};
+
 export type Topic = {
   id: string;
   curriculumId?: string | null;
@@ -230,6 +239,7 @@ export type Topic = {
   tools?: string | null;
   order: number;
   schedules?: Schedule[];
+  tasks?: TopicTask[];
 };
 
 export type Announcement = {
@@ -1228,6 +1238,32 @@ export const api = {
     async delete(id: string) {
       return authenticatedRequest<{ success: boolean }>(`/api/v1/academic/saved-reports/${id}`, {
         method: "DELETE",
+      });
+    },
+  },
+  roadmap: {
+    async fetchScratchFundamental(studentId?: string) {
+      const query = studentId ? `?studentId=${encodeURIComponent(studentId)}` : "";
+      return authenticatedRequest<{
+        curriculum: Curriculum & { topics: (Topic & { tasks: TopicTask[] })[] };
+        progress: { topicTask: { code: string }; status: string; topicTaskId: string; completedAt: string | null; metadata?: string }[];
+      }>(`/api/v1/academic/roadmap/scratch-fundamental${query}`);
+    },
+    async fetchStudentProgress(studentId: string) {
+      return authenticatedRequest<any[]>(
+        `/api/v1/academic/student-topic-progress?studentId=${encodeURIComponent(studentId)}`
+      );
+    },
+    async upsertProgress(payload: {
+      studentId: string;
+      topicTaskCode?: string;
+      topicTaskId?: string;
+      status: string;
+      metadata?: string;
+    }) {
+      return authenticatedRequest<any>("/api/v1/academic/student-topic-progress", {
+        method: "POST",
+        body: JSON.stringify(payload),
       });
     },
   },
