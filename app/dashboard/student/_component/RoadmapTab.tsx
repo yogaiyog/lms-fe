@@ -14,17 +14,17 @@ type Props = {
   allClasses: Class[];
   selectedClassId: string;
   onSelectClass: (id: string) => void;
-  onGoSchedule: () => void;
+  onTopicSelect: (topicId: string) => void;
 };
 
-export default function RoadmapTab({ theme, selectedClass, roadmapItems, roadmapSchedules, allClasses, selectedClassId, onSelectClass, onGoSchedule }: Props) {
+export default function RoadmapTab({ theme, selectedClass, roadmapItems, roadmapSchedules, allClasses, selectedClassId, onSelectClass, onTopicSelect }: Props) {
   return (
     <div>
       <div className="mb-6 flex items-start gap-3">
-        <div>
+        {/* <div>
           <h1 className={`text-2xl font-extrabold tracking-tight ${theme.text}`}>Roadmap</h1>
           <p className={`mt-1 text-sm ${theme.textMuted}`}>Perjalanan belajar kamu.</p>
-        </div>
+        </div> */}
         {allClasses.length > 1 && (
           <select value={selectedClassId} onChange={(e) => onSelectClass(e.target.value)}
             className="ml-auto rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold outline-none focus:border-blue-400 text-slate-600">
@@ -47,7 +47,7 @@ export default function RoadmapTab({ theme, selectedClass, roadmapItems, roadmap
         <Roadmap
           items={roadmapItems}
           animated
-          onStepSelect={() => onGoSchedule()}
+          onStepSelect={(item) => !item.locked && onTopicSelect(item.id)}
         />
       )}
     </div>

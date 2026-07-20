@@ -40,6 +40,7 @@ export function Roadmap({
         totalHeight={totalHeight}
         roadWidth={roadWidth}
         roadColor={roadColor}
+        itemColors={items.map((i) => i.color)}
         animated={animated}
       />
 
