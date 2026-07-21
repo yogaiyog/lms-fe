@@ -13,9 +13,9 @@ export function Nav({ userEmail, onLogout }: NavProps) {
     <header className="flex items-center justify-between rounded-3xl border border-white/20 bg-white/80 px-6 py-4 shadow-lg backdrop-blur-xl">
       <Link href="/">
         <div>
-          <p className="text-xs font-bold uppercase tracking-widest text-indigo-600">
+          <span className="text-xs font-bold uppercase tracking-widest text-indigo-600">
             LMS Coding
-          </p>
+          </span>
           <p className="text-sm text-gray-600">Belajar Coding Bareng</p>
         </div>
       </Link>

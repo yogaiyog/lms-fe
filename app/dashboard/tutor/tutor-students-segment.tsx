@@ -246,7 +246,7 @@ export default function TutorStudentsSegment({
       return (
         <Card theme={theme} className="p-12 flex flex-col items-center text-center border-dashed">
           <span className="text-5xl mb-4">👤</span>
-          <h3 className={`font-bold ${theme.text}`}>Belum ada siswa</h3>
+          <h2 className={`font-bold ${theme.text}`}>Belum ada siswa</h2>
           <p className={`text-sm mt-1 max-w-sm ${theme.textMuted}`}>Kelas kamu belum memiliki siswa terdaftar</p>
         </Card>
       );

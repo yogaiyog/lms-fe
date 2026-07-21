@@ -126,9 +126,9 @@ export default function TutorHomeSegment({
 
   return (
     <div>
-      <p className={`mb-3 text-xs sm:text-sm font-semibold ${theme.textMuted}`}>
+      <h2 className={`mb-3 text-xs sm:text-sm font-semibold ${theme.textMuted}`}>
         Jadwal minggu ini: <span className={`font-bold ${theme.text}`}>{getWeekRange().monday.toLocaleDateString("id-ID", { day: "numeric", month: "short" })} – {getWeekRange().sunday.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}</span>
-      </p>
+      </h2>
 
       {weekSchedules.length === 0 ? (
         <Card theme={theme} className="p-8 sm:p-12 flex flex-col items-center text-center border-dashed">

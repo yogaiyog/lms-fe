@@ -194,7 +194,7 @@ export default function TutorScheduleDetailModal({
 
                   {assessingAttendance === att.id && (
                     <div className={`border-t ${theme.border} px-4 py-3 space-y-3`}>
-                      <p className={`text-xs font-bold ${theme.text}`}>Penilaian</p>
+                      <h3 className={`text-xs font-bold ${theme.text}`}>Penilaian</h3>
                       {formAspects.length === 0 ? (
                         <p className={`text-xs ${theme.textMuted}`}>Kurikulum belum memiliki aspek penilaian</p>
                       ) : (

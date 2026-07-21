@@ -94,9 +94,9 @@ export function RoadStep({ item, index, xPercent, y, animated, onSelect }: RoadS
       </div>
 
       <div className="mt-3 rounded-2xl border border-white/70 bg-white/85 px-3 py-2 text-center shadow-sm backdrop-blur-sm">
-        <p className={['text-sm font-extrabold leading-tight tracking-tight', locked ? 'text-slate-500' : 'text-slate-900'].join(' ')}>
+        <h3 className={['text-sm font-extrabold leading-tight tracking-tight', locked ? 'text-slate-500' : 'text-slate-900'].join(' ')}>
           {title}
-        </p>
+        </h3>
 
         {description && (
           <p className={['mt-1 line-clamp-2 text-xs font-medium leading-snug', locked ? 'text-slate-400' : 'text-slate-600'].join(' ')}>

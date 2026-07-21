@@ -329,7 +329,7 @@ export default function DashboardContent() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-gray-800">Belum ada anak</h3>
+                <h2 className="text-lg font-bold text-gray-800">Belum ada anak</h2>
                 <p className="mt-1 text-sm text-gray-500">Tambahkan anak untuk mulai belajar</p>
                 <button
                   onClick={() => setShowAddStudent(true)}
@@ -349,7 +349,7 @@ export default function DashboardContent() {
                         </svg>
                       </div>
                       <div>
-                        <h3 className="text-[1.1rem] font-bold text-gray-800">{student.nickname}</h3>
+                        <h2 className="text-[1.1rem] font-bold text-gray-800">{student.nickname}</h2>
                         <p className="text-sm text-gray-500">{student.fullName}</p>
                       </div>
                     </div>
@@ -378,7 +378,7 @@ export default function DashboardContent() {
                     {/* Enrolled Classes */}
                     {student.enrollments.length > 0 && (
                       <div className="mt-3">
-                        <p className="mb-2 text-sm font-medium text-gray-600">Kelas:</p>
+                        <h4 className="mb-2 text-sm font-medium text-gray-600">Kelas:</h4>
                         <div className="flex flex-wrap gap-2">
                           {student.enrollments.filter((e) => e.class).map((enrollment) => (
                             <span
@@ -415,7 +415,7 @@ export default function DashboardContent() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-gray-800">Belum ada jadwal</h3>
+                <h2 className="text-lg font-bold text-gray-800">Belum ada jadwal</h2>
                 <p className="mt-1 text-sm text-gray-500">Tambahkan anak terlebih dahulu</p>
               </div>
             ) : (
@@ -425,7 +425,7 @@ export default function DashboardContent() {
                 );
                 return (
                   <div key={student.id} className="rounded-2xl bg-white p-5 shadow-md">
-                    <h3 className="text-[1.1rem] font-bold text-gray-800">{student.nickname}</h3>
+                    <h2 className="text-[1.1rem] font-bold text-gray-800">{student.nickname}</h2>
                     <div className="mt-3">
                       {schedules.length === 0 ? (
                         <p className="text-sm text-gray-400">Belum ada jadwal</p>
@@ -495,7 +495,7 @@ export default function DashboardContent() {
                     <div key={c.id} className="rounded-2xl bg-white p-4 shadow-md">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h3 className="text-sm font-bold text-gray-800">{c.name}</h3>
+                          <h2 className="text-sm font-bold text-gray-800">{c.name}</h2>
                           <p className="text-[10px] text-gray-400">{c.categories?.map((cat) => CATEGORY_LABELS[cat.category.name] ?? cat.category.name).join(", ") ?? ""} &middot; {c.topics.length} topik</p>
                         </div>
                         {c.assessmentSet && (
@@ -569,7 +569,7 @@ export default function DashboardContent() {
                     <div key={s.id} className="rounded-2xl bg-white p-4 shadow-md">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h3 className="text-sm font-bold text-gray-800">{s.name}</h3>
+                          <h2 className="text-sm font-bold text-gray-800">{s.name}</h2>
                           <p className="text-[10px] text-gray-400">
                             {s.aspects?.length ?? 0} aspek
                             {s.description && ` — ${s.description}`}

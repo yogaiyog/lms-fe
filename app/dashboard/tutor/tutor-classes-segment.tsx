@@ -87,7 +87,7 @@ export default function TutorClassesSegment({
     return (
       <Card theme={theme} className="p-12 flex flex-col items-center text-center border-dashed">
         <span className="text-5xl mb-4">📚</span>
-        <h3 className={`font-bold ${theme.text}`}>Belum ada kelas</h3>
+        <h2 className={`font-bold ${theme.text}`}>Belum ada kelas</h2>
         <p className={`text-sm mt-1 max-w-sm ${theme.textMuted}`}>Kamu belum mengajar kelas apapun</p>
       </Card>
     );
@@ -103,7 +103,7 @@ export default function TutorClassesSegment({
                 <BookOpen size={20} className="text-blue-600" />
               </span>
               <div>
-                <h3 className={`text-lg font-extrabold ${theme.text}`}>{cls.name}</h3>
+                <h2 className={`text-lg font-extrabold ${theme.text}`}>{cls.name}</h2>
                 <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
                   {cls.category?.label ?? "-"}
                 </span>
@@ -117,7 +117,7 @@ export default function TutorClassesSegment({
 
               <div className={`border-t ${theme.border} pt-5 mb-5`}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className={`font-bold ${theme.text}`}>Pengumuman</h3>
+              <h2 className={`font-bold ${theme.text}`}>Pengumuman</h2>
               <button onClick={() => onOpenAnnounceForm(cls.id)}
                 className="inline-flex items-center gap-1.5 rounded-2xl bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-700 transition-colors">
                 + Pengumuman
@@ -151,7 +151,7 @@ export default function TutorClassesSegment({
 
           {cls.schedules.length > 0 && (
             <div className="mb-5">
-              <p className={`mb-3 text-sm font-bold ${theme.text}`}>Jadwal:</p>
+              <h3 className={`mb-3 text-sm font-bold ${theme.text}`}>Jadwal:</h3>
               <div className="space-y-2">
                 {[...cls.schedules].sort((b, a) => b.date.localeCompare(a.date)).map((schedule) => {
                   const todayStr = new Date().toISOString().split("T")[0];

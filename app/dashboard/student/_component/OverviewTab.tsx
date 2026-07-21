@@ -35,11 +35,11 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
 
             {announcements.length > 0 && (
         <Card theme={theme} className="p-4 sm:p-6">
-          <h3 className={`font-bold text-sm sm:text-base mb-3 ${theme.text}`}>Pengumuman</h3>
+          <h2 className={`font-bold text-sm sm:text-base mb-3 ${theme.text}`}>Pengumuman</h2>
           <div className="space-y-2">
             {announcements.map((a) => (
               <div key={a.id} className={`rounded-xl p-3 ${theme.dark ? "bg-slate-800" : "bg-amber-50"}`}>
-                <p className={`text-xs font-bold ${theme.text}`}>{a.title}</p>
+                <h3 className={`text-xs font-bold ${theme.text}`}>{a.title}</h3>
                 <p className={`mt-0.5 text-xs sm:text-sm ${theme.textMuted}`}>{a.content}</p>
                 <p className={`mt-1.5 text-[10px] ${theme.textMuted}`}>
                   {allClasses.find((c) => c.id === a.classId)?.name ?? "Kelas"} — {a.tutor?.fullName ?? "Tutor"} — {new Date(a.createdAt).toLocaleDateString("id-ID")}
@@ -51,7 +51,7 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
       )}
 
       <div>
-        <p className={`mb-3 text-xs sm:text-sm font-semibold ${theme.textMuted}`}>Jadwal minggu ini</p>
+        <h2 className={`mb-3 text-xs sm:text-sm font-semibold ${theme.textMuted}`}>Jadwal minggu ini</h2>
 
         {activeWeekSchedules.length === 0 ? (
           <Card theme={theme} className="p-8 sm:p-12 flex flex-col items-center text-center border-dashed">
@@ -138,7 +138,7 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
       {allClasses.length === 0 && (
         <Card theme={theme} className="p-8 sm:p-12 flex flex-col items-center text-center border-dashed">
           <span className="text-4xl sm:text-5xl mb-3">📭</span>
-          <h3 className={`font-bold text-sm sm:text-base ${theme.text}`}>Belum ada kelas</h3>
+          <h2 className={`font-bold text-sm sm:text-base ${theme.text}`}>Belum ada kelas</h2>
           <p className={`text-xs sm:text-sm mt-1 max-w-sm ${theme.textMuted}`}>Kamu belum terdaftar di kelas manapun.</p>
         </Card>
       )}

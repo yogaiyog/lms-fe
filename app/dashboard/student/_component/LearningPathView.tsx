@@ -158,9 +158,9 @@ export default function LearningPathView({
           {filteredUnits.length === 0 ? (
             <div className="rounded-lg border border-dashed border-slate-200 p-12 text-center">
               <span className="text-5xl">📭</span>
-              <h3 className={`mt-4 font-bold ${theme.text}`}>
+              <h2 className={`mt-4 font-bold ${theme.text}`}>
                 Belum ada unit tersedia
-              </h3>
+              </h2>
             </div>
           ) : (
             filteredUnits.map((unit) => (

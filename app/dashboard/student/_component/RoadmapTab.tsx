@@ -21,10 +21,10 @@ export default function RoadmapTab({ theme, selectedClass, roadmapItems, roadmap
   return (
     <div>
       <div className="mb-6 flex items-start gap-3">
-        {/* <div>
+        <div>
           <h1 className={`text-2xl font-extrabold tracking-tight ${theme.text}`}>Roadmap</h1>
           <p className={`mt-1 text-sm ${theme.textMuted}`}>Perjalanan belajar kamu.</p>
-        </div> */}
+        </div>
         {allClasses.length > 1 && (
           <select value={selectedClassId} onChange={(e) => onSelectClass(e.target.value)}
             className="ml-auto rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold outline-none focus:border-blue-400 text-slate-600">
@@ -35,13 +35,13 @@ export default function RoadmapTab({ theme, selectedClass, roadmapItems, roadmap
       {!selectedClass?.curriculum ? (
         <Card theme={theme} className="p-12 flex flex-col items-center text-center border-dashed">
           <span className="text-5xl mb-4">🗺️</span>
-          <h3 className={`font-bold ${theme.text}`}>Belum ada roadmap</h3>
+          <h2 className={`font-bold ${theme.text}`}>Belum ada roadmap</h2>
           <p className={`text-sm mt-1 max-w-sm ${theme.textMuted}`}>Kelas kamu belum memiliki kurikulum.</p>
         </Card>
       ) : roadmapItems.length === 0 ? (
         <Card theme={theme} className="p-12 flex flex-col items-center text-center border-dashed">
           <span className="text-5xl mb-4">📭</span>
-          <h3 className={`font-bold ${theme.text}`}>Kurikulum kosong</h3>
+          <h2 className={`font-bold ${theme.text}`}>Kurikulum kosong</h2>
         </Card>
       ) : (
         <Roadmap

@@ -3,6 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  --font-sans: var(--font-geist-mono);
   --color-tea-green-50: #eafde8;
   --color-tea-green-100: #d5fbd0;
   --color-tea-green-200: #abf7a1;
@@ -62,4 +63,10 @@
   --color-dark-amethyst-800: #32095d;
   --color-dark-amethyst-900: #19052e;
   --color-dark-amethyst-950: #110320;
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-lexend);
+  }
 }

@@ -25,6 +25,8 @@ export interface RoadmapProps {
   animated?: boolean;
   /** Base color of the road. Default a soft indigo */
   roadColor?: string;
+  /** Randomize starting side + add X jitter for organic look */
+  randomize?: boolean;
   /** Called when an unlocked step is activated (click or Enter/Space) */
   onStepSelect?: (item: RoadmapItem) => void;
   className?: string;
