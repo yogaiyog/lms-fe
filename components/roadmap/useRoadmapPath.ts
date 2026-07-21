@@ -10,15 +10,17 @@ import type { RoadmapPoint } from './types';
  */
 export const VIEWBOX_WIDTH = 1000;
 
-const LANE_LEFT = 220;
-const LANE_RIGHT = 780;
-const LANE_CENTER = 500;
-const TOP_PADDING = 70;
+export const LANE_CENTER = 500;
+const TOP_PADDING = 140;
 const BOTTOM_PADDING = 90;
 
 interface UseRoadmapPathOptions {
   itemCount: number;
   spacing: number;
+  /** 0 = all centered, 0.56 = current default, >0.75 = near edges */
+  laneSpread?: number;
+  /** Randomize starting side + add X jitter for organic look */
+  randomize?: boolean;
 }
 
 interface UseRoadmapPathResult {
@@ -28,28 +30,52 @@ interface UseRoadmapPathResult {
   totalHeight: number;
 }
 
-export function useRoadmapPath({ itemCount, spacing }: UseRoadmapPathOptions): UseRoadmapPathResult {
+function seeded(seed: number): number {
+  const x = Math.sin(seed * 7919) * 10000;
+  return x - Math.floor(x);
+}
+
+export function useRoadmapPath({ itemCount, spacing, laneSpread = 0.56, randomize = false }: UseRoadmapPathOptions): UseRoadmapPathResult {
   return useMemo(() => {
     const safeCount = Math.max(itemCount, 0);
     const safeSpacing = Math.max(spacing, 80);
 
+    const laneOffset = Math.round(LANE_CENTER * laneSpread);
+    const laneLeftBase = LANE_CENTER - laneOffset;
+    const laneRightBase = LANE_CENTER + laneOffset;
+    const jitterMax = Math.round(laneOffset * 0.15);
+
     const totalHeight =
       safeCount <= 1 ? safeSpacing + TOP_PADDING + BOTTOM_PADDING : (safeCount - 1) * safeSpacing + TOP_PADDING + BOTTOM_PADDING;
 
-    const points: RoadmapPoint[] = Array.from({ length: safeCount }, (_, i) => {
+    const points: RoadmapPoint[] = [];
+    for (let i = 0; i < safeCount; i++) {
       if (safeCount === 1) {
-        return { x: LANE_CENTER, y: TOP_PADDING, side: 'center' as const };
+        points.push({ x: LANE_CENTER, y: TOP_PADDING, side: 'center' as const });
+        break;
       }
-      const isEven = i % 2 === 0;
-      return {
-        x: isEven ? LANE_LEFT : LANE_RIGHT,
+
+      let side: 'left' | 'right';
+      if (randomize) {
+        side = i === 0
+          ? (seeded(itemCount) > 0.5 ? 'right' : 'left')
+          : (points[i - 1].side === 'left' ? 'right' : 'left');
+      } else {
+        side = i % 2 === 0 ? 'left' : 'right';
+      }
+
+      const baseX = side === 'left' ? laneLeftBase : laneRightBase;
+      const jitter = randomize ? Math.round((seeded(itemCount + i + 2) - 0.5) * 2 * jitterMax) : 0;
+
+      points.push({
+        x: baseX + jitter,
         y: TOP_PADDING + i * safeSpacing,
-        side: isEven ? ('left' as const) : ('right' as const),
-      };
-    });
+        side,
+      });
+    }
 
     return { points, pathD: buildSmoothPath(points), viewBoxWidth: VIEWBOX_WIDTH, totalHeight };
-  }, [itemCount, spacing]);
+  }, [itemCount, spacing, laneSpread, randomize]);
 }
 
 /**

@@ -194,7 +194,7 @@ export default function StudentDashboard() {
         <div className="flex-1 md:ml-64 min-w-0">
           <Topbar theme={theme} segment={segment} onToggleDark={() => setDark((v) => !v)} onLogout={logout} onMenuClick={() => setDrawerOpen(true)} />
 
-          <main className="px-4 sm:px-8 py-1 pb-24 md:pb-10 max-w-6xl">
+          <main className="px-4 sm:px-8 py-1 pb-24 md:pb-10 ">
             {segment === "overview" && (
               <OverviewTab
                 theme={theme}

@@ -33,7 +33,7 @@ export default function ReportTab({ theme, studentId, savedReports: reports, gal
       {reports.length === 0 ? (
         <Card theme={theme} className="p-12 flex flex-col items-center text-center border-dashed">
           <span className="text-5xl mb-4">📄</span>
-          <h3 className={`font-bold ${theme.text}`}>Belum ada laporan</h3>
+          <h2 className={`font-bold ${theme.text}`}>Belum ada laporan</h2>
           <p className={`text-sm mt-1 max-w-sm ${theme.textMuted}`}>Tutor akan membuat laporan hasil belajarmu di sini.</p>
         </Card>
       ) : (

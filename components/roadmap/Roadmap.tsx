@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef, useState, useEffect } from 'react';
 import { RoadPath } from './RoadPath';
 import { RoadStep } from './RoadStep';
 import { useRoadmapPath } from './useRoadmapPath';
@@ -13,10 +14,27 @@ export function Roadmap({
   roadColor = '#6366f1',
   onStepSelect,
   className = '',
+  randomize = true,
 }: RoadmapProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [laneSpread, setLaneSpread] = useState(0.56);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver((entries) => {
+      const w = entries[0]?.contentRect.width ?? 0;
+      setLaneSpread(Math.min(0.70, Math.max(0.30, w / 1000)));
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   const { points, pathD, viewBoxWidth, totalHeight } = useRoadmapPath({
     itemCount: items.length,
     spacing,
+    laneSpread,
+    randomize,
   });
 
   if (items.length === 0) {
@@ -29,9 +47,10 @@ export function Roadmap({
 
   return (
     <div
+      ref={containerRef}
       role="list"
       aria-label="Learning roadmap"
-      className={['relative mx-auto w-full max-w-md px-4 md:max-w-2xl md:px-8', className].join(' ')}
+      className={['relative mx-auto w-full max-w-xl px-4 lg:max-w-3xl lg:px-8', className].join(' ')}
       style={{ height: totalHeight }}
     >
       <RoadPath

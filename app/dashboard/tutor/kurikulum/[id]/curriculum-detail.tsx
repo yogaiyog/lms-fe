@@ -107,7 +107,7 @@ export default function CurriculumDetail() {
         {sortedTopics.length === 0 ? (
           <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-12 flex flex-col items-center text-center">
             <span className="text-5xl mb-4">📖</span>
-            <h3 className="text-lg font-bold text-slate-900">Belum ada topik</h3>
+            <h2 className="text-lg font-bold text-slate-900">Belum ada topik</h2>
             <p className="mt-1 text-sm text-slate-500">Belum ada topik dalam kurikulum ini</p>
           </div>
         ) : (
@@ -119,7 +119,7 @@ export default function CurriculumDetail() {
                     {index + 1}
                   </div>
                   <div>
-                    <h3 className="text-lg font-extrabold text-slate-900">{topic.title}</h3>
+                    <h2 className="text-lg font-extrabold text-slate-900">{topic.title}</h2>
                     {topic.goals && (
                       <p className="mt-0.5 text-sm text-slate-500">{topic.goals}</p>
                     )}

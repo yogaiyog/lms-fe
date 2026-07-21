@@ -42,7 +42,7 @@ export default function EnrollmentTab({ theme, classes, enrollments, schedules, 
       {classes.length === 0 && enrollments.filter((e) => !e.classId).length === 0 ? (
         <Card theme={theme} className="p-12 flex flex-col items-center text-center border-dashed">
           <span className="text-5xl mb-4">📚</span>
-          <h3 className={`font-bold ${theme.text}`}>Belum ada enrollment</h3>
+          <h2 className={`font-bold ${theme.text}`}>Belum ada enrollment</h2>
           <p className={`text-sm mt-1 max-w-sm ${theme.textMuted}`}>Kamu belum terdaftar di enrollment manapun.</p>
         </Card>
       ) : (
@@ -81,7 +81,7 @@ export default function EnrollmentTab({ theme, classes, enrollments, schedules, 
                         <BookOpen size={20} className="text-indigo-600" />
                       </span>
                       <div>
-                        <h3 className={`text-lg font-extrabold ${theme.text}`}>{cls.name}</h3>
+                        <h2 className={`text-lg font-extrabold ${theme.text}`}>{cls.name}</h2>
                         <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                           <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-semibold text-blue-700">
                             {cls.category?.label ?? "-"}
@@ -180,7 +180,7 @@ export default function EnrollmentTab({ theme, classes, enrollments, schedules, 
                   <BookOpen size={20} className="text-amber-600" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className={`text-base font-extrabold ${theme.text}`}>{enr.curriculum?.name ?? "Menunggu kelas"}</h3>
+                  <h2 className={`text-base font-extrabold ${theme.text}`}>{enr.curriculum?.name ?? "Menunggu kelas"}</h2>
                   <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                     <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-semibold text-amber-700">
                       Menunggu Kelas

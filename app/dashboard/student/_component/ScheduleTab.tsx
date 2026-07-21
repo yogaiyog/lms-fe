@@ -58,7 +58,7 @@ export default function ScheduleTab({ theme, schedules, classes, attendances }: 
       {schedules.length === 0 ? (
         <Card theme={theme} className="p-12 flex flex-col items-center text-center border-dashed">
           <span className="text-5xl mb-4">📅</span>
-          <h3 className={`font-bold ${theme.text}`}>Belum ada jadwal</h3>
+          <h2 className={`font-bold ${theme.text}`}>Belum ada jadwal</h2>
         </Card>
       ) : (
         <div className="space-y-8">

@@ -83,7 +83,7 @@ export default function KurikulumList() {
         {classes.length === 0 ? (
           <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-12 flex flex-col items-center text-center border-dashed">
             <span className="text-5xl mb-4">📚</span>
-            <h3 className="text-lg font-bold text-slate-900">Belum ada kelas</h3>
+            <h2 className="text-lg font-bold text-slate-900">Belum ada kelas</h2>
             <p className="mt-1 text-sm text-slate-500">Kamu belum mengajar kelas apapun</p>
           </div>
         ) : (
@@ -103,7 +103,7 @@ export default function KurikulumList() {
                         <BookOpen size={20} className="text-blue-600" />
                       </span>
                       <div>
-                        <h3 className="text-lg font-extrabold text-slate-900">{cls.name}</h3>
+                        <h2 className="text-lg font-extrabold text-slate-900">{cls.name}</h2>
                         <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
                           {cls.category?.label ?? "-"}
                         </span>
