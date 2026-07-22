@@ -66,10 +66,13 @@ export default function StudentDashboard() {
   // Sync state to URL params
   useEffect(() => {
     if (!initialized) return;
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(window.location.search);
     if (segment !== "overview") params.set("tab", segment);
+    else params.delete("tab");
     if (selectedTopicId) params.set("topic", selectedTopicId);
+    else params.delete("topic");
     if (selectedClassId) params.set("class", selectedClassId);
+    else params.delete("class");
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }, [segment, selectedTopicId, selectedClassId, initialized, router, pathname]);
