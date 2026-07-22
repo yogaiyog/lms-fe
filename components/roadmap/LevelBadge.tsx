@@ -1,5 +1,7 @@
 "use client";
 
+import { FileText } from "lucide-react";
+
 type Level = {
   id: string;
   label: string;
@@ -55,6 +57,8 @@ export function LevelBadge({ level, onClick }: Props) {
                 d="M5 13l4 4L19 7"
               />
             </svg>
+          ) : level.type === "QUIZ" ? (
+            <FileText className="h-4 w-4" />
           ) : (
             level.label
           )}

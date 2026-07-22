@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useCallback, type FormEvent } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Home, BookOpen, Clock, Moon, Sun,
@@ -38,6 +38,7 @@ const MOBILE_NAV = ["home", "classes", "roadmap", "students", "attendance"] as c
 
 export default function TutorDashboard() {
   const router = useRouter();
+  const pathname = usePathname();
   const queryClient = useQueryClient();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,6 +49,7 @@ export default function TutorDashboard() {
   const [attendanceForm, setAttendanceForm] = useState<{ scheduleId: string; studentId: string; status: string }[]>([]);
   const [submittingAttendance, setSubmittingAttendance] = useState(false);
   const [attendanceFilledIds, setAttendanceFilledIds] = useState<Set<string>>(new Set());
+  const [initialized, setInitialized] = useState(false);
 
   const theme = {
     dark,
@@ -58,7 +60,27 @@ export default function TutorDashboard() {
     textMuted: dark ? "text-slate-400" : "text-slate-500",
   };
 
-  const go = (p: "home" | "classes" | "students" | "attendance" | "roadmap") => { setSegment(p); setDrawerOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const go = useCallback((p: "home" | "classes" | "students" | "attendance" | "roadmap") => { setSegment(p); setDrawerOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); }, []);
+
+  // Restore state from URL params on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab") as "home" | "classes" | "students" | "attendance" | "roadmap" | null;
+    if (tab && ["home", "classes", "students", "attendance", "roadmap"].includes(tab)) {
+      setSegment(tab);
+    }
+    setInitialized(true);
+  }, []);
+
+  // Sync state to URL params
+  useEffect(() => {
+    if (!initialized) return;
+    const params = new URLSearchParams(window.location.search);
+    if (segment !== "home") params.set("tab", segment);
+    else params.delete("tab");
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [segment, initialized, router, pathname]);
 
   // Schedule edit
   const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { api, type Curriculum, type TopicTask } from "@/lib/api";
 import { UnitSection } from "@/components/roadmap";
 import type { Theme } from "../student/_component/types";
@@ -19,6 +20,8 @@ const STATUS_STYLES: Record<string, string> = {
 };
 
 export default function TutorRoadmapSegment({ theme }: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [curricula, setCurricula] = useState<Curriculum[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +34,13 @@ export default function TutorRoadmapSegment({ theme }: Props) {
         const data = await api.curriculums.list();
         if (!cancelled) {
           setCurricula(data);
-          if (data.length > 0) setSelectedCurriculumId(data[0].id);
+          const params = new URLSearchParams(window.location.search);
+          const curriculumFromUrl = params.get("curriculum");
+          if (curriculumFromUrl) {
+            setSelectedCurriculumId(curriculumFromUrl);
+          } else if (data.length > 0) {
+            setSelectedCurriculumId(data[0].id);
+          }
         }
       } catch (err) {
         if (!cancelled)
@@ -42,6 +51,14 @@ export default function TutorRoadmapSegment({ theme }: Props) {
     })();
     return () => { cancelled = true; };
   }, []);
+
+  useEffect(() => {
+    if (!selectedCurriculumId) return;
+    const params = new URLSearchParams(window.location.search);
+    params.set("curriculum", selectedCurriculumId);
+    const qs = params.toString();
+    router.replace(`${pathname}?${qs}`, { scroll: false });
+  }, [selectedCurriculumId, router, pathname]);
 
   const selectedCurriculum = useMemo(
     () => curricula.find((c) => c.id === selectedCurriculumId),
@@ -117,14 +134,6 @@ export default function TutorRoadmapSegment({ theme }: Props) {
   return (
     <div>
       <div className="mb-6 flex items-start gap-3">
-        <div>
-          <h1 className={`text-2xl font-extrabold tracking-tight ${theme.text}`}>
-            Roadmap
-          </h1>
-          <p className={`mt-1 text-sm ${theme.textMuted}`}>
-            Lihat semua kurikulum dan progress siswa.
-          </p>
-        </div>
         {curricula.length > 1 && (
           <select
             value={selectedCurriculumId}
