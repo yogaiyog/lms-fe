@@ -93,7 +93,6 @@ export function UnitSection({ unit, onLevelClick, onCapstoneClick }: Props) {
             <div className="mt-4">
               <button
                 type="button"
-                disabled={!allComplete && project.capstone.status !== "completed"}
                 onClick={() => project.capstone && onCapstoneClick?.(project.capstone)}
                 className={[
                   "rounded-full border border-slate-300 bg-white px-4 py-1.5 text-sm font-medium text-slate-700",
@@ -101,7 +100,7 @@ export function UnitSection({ unit, onLevelClick, onCapstoneClick }: Props) {
                     ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/30"
                     : allComplete
                       ? "bg-slate-800 text-white hover:bg-slate-700"
-                      : "bg-slate-200 text-slate-400 cursor-not-allowed",
+                      : "bg-slate-200 text-slate-400",
                 ].join(" ")}
               >
                 {project.capstone.status === "completed" ? (

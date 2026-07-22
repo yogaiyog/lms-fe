@@ -98,7 +98,10 @@ export default function LearningPathView({
   );
 
   const handleLevelClick = (level: { id: string; label: string; url: string; status: string }) => {
-    if (level.status === "completed") return;
+    if (level.status === "completed") {
+      window.open(level.url, "_blank");
+      return;
+    }
     const unit = units.find((u) =>
       u.project.levels.some((l) => l.id === level.id),
     );
@@ -106,9 +109,10 @@ export default function LearningPathView({
   };
 
   const handleCapstoneClick = (capstone: { id: string; url: string; status: string }) => {
-    if (capstone.status === "completed") return;
     window.open(capstone.url, "_blank");
-    setTaskStatus(capstone.id, "completed");
+    if (capstone.status !== "completed") {
+      setTaskStatus(capstone.id, "completed");
+    }
   };
 
   return (
