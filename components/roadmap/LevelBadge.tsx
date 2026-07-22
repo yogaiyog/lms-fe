@@ -3,6 +3,7 @@
 type Level = {
   id: string;
   label: string;
+  type: "SCRATCH" | "QUIZ";
   status: string;
 };
 

@@ -223,9 +223,10 @@ export type TopicTask = {
   id: string;
   code: string;
   label: string;
-  url: string;
+  url: string | null;
   isCapstone: boolean;
   order: number;
+  type: "SCRATCH" | "QUIZ";
 };
 
 export type Topic = {
@@ -240,6 +241,25 @@ export type Topic = {
   order: number;
   schedules?: Schedule[];
   tasks?: TopicTask[];
+};
+
+export type QuizChoiceData = {
+  content: string;
+  isCorrect: boolean;
+  feedback: string;
+};
+
+export type QuizQuestionData = {
+  id: string;
+  question: string;
+  choices: QuizChoiceData[];
+};
+
+export type QuizData = {
+  id: string;
+  taskId: string;
+  taskCode: string;
+  questions: QuizQuestionData[];
 };
 
 export type Announcement = {
@@ -1265,6 +1285,11 @@ export const api = {
         method: "POST",
         body: JSON.stringify(payload),
       });
+    },
+  },
+  quiz: {
+    async fetchByTaskCode(taskCode: string) {
+      return authenticatedRequest<QuizData>(`/api/v1/academic/quiz/${taskCode}`);
     },
   },
   galleries: {

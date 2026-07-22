@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import type { RoadmapItem } from "@/components/roadmap";
 import {
   api,
@@ -25,6 +25,7 @@ import BadgesTab from "./_component/BadgesTab";
 
 export default function StudentDashboard() {
   const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [segment, setSegment] = useState<Segment>("overview");
@@ -35,6 +36,7 @@ export default function StudentDashboard() {
   const [selectedClassId, setSelectedClassId] = useState<string>("");
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
   const [countdowns, setCountdowns] = useState<Record<string, { days: number; hours: number; minutes: number; seconds: number }>>({});
+  const [initialized, setInitialized] = useState(false);
 
   const theme: Theme = {
     dark,
@@ -45,7 +47,32 @@ export default function StudentDashboard() {
     textMuted: dark ? "text-slate-400" : "text-slate-500",
   };
 
-  const go = (p: Segment) => { setSegment(p); setDrawerOpen(false); setSelectedTopicId(null); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const go = useCallback((p: Segment) => { setSegment(p); setDrawerOpen(false); setSelectedTopicId(null); window.scrollTo({ top: 0, behavior: "smooth" }); }, []);
+
+  // Restore state from URL params on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab") as Segment | null;
+    const topic = params.get("topic");
+    const cls = params.get("class");
+    if (tab && ["overview", "schedule", "reports", "enrollment", "roadmap", "badges"].includes(tab)) {
+      setSegment(tab);
+    }
+    if (topic) setSelectedTopicId(topic);
+    if (cls) setSelectedClassId(cls);
+    setInitialized(true);
+  }, []);
+
+  // Sync state to URL params
+  useEffect(() => {
+    if (!initialized) return;
+    const params = new URLSearchParams();
+    if (segment !== "overview") params.set("tab", segment);
+    if (selectedTopicId) params.set("topic", selectedTopicId);
+    if (selectedClassId) params.set("class", selectedClassId);
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [segment, selectedTopicId, selectedClassId, initialized, router, pathname]);
 
   useEffect(() => {
     const session = getStoredSession();
