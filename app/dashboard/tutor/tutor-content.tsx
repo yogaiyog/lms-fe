@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Home, BookOpen, Clock, Moon, Sun,
-  LogOut, X, Menu, FileText, User,
+  LogOut, X, Menu, FileText, User, Route,
 } from "lucide-react";
 import {
   api,
@@ -23,23 +23,25 @@ import TutorHomeSegment from "./tutor-home-segment";
 import TutorClassesSegment from "./tutor-classes-segment";
 import TutorStudentsSegment from "./tutor-students-segment";
 import TutorAttendanceSegment from "./tutor-attendance-segment";
+import TutorRoadmapSegment from "./tutor-roadmap-segment";
 import TutorScheduleDetailModal from "./tutor-schedule-detail-modal";
 
 const NAV_ITEMS = [
   { key: "home", label: "Beranda", icon: Home },
   { key: "classes", label: "Kelas", icon: BookOpen },
+  { key: "roadmap", label: "Roadmap", icon: Route },
   { key: "students", label: "Siswa", icon: User },
   { key: "attendance", label: "Absensi", icon: BookOpen },
 ] as const;
 
-const MOBILE_NAV = ["home", "classes", "students", "attendance"] as const;
+const MOBILE_NAV = ["home", "classes", "roadmap", "students", "attendance"] as const;
 
 export default function TutorDashboard() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [segment, setSegment] = useState<"home" | "classes" | "students" | "attendance">("home");
+  const [segment, setSegment] = useState<"home" | "classes" | "students" | "attendance" | "roadmap">("home");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [dark, setDark] = useState(false);
   const [countdowns, setCountdowns] = useState<Record<string, { days: number; hours: number; minutes: number; seconds: number }>>({});
@@ -56,7 +58,7 @@ export default function TutorDashboard() {
     textMuted: dark ? "text-slate-400" : "text-slate-500",
   };
 
-  const go = (p: "home" | "classes" | "students" | "attendance") => { setSegment(p); setDrawerOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const go = (p: "home" | "classes" | "students" | "attendance" | "roadmap") => { setSegment(p); setDrawerOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
 
   // Schedule edit
   const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null);
@@ -455,7 +457,7 @@ export default function TutorDashboard() {
                     );
                   }
                   return (
-                    <button key={item.key} onClick={() => go(item.key as "home" | "classes" | "students" | "attendance")}
+                    <button key={item.key} onClick={() => go(item.key as "home" | "classes" | "students" | "attendance" | "roadmap")}
                       className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold ${active ? "bg-blue-600 text-white" : `${theme.text} hover:bg-blue-50 hover:text-blue-700`}`}>
                       <Icon size={18} /> {item.label}
                     </button>
@@ -504,6 +506,9 @@ export default function TutorDashboard() {
                 classes={classes}
                 students={students}
               />
+            )}
+            {segment === "roadmap" && (
+              <TutorRoadmapSegment theme={theme} />
             )}
             {segment === "attendance" && user?.tutorProfile?.id && (
               <TutorAttendanceSegment
