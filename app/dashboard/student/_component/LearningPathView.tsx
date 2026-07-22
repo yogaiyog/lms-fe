@@ -26,6 +26,7 @@ function mapCurriculumToUnits(
         id: t.code,
         label: t.label,
         url: t.url,
+        type: t.type,
         status: getTaskStatus(t.code),
       }));
     const capstoneTask = topic.tasks?.find((t: TopicTask) => t.isCapstone);
@@ -41,6 +42,7 @@ function mapCurriculumToUnits(
           ? {
               id: capstoneTask.code,
               url: capstoneTask.url,
+              type: capstoneTask.type,
               status: getTaskStatus(capstoneTask.code),
             }
           : null,
@@ -97,19 +99,27 @@ export default function LearningPathView({
     [units, selectedTopicId],
   );
 
-  const handleLevelClick = (level: { id: string; label: string; url: string; status: string }) => {
-    if (level.status === "completed") {
+  const handleLevelClick = (level: { id: string; label: string; url: string | null; type: "SCRATCH" | "QUIZ"; status: string }) => {
+    if (level.type === "QUIZ") {
+      window.open(`/dashboard/student/quiz/${level.id}`, "_blank");
+      return;
+    }
+    if (level.status === "completed" && level.url) {
       window.open(level.url, "_blank");
       return;
     }
     const unit = units.find((u) =>
       u.project.levels.some((l) => l.id === level.id),
     );
-    openTutorial(level.url, unit?.project.projectId ?? "", level.id);
+    openTutorial(level.url ?? "", unit?.project.projectId ?? "", level.id);
   };
 
-  const handleCapstoneClick = (capstone: { id: string; url: string; status: string }) => {
-    window.open(capstone.url, "_blank");
+  const handleCapstoneClick = (capstone: { id: string; url: string | null; type: "SCRATCH" | "QUIZ"; status: string }) => {
+    if (capstone.type === "QUIZ") {
+      window.open(`/dashboard/student/quiz/${capstone.id}`, "_blank");
+      return;
+    }
+    if (capstone.url) window.open(capstone.url, "_blank");
     if (capstone.status !== "completed") {
       setTaskStatus(capstone.id, "completed");
     }

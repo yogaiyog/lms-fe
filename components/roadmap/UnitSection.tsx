@@ -6,13 +6,15 @@ import { LevelBadge } from "./LevelBadge";
 type Level = {
   id: string;
   label: string;
-  url: string;
+  url: string | null;
+  type: "SCRATCH" | "QUIZ";
   status: string;
 };
 
 type Capstone = {
   id: string;
-  url: string;
+  url: string | null;
+  type: "SCRATCH" | "QUIZ";
   status: string;
 };
 
