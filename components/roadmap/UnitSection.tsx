@@ -22,6 +22,7 @@ export type Unit = {
   id: string;
   title: string;
   topicId?: string;
+  materialLink?: string | null;
   project: {
     name: string;
     projectId?: string;
@@ -92,7 +93,7 @@ export function UnitSection({ unit, onLevelClick, onCapstoneClick }: Props) {
           </div>
 
           {project.capstone && (
-            <div className="mt-4">
+            <div className="mt-4 flex items-center gap-3">
               <button
                 type="button"
                 onClick={() => project.capstone && onCapstoneClick?.(project.capstone)}
@@ -112,6 +113,16 @@ export function UnitSection({ unit, onLevelClick, onCapstoneClick }: Props) {
                 ) : null}
                 Capstone Project
               </button>
+              {unit.materialLink && (
+                <a
+                  href={unit.materialLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-auto rounded-full border border-blue-300 bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-100"
+                >
+                  Buka Materi
+                </a>
+              )}
             </div>
           )}
         </div>
