@@ -21,7 +21,7 @@ export default function MobileDrawer({ theme, open, segment, onNavigate, onClose
       <div className={`absolute left-0 top-0 bottom-0 w-72 ${theme.card} p-5`}>
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <img src="/logo.jpeg" alt="Logo" className="h-8 w-8 rounded-lg object-cover" />
+            <img src="/logo.png" alt="Logo" className="h-8 w-8 rounded-lg object-cover" />
             <div>
               <p className={`text-xs font-bold ${theme.textMuted}`}>Student</p>
               <p className={`text-sm font-extrabold ${theme.text} leading-tight`}>{user?.studentProfile?.fullName ?? "Student"}</p>
