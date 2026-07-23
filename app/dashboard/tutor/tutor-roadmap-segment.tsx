@@ -82,6 +82,7 @@ export default function TutorRoadmapSegment({ theme }: Props) {
         id: topic.title.toLowerCase().replace(/\s+/g, "-"),
         title: topic.title,
         topicId: topic.id,
+        materialLink: topic.materialLink,
         project: {
           name: topic.title,
           projectId: topic.id,
