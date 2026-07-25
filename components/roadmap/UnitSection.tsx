@@ -7,14 +7,14 @@ type Level = {
   id: string;
   label: string;
   url: string | null;
-  type: "SCRATCH" | "QUIZ";
+  type: "SCRATCH" | "QUIZ" | "PYTHON";
   status: string;
 };
 
 type Capstone = {
   id: string;
   url: string | null;
-  type: "SCRATCH" | "QUIZ";
+  type: "SCRATCH" | "QUIZ" | "PYTHON";
   status: string;
 };
 

@@ -5,6 +5,8 @@ import { api } from "@/lib/api";
 
 const SCRATCH_GUI_ORIGIN =
   process.env.NEXT_PUBLIC_SCRATCH_GUI_URL ?? "http://localhost:8601";
+const PYTHON_EDITOR_ORIGIN =
+  process.env.NEXT_PUBLIC_PYTHON_EDITOR_URL ?? "http://localhost:3000";
 
 type ProgressRecord = {
   status: string;
@@ -72,28 +74,8 @@ export function useProgressTracker(studentId: string) {
     };
   }, [studentId]);
 
-  const handleMessage = useCallback(
-    (event: MessageEvent) => {
-      if (event.origin !== SCRATCH_GUI_ORIGIN) return;
-      if (event.data?.type !== "scratch-progress") return;
-
-      const { taskId, status, projectId, studentId: msgStudentId } =
-        event.data.payload ?? {};
-
-      const effectiveStudentId = msgStudentId || studentId;
-      if (!effectiveStudentId) return;
-
-      if (taskId === "session-start") {
-        return;
-      }
-
-      const levelId =
-        taskId === "project-complete" && activeLevelRef.current
-          ? activeLevelRef.current.levelId
-          : taskId;
-
-      if (!levelId) return;
-
+  const applyProgress = useCallback(
+    (levelId: string, status: string, projectId?: string | null) => {
       setProgress((prev) => ({
         ...prev,
         [levelId]: {
@@ -104,9 +86,15 @@ export function useProgressTracker(studentId: string) {
             status === "completed" ? new Date().toISOString() : null,
         },
       }));
+    },
+    [],
+  );
 
+  const sendProgressToServer = useCallback(
+    (levelId: string, status: string, projectId?: string | null) => {
+      if (!studentId) return;
       api.roadmap.upsertProgress({
-        studentId: effectiveStudentId,
+        studentId,
         topicTaskCode: levelId,
         status,
         metadata: JSON.stringify({
@@ -118,17 +106,71 @@ export function useProgressTracker(studentId: string) {
     [studentId],
   );
 
+  const handleMessage = useCallback(
+    (event: MessageEvent) => {
+      const { type, payload } = event.data ?? {};
+
+      if (type === "scratch-progress") {
+        if (event.origin !== SCRATCH_GUI_ORIGIN) return;
+
+        const { taskId, status, projectId, studentId: msgStudentId } =
+          payload ?? {};
+
+        const effectiveStudentId = msgStudentId || studentId;
+        if (!effectiveStudentId) return;
+
+        if (taskId === "session-start") return;
+
+        const levelId =
+          taskId === "project-complete" && activeLevelRef.current
+            ? activeLevelRef.current.levelId
+            : taskId;
+
+        if (!levelId) return;
+
+        applyProgress(levelId, status, projectId);
+        sendProgressToServer(levelId, status, projectId);
+        return;
+      }
+
+      if (type === "python-editor:progress" || type === "python-editor:done") {
+        if (event.origin !== PYTHON_EDITOR_ORIGIN) return;
+
+        const { status, taskCode } = payload ?? {};
+        if (!taskCode || !status) return;
+
+        applyProgress(taskCode, status);
+        sendProgressToServer(taskCode, status);
+        return;
+      }
+    },
+    [studentId, applyProgress, sendProgressToServer],
+  );
+
   useEffect(() => {
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
   }, [handleMessage]);
 
   const openTutorial = useCallback(
-    (url: string, projectId: string, levelId: string) => {
+    (
+      url: string,
+      projectId: string,
+      levelId: string,
+      options?: {
+        type?: "SCRATCH" | "PYTHON";
+        instructions?: string | null;
+        defaultCode?: string | null;
+        title?: string | null;
+      },
+    ) => {
       if (!studentId) return;
 
+      const effectiveUrl =
+        options?.type === "PYTHON" ? url : `${url}#0`;
+
       const tutorialWindow = window.open(
-        `${url}#0`,
+        effectiveUrl,
         "scratch-tutorial",
         "width=1200,height=800",
       );
@@ -148,18 +190,37 @@ export function useProgressTracker(studentId: string) {
 
       setTimeout(() => {
         if (tutorialWindow && !tutorialWindow.closed) {
-          tutorialWindow.postMessage(
-            {
-              type: "scratch-integration-config",
-              payload: {
-                fallbackUrl: `${window.location.origin}/api/v1/academic/student-topic-progress`,
-                studentId,
-                token: `token-${studentId}`,
-                projectId,
+          if (options?.type === "PYTHON") {
+            tutorialWindow.postMessage(
+              {
+                type: "python-editor:init",
+                payload: {
+                  instructions: options.instructions ?? undefined,
+                  defaultCode: options.defaultCode ?? undefined,
+                  title: options.title ?? undefined,
+                  studentId,
+                  token: `token-${studentId}`,
+                  fallbackUrl: `${window.location.origin}/api/v1/academic/student-topic-progress`,
+                  taskCode: levelId,
+                  projectId,
+                },
               },
-            },
-            "*",
-          );
+              "*",
+            );
+          } else {
+            tutorialWindow.postMessage(
+              {
+                type: "scratch-integration-config",
+                payload: {
+                  fallbackUrl: `${window.location.origin}/api/v1/academic/student-topic-progress`,
+                  studentId,
+                  token: `token-${studentId}`,
+                  projectId,
+                },
+              },
+              "*",
+            );
+          }
         }
       }, 2000);
     },

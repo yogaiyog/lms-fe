@@ -5,7 +5,7 @@ import { FileText } from "lucide-react";
 type Level = {
   id: string;
   label: string;
-  type: "SCRATCH" | "QUIZ";
+  type: "SCRATCH" | "QUIZ" | "PYTHON";
   status: string;
 };
 

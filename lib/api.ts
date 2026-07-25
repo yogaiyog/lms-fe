@@ -226,7 +226,9 @@ export type TopicTask = {
   url: string | null;
   isCapstone: boolean;
   order: number;
-  type: "SCRATCH" | "QUIZ";
+  type: "SCRATCH" | "QUIZ" | "PYTHON";
+  instructions?: string | null;
+  defaultCode?: string | null;
 };
 
 export type Topic = {
@@ -1262,12 +1264,15 @@ export const api = {
     },
   },
   roadmap: {
-    async fetchScratchFundamental(studentId?: string) {
-      const query = studentId ? `?studentId=${encodeURIComponent(studentId)}` : "";
+    async fetchScratchFundamental(studentId?: string, curriculumId?: string) {
+      const params = new URLSearchParams();
+      if (studentId) params.set("studentId", studentId);
+      if (curriculumId) params.set("curriculumId", curriculumId);
+      const query = params.toString();
       return authenticatedRequest<{
         curriculum: Curriculum & { topics: (Topic & { tasks: TopicTask[] })[] };
         progress: { topicTask: { code: string }; status: string; topicTaskId: string; completedAt: string | null; metadata?: string }[];
-      }>(`/api/v1/academic/roadmap/scratch-fundamental${query}`);
+      }>(`/api/v1/academic/roadmap/scratch-fundamental${query ? `?${query}` : ""}`);
     },
     async fetchStudentProgress(studentId: string) {
       return authenticatedRequest<any[]>(
