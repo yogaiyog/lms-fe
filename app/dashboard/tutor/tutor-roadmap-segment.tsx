@@ -76,6 +76,8 @@ export default function TutorRoadmapSegment({ theme }: Props) {
           url: t.url,
           type: t.type,
           status: "available",
+          instructions: t.instructions,
+          defaultCode: t.defaultCode,
         }));
       const capstoneTask = topic.tasks?.find((t: TopicTask) => t.isCapstone);
       return {
@@ -93,6 +95,8 @@ export default function TutorRoadmapSegment({ theme }: Props) {
                 url: capstoneTask.url,
                 type: capstoneTask.type,
                 status: "available",
+                instructions: capstoneTask.instructions,
+                defaultCode: capstoneTask.defaultCode,
               }
             : null,
         },
@@ -100,18 +104,60 @@ export default function TutorRoadmapSegment({ theme }: Props) {
     });
   }, [selectedCurriculum]);
 
-  const handleLevelClick = (level: { id: string; label: string; url: string | null; type: "SCRATCH" | "QUIZ"; status: string }) => {
+  const openPythonEditor = (url: string, payload: { instructions?: string; defaultCode?: string; title: string; taskCode: string }) => {
+    const win = window.open(url, "scratch-tutorial", "width=1200,height=800");
+    if (!win) return;
+
+    const initPayload = { type: "python-editor:init" as const, payload };
+
+    const onReady = (e: MessageEvent) => {
+      if (e.source !== win) return;
+      if (e.data?.type !== "python-editor:ready") return;
+      win.postMessage(initPayload, "*");
+      window.removeEventListener("message", onReady);
+    };
+    window.addEventListener("message", onReady);
+
+    setTimeout(() => {
+      window.removeEventListener("message", onReady);
+      if (!win.closed) win.postMessage(initPayload, "*");
+    }, 10000);
+  };
+
+  const handleLevelClick = (level: { id: string; label: string; url: string | null; type: "SCRATCH" | "QUIZ" | "PYTHON"; status: string; instructions?: string | null; defaultCode?: string | null }) => {
     if (level.type === "QUIZ") {
       window.open(`/dashboard/student/quiz/${level.id}`, "_blank");
-    } else if (level.url) {
+      return;
+    }
+    if (level.type === "PYTHON" && level.url) {
+      openPythonEditor(level.url, {
+        instructions: level.instructions ?? undefined,
+        defaultCode: level.defaultCode ?? undefined,
+        title: level.label,
+        taskCode: level.id,
+      });
+      return;
+    }
+    if (level.url) {
       window.open(level.url, "_blank");
     }
   };
 
-  const handleCapstoneClick = (capstone: { id: string; url: string | null; type: "SCRATCH" | "QUIZ"; status: string }) => {
+  const handleCapstoneClick = (capstone: { id: string; url: string | null; type: "SCRATCH" | "QUIZ" | "PYTHON"; status: string; instructions?: string | null; defaultCode?: string | null }) => {
     if (capstone.type === "QUIZ") {
       window.open(`/dashboard/student/quiz/${capstone.id}`, "_blank");
-    } else if (capstone.url) {
+      return;
+    }
+    if (capstone.type === "PYTHON" && capstone.url) {
+      openPythonEditor(capstone.url, {
+        instructions: capstone.instructions ?? undefined,
+        defaultCode: capstone.defaultCode ?? undefined,
+        title: "Capstone",
+        taskCode: capstone.id,
+      });
+      return;
+    }
+    if (capstone.url) {
       window.open(capstone.url, "_blank");
     }
   };

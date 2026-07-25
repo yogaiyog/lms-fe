@@ -11,6 +11,7 @@ type Props = {
   theme: Theme;
   studentId: string;
   selectedTopicId?: string | null;
+  curriculumId?: string | null;
   onBack: () => void;
 };
 
@@ -28,6 +29,8 @@ function mapCurriculumToUnits(
         url: t.url,
         type: t.type,
         status: getTaskStatus(t.code),
+        instructions: t.instructions,
+        defaultCode: t.defaultCode,
       }));
     const capstoneTask = topic.tasks?.find((t: TopicTask) => t.isCapstone);
     return {
@@ -56,6 +59,7 @@ export default function LearningPathView({
   theme,
   studentId,
   selectedTopicId,
+  curriculumId,
   onBack,
 }: Props) {
   const [rawData, setRawData] = useState<Awaited<
@@ -71,7 +75,7 @@ export default function LearningPathView({
     let cancelled = false;
     (async () => {
       try {
-        const data = await api.roadmap.fetchScratchFundamental(studentId);
+        const data = await api.roadmap.fetchScratchFundamental(studentId, curriculumId ?? undefined);
         if (!cancelled) setRawData(data);
       } catch (err) {
         if (!cancelled)
@@ -85,7 +89,7 @@ export default function LearningPathView({
     return () => {
       cancelled = true;
     };
-  }, [studentId]);
+  }, [studentId, curriculumId]);
 
   const units = useMemo(
     () => (rawData ? mapCurriculumToUnits(rawData, getTaskStatus) : []),
@@ -100,9 +104,18 @@ export default function LearningPathView({
     [units, selectedTopicId],
   );
 
-  const handleLevelClick = (level: { id: string; label: string; url: string | null; type: "SCRATCH" | "QUIZ"; status: string }) => {
+  const handleLevelClick = (level: { id: string; label: string; url: string | null; type: "SCRATCH" | "QUIZ" | "PYTHON"; status: string; instructions?: string | null; defaultCode?: string | null }) => {
     if (level.type === "QUIZ") {
       window.open(`/dashboard/student/quiz/${level.id}`, "_blank");
+      return;
+    }
+    if (level.type === "PYTHON") {
+      openTutorial(level.url ?? "", "", level.id, {
+        type: "PYTHON",
+        instructions: level.instructions,
+        defaultCode: level.defaultCode,
+        title: level.label,
+      });
       return;
     }
     if (level.status === "completed" && level.url) {
@@ -115,7 +128,7 @@ export default function LearningPathView({
     openTutorial(level.url ?? "", unit?.project.projectId ?? "", level.id);
   };
 
-  const handleCapstoneClick = (capstone: { id: string; url: string | null; type: "SCRATCH" | "QUIZ"; status: string }) => {
+  const handleCapstoneClick = (capstone: { id: string; url: string | null; type: "SCRATCH" | "QUIZ" | "PYTHON"; status: string }) => {
     if (capstone.type === "QUIZ") {
       window.open(`/dashboard/student/quiz/${capstone.id}`, "_blank");
       return;

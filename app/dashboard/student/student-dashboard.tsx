@@ -273,6 +273,7 @@ export default function StudentDashboard() {
                       theme={theme}
                       studentId={studentId}
                       selectedTopicId={selectedTopicId}
+                      curriculumId={selectedClass?.curriculum?.id}
                       onBack={() => setSelectedTopicId(null)}
                     />
                   ) : null}
