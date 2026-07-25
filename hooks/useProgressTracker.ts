@@ -5,8 +5,6 @@ import { api } from "@/lib/api";
 
 const SCRATCH_GUI_ORIGIN =
   process.env.NEXT_PUBLIC_SCRATCH_GUI_URL ?? "http://localhost:8601";
-const PYTHON_EDITOR_ORIGIN =
-  process.env.NEXT_PUBLIC_PYTHON_EDITOR_URL ?? "http://localhost:3000";
 
 type ProgressRecord = {
   status: string;
@@ -134,7 +132,10 @@ export function useProgressTracker(studentId: string) {
       }
 
       if (type === "python-editor:progress" || type === "python-editor:done") {
-        if (event.origin !== PYTHON_EDITOR_ORIGIN) return;
+        if (activeLevelRef.current?.url) {
+          const expectedOrigin = new URL(activeLevelRef.current.url).origin;
+          if (event.origin !== expectedOrigin) return;
+        }
 
         const { status, taskCode } = payload ?? {};
         if (!taskCode || !status) return;
