@@ -249,11 +249,13 @@ export type QuizChoiceData = {
   content: string;
   isCorrect: boolean;
   feedback: string;
+  imageUrl?: string;
 };
 
 export type QuizQuestionData = {
   id: string;
   question: string;
+  imageUrl?: string;
   choices: QuizChoiceData[];
 };
 

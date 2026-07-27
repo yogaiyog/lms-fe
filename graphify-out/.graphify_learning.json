@@ -1,0 +1,22 @@
+{
+  "generated_at": "2026-07-27T07:12:15.638498+00:00",
+  "nodes": {
+    "lib_api_api": {
+      "code_fingerprint": "4186592d98e9dc64d392f1ece3f9ad5840423dbf2f7bfcafb36f8459b23a6d5e",
+      "label": "api",
+      "last": "2026-07-27T07:12:15.296128+00:00",
+      "provenance": [
+        {
+          "date": "2026-07-27T07:12:15.296128+00:00",
+          "outcome": "useful",
+          "q": "Apa peran api (lib/api.ts) sebagai god node 37 edges?"
+        }
+      ],
+      "score": 0.999999908,
+      "source_file": "lib/api.ts",
+      "status": "tentative",
+      "uses": 1
+    }
+  },
+  "version": 1
+}
