@@ -164,6 +164,16 @@ export default function QuizPage() {
           <div className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-400">
             Soal:
           </div>
+          {question.imageUrl && (
+            <div className="mb-4 flex justify-center">
+              <img
+                src={question.imageUrl}
+                alt="Gambar soal"
+                className="max-h-64 w-full rounded-lg object-contain"
+                loading="lazy"
+              />
+            </div>
+          )}
           <div className="mb-6 text-lg font-medium leading-relaxed">
             <MixedContent text={question.question} />
           </div>
@@ -189,22 +199,30 @@ export default function QuizPage() {
                     ${showWrong ? "border-red-500 bg-red-50" : ""}
                   `}
                 >
-                  <span className="inline-flex items-start gap-3">
-                    <span className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
-                      isSelected && !submitted
-                        ? "bg-blue-600 text-white"
-                        : showCorrect
-                          ? "bg-emerald-600 text-white"
-                          : showWrong
-                            ? "bg-red-600 text-white"
-                            : "bg-slate-100 text-slate-600"
-                    }`}>
-                      {LABELS[index] || index}
+                    <span className="inline-flex items-start gap-3">
+                      <span className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
+                        isSelected && !submitted
+                          ? "bg-blue-600 text-white"
+                          : showCorrect
+                            ? "bg-emerald-600 text-white"
+                            : showWrong
+                              ? "bg-red-600 text-white"
+                              : "bg-slate-100 text-slate-600"
+                      }`}>
+                        {LABELS[index] || index}
+                      </span>
+                      <span className="flex flex-col gap-2 pt-0.5">
+                        {choice.imageUrl && (
+                          <img
+                            src={choice.imageUrl}
+                            alt=""
+                            className="max-h-24 w-full rounded object-contain border border-slate-200"
+                            loading="lazy"
+                          />
+                        )}
+                        {choice.content && <MixedContent text={choice.content} />}
+                      </span>
                     </span>
-                    <span className="pt-0.5">
-                      <MixedContent text={choice.content} />
-                    </span>
-                  </span>
                 </button>
               );
             })}

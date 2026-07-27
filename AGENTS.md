@@ -1,3 +1,97 @@
+<!-- BEGIN:graphify-rules -->
+
+# Graphify — Wajib Pakai Sebelum Baca Kode (Hemat Token)
+
+Sebelum membaca file untuk memahami kode, cek graph dulu:
+
+```bash
+if [ -f graphify-out/graph.json ]; then
+    graphify query "<pertanyaan tentang kode>"
+fi
+```
+
+## Cara pakai
+
+```bash
+# Query arsitektur (BFS — broad context)
+graphify query "bagaimana alur authentication?"
+graphify query "siapa aja yang import api?"
+
+# Trace path spesifik (DFS)
+graphify query "dari dashboard ke API" --dfs
+
+# Cari jalur antar konsep
+graphify path "Parent Dashboard" "Student Dashboard"
+
+# Penjelasan node tertentu
+graphify explain "getStoredSession"
+```
+
+## Efek hemat token
+
+Ganti `graphify query` ini:
+- ❌ Baca 20 file `.tsx` satu per satu → **ribuan token**
+- ✅ `graphify query "siapa import getStoredSession?"` → **puluhan token**
+
+## Save query ke graph (memory) — biar agent berikutnya makin pintar
+
+Setiap query yang menghasilkan insight arsitektur, **wajib di-save**:
+
+```bash
+# Template
+graphify query "pertanyaan" 2>&1
+
+$(cat graphify-out/.graphify_python) -m graphify save-result \
+  --question "Pertanyaan dalam Bahasa Indonesia" \
+  --answer "Jawaban dalam Bahasa Indonesia (jelas, struktural, sebut file path)" \
+  --type query \
+  --outcome useful \
+  --nodes Node1 Node2 Node3
+
+# Lalu refresh
+$(cat graphify-out/.graphify_python) -m graphify reflect --if-stale
+```
+
+**Kriteria `--outcome`:**
+| Outcome | Kapan pakai | Efek ke graph |
+|---|---|---|
+| `useful` | Jawaban akurat, node tepat, insight arsitektur | Jadi *preferred source* — agent lain mulai dari sini |
+| `dead_end` | Query gak nemu jawaban relevan | Agent skip query mirip ini di masa depan |
+| `corrected` | Jawaban sebelumnya salah | Timpa dengan `--correction "jawaban benar"` |
+
+**Aturan cara query biar hasilnya useful untuk memory:**
+
+1. **Query spesifik, bukan random** — jangan tanya `"apa aja yang ada"`, tanya `"bagaimana alur auth?"` atau `"siapa import api?"`
+2. **Jawaban harus struktural** — sebut nama file, community, edge type. Jangan cuma "api itu API layer"
+3. **`--nodes` diisi node yang benar-benar relevan** — bukan semua node yang muncul
+4. **Kalau ragu, skip save** — lebih baik gak di-save daripada di-save dengan `useful` tapi jawaban ngawur
+
+**Contoh dari sesi ini yang sudah di-save:**
+```
+"Apa peran api (lib/api.ts) sebagai god node 37 edges?"
+"Bagaimana alur Capacitor Android build pipeline?"
+```
+
+## Update graph jika kode berubah
+
+```bash
+cd /Users/yoga/Developer/Personal/Scratch/scratch-gui/frontend
+graphify extract --update
+graphify export html
+```
+
+## Urutan kerja
+
+1. **Cek graph dulu** — `graphify query` sebelum baca file
+2. Planning
+3. Implementasi
+4. **Update graph** — `graphify extract --update` (jika ada perubahan kode)
+5. **Save query useful** — `graphify query → save-result --outcome useful`
+6. TypeScript check
+7. Selesai
+
+<!-- END:graphify-rules -->
+
 <!-- BEGIN:nextjs-agent-rules -->
 # This is NOT the Next.js you know
 
