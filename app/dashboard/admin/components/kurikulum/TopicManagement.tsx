@@ -3,6 +3,7 @@
 import { useState, type FormEvent, useRef, useEffect } from "react";
 import { api, uploadImage, images, type ImageRecord, type Curriculum, type Topic } from "@/lib/api";
 import { RoadmapAvatar } from "@/components/roadmap";
+import TopicTaskEditor from "./TopicTaskEditor";
 import { CATEGORY_LABELS } from "../../constants";
 
 type Props = {
@@ -227,7 +228,7 @@ export default function TopicManagement({ curriculums }: Props) {
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
           <div className="fixed inset-0 bg-black/40" onClick={() => setShowCreate(false)} />
-          <div className="relative w-full max-w-md rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
+          <div className="relative w-full max-w-lg rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-bold text-slate-800">Tambah Topik</h3>
               <button onClick={() => setShowCreate(false)} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
@@ -318,7 +319,7 @@ export default function TopicManagement({ curriculums }: Props) {
       {detailTopic && (
         <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
           <div className="fixed inset-0 bg-black/40" onClick={() => setDetailTopic(null)} />
-          <div className="relative w-full max-w-lg rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl overflow-y-auto max-h-[90vh]">
+          <div className="relative w-full max-w-5xl rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl overflow-y-auto max-h-[90vh]">
             <div className="p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-bold text-slate-800">Detail Topik</h3>
@@ -408,12 +409,32 @@ export default function TopicManagement({ curriculums }: Props) {
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
             </div>
 
+            <div className="mb-4 rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <TopicTaskEditor topicId={detailTopic.id} />
+            </div>
+
             {detailError && <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-700">{detailError}</div>}
-            <button onClick={saveDetail} disabled={!detailDirty || detailSaving}
-              className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700 disabled:opacity-50"
-            >
-              {detailSaving ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Simpan Perubahan"}
-            </button>
+            <div className="flex gap-2">
+              <button onClick={async () => {
+                if (!confirm(`Hapus topik "${detailTopic.title}"?`)) return;
+                try {
+                  await api.topics.delete(detailTopic.id);
+                  setDetailTopic(null);
+                  if (selectedId) await loadTopics(selectedId);
+                } catch {
+                  setDetailError("Gagal menghapus topik");
+                }
+              }}
+                className="rounded-2xl border border-red-200 px-5 py-3 text-sm font-bold text-red-600 transition hover:bg-red-50"
+              >
+                Hapus
+              </button>
+              <button onClick={saveDetail} disabled={!detailDirty || detailSaving}
+                className="flex-1 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700 disabled:opacity-50"
+              >
+                {detailSaving ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Simpan Perubahan"}
+              </button>
+            </div>
           </div>
           </div>
         </div>

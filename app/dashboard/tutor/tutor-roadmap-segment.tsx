@@ -85,6 +85,7 @@ export default function TutorRoadmapSegment({ theme }: Props) {
         title: topic.title,
         topicId: topic.id,
         materialLink: topic.materialLink,
+        exampleProjectLink: topic.exampleProjectLink,
         project: {
           name: topic.title,
           projectId: topic.id,
