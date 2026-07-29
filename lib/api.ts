@@ -1046,6 +1046,50 @@ export const api = {
       });
     },
   },
+  topicTasks: {
+    async listByTopic(topicId: string) {
+      return authenticatedRequest<TopicTask[]>(`/api/v1/academic/topic-tasks?topicId=${topicId}`);
+    },
+    async get(id: string) {
+      return authenticatedRequest<TopicTask & { quiz?: { id: string; questions: QuizQuestionData[] } | null }>(`/api/v1/academic/topic-tasks/${id}`);
+    },
+    async create(payload: {
+      topicId: string;
+      type?: "SCRATCH" | "QUIZ" | "PYTHON";
+      code: string;
+      label: string;
+      url?: string | null;
+      order?: number;
+      isCapstone?: boolean;
+      instructions?: string | null;
+      defaultCode?: string | null;
+    }) {
+      return authenticatedRequest<TopicTask & { quiz?: { id: string; questions: QuizQuestionData[] } | null }>("/api/v1/academic/topic-tasks", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    },
+    async update(id: string, payload: Partial<{
+      type: "SCRATCH" | "QUIZ" | "PYTHON";
+      code: string;
+      label: string;
+      url: string | null;
+      order: number;
+      isCapstone: boolean;
+      instructions: string | null;
+      defaultCode: string | null;
+    }>) {
+      return authenticatedRequest<TopicTask & { quiz?: { id: string; questions: QuizQuestionData[] } | null }>(`/api/v1/academic/topic-tasks/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+      });
+    },
+    async delete(id: string) {
+      return authenticatedRequest<void>(`/api/v1/academic/topic-tasks/${id}`, {
+        method: "DELETE",
+      });
+    },
+  },
   tutorSlots: {
     async list(tutorId: string) {
       return authenticatedRequest<{ slots: TutorSlot[]; dayoffs: number[]; restrictWeekdayMorning: boolean }>(`/api/v1/academic/tutor-slots/${tutorId}`);
@@ -1297,6 +1341,23 @@ export const api = {
   quiz: {
     async fetchByTaskCode(taskCode: string) {
       return authenticatedRequest<QuizData>(`/api/v1/academic/quiz/${taskCode}`);
+    },
+    async createQuestion(taskCode: string, payload: { question: string; imageUrl?: string | null; choices: { content: string; isCorrect: boolean; feedback: string; imageUrl?: string }[] }) {
+      return authenticatedRequest<QuizQuestionData>(`/api/v1/academic/quiz/${taskCode}/questions`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    },
+    async updateQuestion(taskCode: string, questionId: string, payload: Partial<{ question: string; imageUrl: string | null; choices: { content: string; isCorrect: boolean; feedback: string; imageUrl?: string }[] }>) {
+      return authenticatedRequest<QuizQuestionData>(`/api/v1/academic/quiz/${taskCode}/questions/${questionId}`, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+      });
+    },
+    async deleteQuestion(taskCode: string, questionId: string) {
+      return authenticatedRequest<void>(`/api/v1/academic/quiz/${taskCode}/questions/${questionId}`, {
+        method: "DELETE",
+      });
     },
   },
   galleries: {

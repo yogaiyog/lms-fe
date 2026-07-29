@@ -23,6 +23,7 @@ export type Unit = {
   title: string;
   topicId?: string;
   materialLink?: string | null;
+  exampleProjectLink?: string | null;
   project: {
     name: string;
     projectId?: string;
@@ -113,14 +114,28 @@ export function UnitSection({ unit, onLevelClick, onCapstoneClick }: Props) {
                 ) : null}
                 Capstone Project
               </button>
+            </div>
+          )}
+          {(unit.materialLink || unit.exampleProjectLink) && (
+            <div className="mt-4 flex items-center gap-3">
               {unit.materialLink && (
                 <a
                   href={unit.materialLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-auto rounded-full border border-blue-300 bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-100"
+                  className="rounded-full border border-blue-300 bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-100"
                 >
                   Buka Materi
+                </a>
+              )}
+              {unit.exampleProjectLink && (
+                <a
+                  href={unit.exampleProjectLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full border border-emerald-300 bg-emerald-50 px-4 py-1.5 text-sm font-medium text-emerald-700 hover:bg-emerald-100"
+                >
+                  Contoh Project
                 </a>
               )}
             </div>
