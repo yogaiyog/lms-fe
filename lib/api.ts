@@ -85,7 +85,12 @@ export type StudentProfile = {
   school?: string | null;
   enrollments?: Enrollment[];
   user?: { id: string; email: string };
-  parent?: { id: string; fullName: string; phone?: string };
+  parent?: {
+    id: string;
+    fullName: string;
+    phone?: string;
+    user?: { email?: string };
+  };
 };
 
 export type MeetUsage = {
@@ -106,12 +111,54 @@ export type Enrollment = {
   joinedAt: string;
   totalMeetPurchased: number;
   totalMeetLeft: number;
-  verified?: boolean;
   meetUsages?: MeetUsage[];
   class: Class | null;
   curriculum?: Curriculum;
   student?: StudentProfile;
+  invoices?: Invoice[];
 };
+
+export type Invoice = {
+  id: string;
+  enrollmentId: string;
+  number: string;
+  description?: string | null;
+  meetCount: number;
+  subtotal: number;
+  registrationFee?: number | null;
+  taxPercent?: number | null;
+  taxAmount?: number | null;
+  total: number;
+  status: "DRAFT" | "UNPAID" | "PAID" | "PARTIAL" | "REFUNDED" | "CANCELLED";
+  dueDate?: string | null;
+  paidAt?: string | null;
+  notes?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  payments?: Payment[];
+  enrollment?: Enrollment;
+};
+
+export type Payment = {
+  id: string;
+  invoiceId: string;
+  amount: number;
+  paymentMethod?: string | null;
+  paymentType?: string | null;
+  bank?: string | null;
+  vaNumber?: string | null;
+  qrString?: string | null;
+  deeplinkUrl?: string | null;
+  status: "PENDING" | "SETTLEMENT" | "EXPIRED" | "DENY" | "REFUND" | "CANCELLED";
+  transactionId?: string | null;
+  gateway?: string | null;
+  paidAt?: string | null;
+  createdAt: string;
+  invoice?: Invoice;
+};
+
+export type MidtransChargeMethod = "bank_transfer" | "qris" | "gopay" | "shopeepay" | "dana";
+export type MidtransBank = "bca" | "bni" | "bri" | "mandiri" | "permata";
 
 
 
@@ -496,6 +543,44 @@ async function fetchPdfAsBlob(url: string, body: any, token: string): Promise<Bl
   return response.blob();
 }
 
+async function fetchPdfBlob(url: string, token: string): Promise<Blob> {
+  if (Capacitor.isNativePlatform()) {
+    console.log("[api] Using CapacitorHttp.request for PDF (GET)");
+    const result = await CapacitorHttp.request({
+      method: "GET",
+      url,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "blob",
+    });
+    if (typeof result.data === "string" && result.data.length > 0) {
+      const binaryString = atob(result.data);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      return new Blob([bytes], { type: "application/pdf" });
+    }
+    throw new Error("CapacitorHttp returned empty data");
+  }
+
+  console.log("[api] Using fetch for PDF (web GET)");
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: "Gagal membuat PDF" }));
+    throw new Error(error.message ?? "Gagal membuat PDF");
+  }
+
+  return response.blob();
+}
+
 async function request<T>(
   path: string,
   options: RequestInit = {},
@@ -796,7 +881,7 @@ export const api = {
     async listUnassignedByCurriculum(curriculumId: string) {
       return authenticatedRequest<Enrollment[]>(`/api/v1/academic/enrollments/unassigned/${curriculumId}`);
     },
-    async create(payload: { studentId: string; classId?: string; curriculumId: string; totalMeetPurchased?: number; verified?: boolean }) {
+    async create(payload: { studentId: string; classId?: string; curriculumId: string; totalMeetPurchased?: number }) {
       return authenticatedRequest<Enrollment>("/api/v1/academic/enrollments", {
         method: "POST",
         body: JSON.stringify(payload),
@@ -950,7 +1035,7 @@ export const api = {
     async listByClass(classId: string) {
       return authenticatedRequest<Schedule[]>(`/api/v1/academic/schedules?classId=${classId}`);
     },
-    async create(payload: { classId: string; dayOfWeek: string; startTime: string; endTime: string; meetLink: string; date: string; topic?: string | null }) {
+    async create(payload: { classId: string; dayOfWeek: string; startTime: string; endTime: string; meetLink: string; date: string; topic?: string | null; topicId?: string | null }) {
       return authenticatedRequest<Schedule>("/api/v1/academic/schedules", {
         method: "POST",
         body: JSON.stringify(payload),
@@ -1358,6 +1443,120 @@ export const api = {
       return authenticatedRequest<void>(`/api/v1/academic/quiz/${taskCode}/questions/${questionId}`, {
         method: "DELETE",
       });
+    },
+  },
+  invoices: {
+    async list() {
+      return authenticatedRequest<Invoice[]>("/api/v1/academic/invoices");
+    },
+    async get(id: string) {
+      return authenticatedRequest<Invoice>(`/api/v1/academic/invoices/${id}`);
+    },
+    async listByEnrollment(enrollmentId: string) {
+      return authenticatedRequest<Invoice[]>(`/api/v1/academic/invoices/by-enrollment/${enrollmentId}`);
+    },
+    async create(payload: { enrollmentId: string; description?: string; meetCount?: number; subtotal?: number; registrationFee?: number; taxPercent?: number; notes?: string }) {
+      return authenticatedRequest<Invoice>("/api/v1/academic/invoices", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    },
+    async update(id: string, payload: Record<string, unknown>) {
+      return authenticatedRequest<Invoice>(`/api/v1/academic/invoices/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+      });
+    },
+    async delete(id: string) {
+      return authenticatedRequest<void>(`/api/v1/academic/invoices/${id}`, {
+        method: "DELETE",
+      });
+    },
+    async generatePdf(id: string): Promise<Blob> {
+      const session = getStoredSession();
+      if (!session) throw new Error("Silakan login dulu");
+      return fetchPdfBlob(`${API_BASE_URL}/api/v1/academic/invoices/${id}/pdf?_t=${Date.now()}`, session.accessToken);
+    },
+    async sendEmail(id: string) {
+      return authenticatedRequest<{ to: string }>(`/api/v1/academic/invoices/${id}/send-email`, {
+        method: "POST",
+      });
+    },
+  },
+  payments: {
+    async list() {
+      return authenticatedRequest<Payment[]>("/api/v1/academic/payments");
+    },
+    async get(id: string) {
+      return authenticatedRequest<Payment>(`/api/v1/academic/payments/${id}`);
+    },
+    async listByInvoice(invoiceId: string) {
+      return authenticatedRequest<Payment[]>(`/api/v1/academic/payments/by-invoice/${invoiceId}`);
+    },
+    async create(payload: { invoiceId: string; amount: number; paymentMethod?: string; status?: string; transactionId?: string; gateway?: string }) {
+      return authenticatedRequest<Payment>("/api/v1/academic/payments", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    },
+    async createMidtransCharge(payload: {
+      invoiceId: string;
+      method: MidtransChargeMethod;
+      bank?: MidtransBank;
+      amount?: number;
+    }) {
+      return authenticatedRequest<Payment>("/api/v1/academic/payments/midtrans/charge", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    },
+    async update(id: string, payload: Record<string, unknown>) {
+      return authenticatedRequest<Payment>(`/api/v1/academic/payments/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+      });
+    },
+    async delete(id: string) {
+      return authenticatedRequest<void>(`/api/v1/academic/payments/${id}`, {
+        method: "DELETE",
+      });
+    },
+    async checkStatus(id: string) {
+      return authenticatedRequest<{ updated: boolean; unchanged?: boolean; skipped?: boolean; payment?: Payment; status?: string }>(
+        `/api/v1/academic/payments/${id}/check-status`,
+        { method: "POST" },
+      );
+    },
+  },
+  trial: {
+    async create(payload: {
+      parent: {
+        parentId?: string;
+        fullName?: string;
+        email?: string;
+        password?: string;
+        phone?: string;
+      };
+      student: {
+        fullName: string;
+        nickname: string;
+        birthDate: string;
+        email: string;
+        password: string;
+        categoryId: string;
+        school?: string | null;
+      };
+      curriculumId: string;
+      tutorId: string;
+      className?: string;
+      isOnline?: boolean;
+      slot: { dayOfWeek: string; startTime: string; endTime: string };
+      startDate: string;
+    }) {
+      return authenticatedRequest<{ parentId: string; studentId: string; classId: string; scheduleId: string; enrollmentId: string }>(
+        "/api/v1/auth/register/trial",
+        { method: "POST", body: JSON.stringify(payload) },
+      );
     },
   },
   galleries: {

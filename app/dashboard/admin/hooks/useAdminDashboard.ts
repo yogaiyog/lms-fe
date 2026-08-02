@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo, type FormEvent } from "react";
+import { useEffect, useState, useMemo, useRef, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   useReactTable,
@@ -48,14 +48,14 @@ export function useAdminDashboard() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const menuParam = searchParams.get("menu") as "classes" | "tutors" | "curriculums" | "students" | "attendance" | null;
+  const menuParam = searchParams.get("menu") as "classes" | "tutors" | "curriculums" | "students" | "attendance" | "billing" | null;
   const segParam = searchParams.get("seg");
 
-  const validMenus = ["classes", "tutors", "curriculums", "students", "attendance"] as const;
+  const validMenus = ["classes", "tutors", "curriculums", "students", "attendance", "billing"] as const;
   const initialMenu = menuParam && validMenus.includes(menuParam) ? menuParam : "classes";
 
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [mainMenu, setMainMenu] = useState<"classes" | "tutors" | "curriculums" | "students" | "attendance">(initialMenu);
+  const [mainMenu, setMainMenu] = useState<"classes" | "tutors" | "curriculums" | "students" | "attendance" | "billing">(initialMenu);
   const [segment, setSegment] = useState<"classes" | "requests" | "create">(
     initialMenu === "classes" && ["classes", "requests", "create"].includes(segParam ?? "") ? segParam as "classes" | "requests" | "create" : "classes"
   );
@@ -129,9 +129,17 @@ export function useAdminDashboard() {
   }
 
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   function showToast(message: string, type: "success" | "error") {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
     setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
+    if (type === "success") {
+      toastTimer.current = setTimeout(() => setToast(null), 3000);
+    }
+  }
+  function dismissToast() {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    setToast(null);
   }
 
   const [classGlobalFilter, setClassGlobalFilter] = useState("");
@@ -992,7 +1000,7 @@ export function useAdminDashboard() {
     approveClassId, setApproveClassId,
     adminNotes, setAdminNotes,
     approving, approveError, setApproveError,
-    toast, showToast,
+    toast, showToast, dismissToast,
     createClass, handleApproveReject, openClassDetail,
     handleSaveDetail, handleAddStudent, handleReschedule, handleShiftSchedule, handleUpdateScheduleTime,
     handleRegisterTutor, logout, handleImpersonate, handleSelectStudent,

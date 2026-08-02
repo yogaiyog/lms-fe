@@ -2,7 +2,7 @@
 
 import { LogOut } from "lucide-react";
 
-type MainMenu = "classes" | "tutors" | "curriculums" | "students" | "attendance";
+type MainMenu = "classes" | "tutors" | "curriculums" | "students" | "attendance" | "billing";
 
 type Props = {
   mainMenu: MainMenu;
@@ -17,11 +17,12 @@ const items: { key: MainMenu; label: string }[] = [
   { key: "curriculums", label: "Kurikulum" },
   { key: "students", label: "Student" },
   { key: "attendance", label: "Absensi" },
+  { key: "billing", label: "Keuangan" },
 ];
 
 export default function AdminNavbar({ mainMenu, onChange, email, onLogout }: Props) {
   return (
-    <nav className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-slate-200 bg-white/90 backdrop-blur px-6 py-3">
+    <nav className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-slate-200 bg-white/90 backdrop-blur px-6 py-3 print:hidden">
       <div className="flex items-center gap-8">
         <span className="text-lg font-extrabold tracking-tight text-slate-900">{process.env.NEXT_PUBLIC_COMPANY_NAME || "JTCourse"} Admin</span>
         <div className="flex gap-1">

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useRef, useMemo, type FormEvent } from "react";
-import { X, User, Mail, GraduationCap, BookOpen, Calendar, ArrowRight, Plus, Pencil, Loader2, FileText, FileCheck, Save } from "lucide-react";
+import { useEffect, useState, useRef, type FormEvent } from "react";
+import { X, User, Mail, GraduationCap, BookOpen, Calendar, ArrowRight, Plus, Pencil, Loader2, FileText, FileCheck, Save, Trash2 } from "lucide-react";
 import { api, checkEmail, type StudentProfile, type Enrollment, type Curriculum, type Class, type Certificate, type ParentProfile, type Category } from "@/lib/api";
 import CertificatePreviewModal from "../../../shared/CertificatePreviewModal";
 
@@ -27,7 +27,6 @@ export default function StudentDetailModal({
   const [showForm, setShowForm] = useState(false);
   const [editingEnrollment, setEditingEnrollment] = useState<Enrollment | null>(null);
   const [formCurriculumId, setFormCurriculumId] = useState("");
-  const [formClassId, setFormClassId] = useState("");
   const [formTotalMeetPurchased, setFormTotalMeetPurchased] = useState("");
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [previewEnrollment, setPreviewEnrollment] = useState<Enrollment | null>(null);
@@ -52,34 +51,20 @@ export default function StudentDetailModal({
   }, [certificates, student.id]);
 
   const isEdit = !!editingEnrollment;
-  const selectedCurriculum = curriculums.find((c) => c.id === formCurriculumId);
-  const maxMeet = selectedCurriculum?.topics.length ?? 0;
-  const meetValue = formTotalMeetPurchased ? Number(formTotalMeetPurchased) : 0;
-  const meetError = !isEdit && maxMeet > 0 && meetValue > maxMeet
-    ? `Kurikulum hanya memiliki ${maxMeet} pertemuan`
-    : "";
 
   const isCertificateSent = (enr: Enrollment) =>
     localCertificates.some((cert) => cert.studentId === enr.studentId && cert.curriculumId === enr.curriculumId);
 
-  const filteredClasses = useMemo(
-    () => classes.filter((c) => c.isActive !== false && (!formCurriculumId || c.curriculumId === formCurriculumId)),
-    [classes, formCurriculumId],
-  );
-
   function openAddForm() {
     setEditingEnrollment(null);
     setFormCurriculumId("");
-    setFormClassId("");
-    setFormTotalMeetPurchased("");
     setShowForm(true);
   }
 
   function openEditForm(enr: Enrollment) {
     setEditingEnrollment(enr);
     setFormCurriculumId(enr.curriculumId);
-    setFormClassId(enr.classId ?? "");
-    setFormTotalMeetPurchased(String(enr.totalMeetPurchased));
+    setFormTotalMeetPurchased(String(enr.totalMeetPurchased ?? ""));
     setShowForm(true);
   }
 
@@ -87,7 +72,6 @@ export default function StudentDetailModal({
     setShowForm(false);
     setEditingEnrollment(null);
     setFormCurriculumId("");
-    setFormClassId("");
     setFormTotalMeetPurchased("");
   }
 
@@ -158,27 +142,23 @@ export default function StudentDetailModal({
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (formSubmitting || meetError) return;
+    if (formSubmitting) return;
 
-    const totalMeetPurchased = formTotalMeetPurchased ? Number(formTotalMeetPurchased) : undefined;
     setFormSubmitting(true);
     try {
       if (isEdit) {
-        const updateData: Record<string, unknown> = {
-          ...(formClassId !== editingEnrollment!.classId ? { classId: formClassId || null } : {}),
-        };
+        const totalMeetPurchased = formTotalMeetPurchased ? Number(formTotalMeetPurchased) : undefined;
+        const updateData: Record<string, unknown> = {};
         if (totalMeetPurchased !== undefined) {
           updateData.totalMeetPurchased = totalMeetPurchased;
-          updateData.verified = true;
         }
-        await api.enrollments.update(editingEnrollment!.id, updateData);
+        if (Object.keys(updateData).length > 0) {
+          await api.enrollments.update(editingEnrollment!.id, updateData);
+        }
       } else {
         await api.enrollments.create({
           studentId: student.id,
           curriculumId: formCurriculumId,
-          classId: formClassId || undefined,
-          totalMeetPurchased,
-          verified: totalMeetPurchased ? true : undefined,
         });
       }
       closeForm();
@@ -353,7 +333,7 @@ export default function StudentDetailModal({
                 {!isEdit && (
                   <div>
                     <label className="mb-1 block text-xs font-bold text-slate-600">Kurikulum</label>
-                    <select value={formCurriculumId} onChange={(e) => { setFormCurriculumId(e.target.value); setFormClassId(""); }}
+                    <select value={formCurriculumId} onChange={(e) => { setFormCurriculumId(e.target.value); }}
                       required className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400">
                       <option value="">Pilih Kurikulum</option>
                       {curriculums.map((c) => (
@@ -362,38 +342,23 @@ export default function StudentDetailModal({
                     </select>
                   </div>
                 )}
-                <div>
-                  <label className="mb-1 block text-xs font-bold text-slate-600">Kelas (opsional)</label>
-                  <select value={formClassId} onChange={(e) => setFormClassId(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400">
-                    <option value="">Pilih Kelas</option>
-                    {filteredClasses.map((c) => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs font-bold text-slate-600">Total Pertemuan Dibeli</label>
-                  <input type="number" min="0" value={formTotalMeetPurchased}
-                    onChange={(e) => setFormTotalMeetPurchased(e.target.value)}
-                    placeholder={maxMeet > 0 ? `Maksimal ${maxMeet}` : "0"}
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400" />
-                  {!isEdit && maxMeet > 0 && (
-                    <p className="mt-1 text-[11px] text-slate-400">Maksimal {maxMeet} pertemuan (sesuai kurikulum)</p>
-                  )}
-                  {isEdit && (
-                    <p className="mt-1 text-[11px] text-blue-500">Mengisi nilai akan memverifikasi enrollment ini.</p>
-                  )}
-                </div>
-                {meetError && (
-                  <p className="text-xs font-semibold text-red-500">{meetError}</p>
+                {isEdit && (
+                  <div>
+                    <label className="mb-1 block text-xs font-bold text-slate-600">Total Pertemuan Dibeli</label>
+                    <input type="number" min="0" value={formTotalMeetPurchased}
+                      onChange={(e) => setFormTotalMeetPurchased(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400" />
+                    <p className="mt-1 text-[10px] font-semibold text-amber-600">
+                      Hanya untuk koreksi kegagalan sistem pembayaran. Normalnya diupdate otomatis saat invoice dibayar.
+                    </p>
+                  </div>
                 )}
                 <div className="flex items-center justify-end gap-2 pt-1">
                   <button type="button" onClick={closeForm}
                     className="rounded-xl px-3 py-1.5 text-xs font-bold text-slate-500 transition hover:bg-slate-200/60">
                     Batal
                   </button>
-                  <button type="submit" disabled={formSubmitting || (!isEdit && !formCurriculumId) || !!meetError}
+                  <button type="submit" disabled={formSubmitting || (!isEdit && !formCurriculumId)}
                     className="inline-flex items-center gap-1 rounded-xl bg-blue-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50">
                     {formSubmitting && <Loader2 size={13} className="animate-spin" />}
                     {isEdit ? "Simpan" : "Tambah"}
@@ -426,10 +391,25 @@ export default function StudentDetailModal({
                           <p className="text-xs font-semibold text-slate-700">
                             {enr.meetUsages?.length ?? 0} / {enr.totalMeetPurchased} sesi digunakan
                           </p>
-                          {enr.verified ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700">Terverifikasi</span>
+                          {enr.invoices && enr.invoices.length > 0 ? (
+                            (() => {
+                              const latest = enr.invoices[0];
+                              const colors: Record<string, string> = {
+                                DRAFT: "bg-slate-100 text-slate-600",
+                                UNPAID: "bg-amber-100 text-amber-700",
+                                PAID: "bg-green-100 text-green-700",
+                                PARTIAL: "bg-blue-100 text-blue-700",
+                                REFUNDED: "bg-rose-100 text-rose-700",
+                                CANCELLED: "bg-gray-100 text-gray-500",
+                              };
+                              return (
+                                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${colors[latest.status] ?? "bg-slate-100 text-slate-600"}`}>
+                                  {latest.status}
+                                </span>
+                              );
+                            })()
                           ) : (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">Menunggu Verifikasi</span>
+                            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-400">-</span>
                           )}
                           {(() => {
                             const c = curriculums.find((c) => c.id === enr.curriculumId);
@@ -455,6 +435,20 @@ export default function StudentDetailModal({
                           className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-blue-600">
                           <Pencil size={14} />
                         </button>
+                        {enr.totalMeetPurchased === 0 && (
+                          <button onClick={async () => {
+                            if (!confirm(`Hapus enrollment "${enr.curriculum?.name ?? "—"}"?`)) return;
+                            try {
+                              await api.enrollments.delete(enr.id);
+                              onRefreshEnrollments();
+                            } catch {
+                              alert("Gagal menghapus enrollment");
+                            }
+                          }}
+                            className="rounded-lg p-1.5 text-slate-400 transition hover:bg-red-50 hover:text-red-500">
+                            <Trash2 size={14} />
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
