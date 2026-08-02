@@ -371,15 +371,15 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_admin_dashboard",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "admin-dashboard.tsx"
     },
     {
       "label": "AdminDashboard()",
       "file_type": "code",
       "source_file": "app/dashboard/admin/admin-dashboard.tsx",
-      "source_location": "L28",
+      "source_location": "L30",
       "_origin": "ast",
       "id": "app_dashboard_admin_admin_dashboard_admindashboard",
       "community": 6,
@@ -390,11 +390,11 @@
       "label": "AllEnrollmentsView()",
       "file_type": "code",
       "source_file": "app/dashboard/admin/admin-dashboard.tsx",
-      "source_location": "L392",
+      "source_location": "L403",
       "_origin": "ast",
       "id": "app_dashboard_admin_admin_dashboard_allenrollmentsview",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "allenrollmentsview()"
     },
     {
@@ -404,8 +404,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminnavbar",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 26,
+      "community_name": "Admin Navbar",
       "norm_label": "adminnavbar.tsx"
     },
     {
@@ -415,8 +415,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminnavbar_mainmenu",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 26,
+      "community_name": "Admin Navbar",
       "norm_label": "mainmenu"
     },
     {
@@ -426,8 +426,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminnavbar_props",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 26,
+      "community_name": "Admin Navbar",
       "norm_label": "props"
     },
     {
@@ -437,8 +437,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminnavbar_items",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 26,
+      "community_name": "Admin Navbar",
       "norm_label": "items"
     },
     {
@@ -448,8 +448,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminnavbar_adminnavbar",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 26,
+      "community_name": "Admin Navbar",
       "norm_label": "adminnavbar()"
     },
     {
@@ -459,8 +459,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminsidebar",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "adminsidebar.tsx"
     },
     {
@@ -470,8 +470,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminsidebar_props",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "props"
     },
     {
@@ -481,8 +481,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminsidebar_adminsidebar",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "adminsidebar()"
     },
     {
@@ -492,8 +492,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_approverejectmodal",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 62,
+      "community_name": "ApproveRejectModal.tsx",
       "norm_label": "approverejectmodal.tsx"
     },
     {
@@ -503,8 +503,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_approverejectmodal_props",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 62,
+      "community_name": "ApproveRejectModal.tsx",
       "norm_label": "props"
     },
     {
@@ -514,8 +514,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_approverejectmodal_approverejectmodal",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 62,
+      "community_name": "ApproveRejectModal.tsx",
       "norm_label": "approverejectmodal()"
     },
     {
@@ -618,56 +618,45 @@
       "norm_label": "adminattendance()"
     },
     {
-      "label": "InvoiceDetailView.tsx",
+      "label": "InvoiceDetailModal.tsx",
       "file_type": "code",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
+      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailModal.tsx",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "app_dashboard_admin_components_billing_invoicedetailview",
+      "id": "app_dashboard_admin_components_billing_invoicedetailmodal",
       "community": 28,
       "community_name": "Register Page",
-      "norm_label": "invoicedetailview.tsx"
+      "norm_label": "invoicedetailmodal.tsx"
     },
     {
       "label": "Props",
       "file_type": "code",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
+      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailModal.tsx",
       "source_location": "L8",
       "_origin": "ast",
-      "id": "app_dashboard_admin_components_billing_invoicedetailview_props",
+      "id": "app_dashboard_admin_components_billing_invoicedetailmodal_props",
       "community": 28,
       "community_name": "Register Page",
       "norm_label": "props"
     },
     {
-      "label": "InvoiceDetailView()",
+      "label": "InvoiceDetailModal()",
       "file_type": "code",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
-      "source_location": "L23",
+      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailModal.tsx",
+      "source_location": "L22",
       "_origin": "ast",
-      "id": "app_dashboard_admin_components_billing_invoicedetailview_invoicedetailview",
+      "id": "app_dashboard_admin_components_billing_invoicedetailmodal_invoicedetailmodal",
       "community": 28,
       "community_name": "Register Page",
-      "norm_label": "invoicedetailview()"
-    },
-    {
-      "label": "paymentExpiry()",
-      "file_type": "code",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
-      "source_location": "L257",
-      "_origin": "ast",
-      "id": "app_dashboard_admin_components_billing_invoicedetailview_paymentexpiry",
-      "community": 28,
-      "community_name": "Register Page",
-      "norm_label": "paymentexpiry()"
+      "norm_label": "invoicedetailmodal()"
     },
     {
       "label": "PaymentMethodDetail()",
       "file_type": "code",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
-      "source_location": "L270",
+      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailModal.tsx",
+      "source_location": "L199",
       "_origin": "ast",
-      "id": "app_dashboard_admin_components_billing_invoicedetailview_paymentmethoddetail",
+      "id": "app_dashboard_admin_components_billing_invoicedetailmodal_paymentmethoddetail",
       "community": 28,
       "community_name": "Register Page",
       "norm_label": "paymentmethoddetail()"
@@ -675,10 +664,10 @@
     {
       "label": "Info()",
       "file_type": "code",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
-      "source_location": "L303",
+      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailModal.tsx",
+      "source_location": "L232",
       "_origin": "ast",
-      "id": "app_dashboard_admin_components_billing_invoicedetailview_info",
+      "id": "app_dashboard_admin_components_billing_invoicedetailmodal_info",
       "community": 28,
       "community_name": "Register Page",
       "norm_label": "info()"
@@ -690,8 +679,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_billing_invoiceformmodal",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 57,
+      "community_name": "AddTutorForm.tsx",
       "norm_label": "invoiceformmodal.tsx"
     },
     {
@@ -701,85 +690,85 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_billing_invoiceformmodal_props",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 57,
+      "community_name": "AddTutorForm.tsx",
       "norm_label": "props"
     },
     {
       "label": "MethodKey",
       "file_type": "code",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L19",
+      "source_location": "L17",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_billing_invoiceformmodal_methodkey",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 57,
+      "community_name": "AddTutorForm.tsx",
       "norm_label": "methodkey"
     },
     {
       "label": "BANKS",
       "file_type": "code",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L21",
+      "source_location": "L19",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_billing_invoiceformmodal_banks",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 57,
+      "community_name": "AddTutorForm.tsx",
       "norm_label": "banks"
     },
     {
       "label": "WALLETS",
       "file_type": "code",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L29",
+      "source_location": "L27",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_billing_invoiceformmodal_wallets",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 57,
+      "community_name": "AddTutorForm.tsx",
       "norm_label": "wallets"
     },
     {
       "label": "InvoiceFormModal()",
       "file_type": "code",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L35",
+      "source_location": "L33",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_billing_invoiceformmodal_invoiceformmodal",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "invoiceformmodal()"
     },
     {
       "label": "MethodCard()",
       "file_type": "code",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L317",
+      "source_location": "L299",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_billing_invoiceformmodal_methodcard",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 57,
+      "community_name": "AddTutorForm.tsx",
       "norm_label": "methodcard()"
     },
     {
       "label": "SummaryRow()",
       "file_type": "code",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L332",
+      "source_location": "L314",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_billing_invoiceformmodal_summaryrow",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 57,
+      "community_name": "AddTutorForm.tsx",
       "norm_label": "summaryrow()"
     },
     {
       "label": "EditFields()",
       "file_type": "code",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L341",
+      "source_location": "L323",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_billing_invoiceformmodal_editfields",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 57,
+      "community_name": "AddTutorForm.tsx",
       "norm_label": "editfields()"
     },
     {
@@ -852,12 +841,133 @@
       "label": "InvoiceBadge()",
       "file_type": "code",
       "source_file": "app/dashboard/admin/components/billing/InvoiceList.tsx",
-      "source_location": "L120",
+      "source_location": "L124",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_billing_invoicelist_invoicebadge",
       "community": 28,
       "community_name": "Register Page",
       "norm_label": "invoicebadge()"
+    },
+    {
+      "label": "PaymentFormModal.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/admin/components/billing/PaymentFormModal.tsx",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "app_dashboard_admin_components_billing_paymentformmodal",
+      "community": 28,
+      "community_name": "Register Page",
+      "norm_label": "paymentformmodal.tsx"
+    },
+    {
+      "label": "Props",
+      "file_type": "code",
+      "source_file": "app/dashboard/admin/components/billing/PaymentFormModal.tsx",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "app_dashboard_admin_components_billing_paymentformmodal_props",
+      "community": 28,
+      "community_name": "Register Page",
+      "norm_label": "props"
+    },
+    {
+      "label": "METHODS",
+      "file_type": "code",
+      "source_file": "app/dashboard/admin/components/billing/PaymentFormModal.tsx",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "app_dashboard_admin_components_billing_paymentformmodal_methods",
+      "community": 28,
+      "community_name": "Register Page",
+      "norm_label": "methods"
+    },
+    {
+      "label": "PaymentFormModal()",
+      "file_type": "code",
+      "source_file": "app/dashboard/admin/components/billing/PaymentFormModal.tsx",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "app_dashboard_admin_components_billing_paymentformmodal_paymentformmodal",
+      "community": 28,
+      "community_name": "Register Page",
+      "norm_label": "paymentformmodal()"
+    },
+    {
+      "label": "PaymentMethodModal.tsx",
+      "file_type": "code",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "app_dashboard_admin_components_billing_paymentmethodmodal",
+      "community": 65,
+      "community_name": "PaymentMethodModal.tsx",
+      "norm_label": "paymentmethodmodal.tsx"
+    },
+    {
+      "label": "Props",
+      "file_type": "code",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L8",
+      "_origin": "ast",
+      "id": "app_dashboard_admin_components_billing_paymentmethodmodal_props",
+      "community": 65,
+      "community_name": "PaymentMethodModal.tsx",
+      "norm_label": "props"
+    },
+    {
+      "label": "BANKS",
+      "file_type": "code",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L18",
+      "_origin": "ast",
+      "id": "app_dashboard_admin_components_billing_paymentmethodmodal_banks",
+      "community": 65,
+      "community_name": "PaymentMethodModal.tsx",
+      "norm_label": "banks"
+    },
+    {
+      "label": "EWALLETS",
+      "file_type": "code",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L26",
+      "_origin": "ast",
+      "id": "app_dashboard_admin_components_billing_paymentmethodmodal_ewallets",
+      "community": 65,
+      "community_name": "PaymentMethodModal.tsx",
+      "norm_label": "ewallets"
+    },
+    {
+      "label": "PaymentMethodModal()",
+      "file_type": "code",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "app_dashboard_admin_components_billing_paymentmethodmodal_paymentmethodmodal",
+      "community": 65,
+      "community_name": "PaymentMethodModal.tsx",
+      "norm_label": "paymentmethodmodal()"
+    },
+    {
+      "label": "ChargeResult()",
+      "file_type": "code",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L129",
+      "_origin": "ast",
+      "id": "app_dashboard_admin_components_billing_paymentmethodmodal_chargeresult",
+      "community": 65,
+      "community_name": "PaymentMethodModal.tsx",
+      "norm_label": "chargeresult()"
+    },
+    {
+      "label": "PendingPayments()",
+      "file_type": "code",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L196",
+      "_origin": "ast",
+      "id": "app_dashboard_admin_components_billing_paymentmethodmodal_pendingpayments",
+      "community": 65,
+      "community_name": "PaymentMethodModal.tsx",
+      "norm_label": "pendingpayments()"
     },
     {
       "label": "ClassDetailModal.tsx",
@@ -1020,8 +1130,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_kurikulum_assessmentsetmanagement",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 54,
+      "community_name": "CurriculumList.tsx",
       "norm_label": "assessmentsetmanagement.tsx"
     },
     {
@@ -1031,8 +1141,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_kurikulum_assessmentsetmanagement_props",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 54,
+      "community_name": "CurriculumList.tsx",
       "norm_label": "props"
     },
     {
@@ -1042,8 +1152,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_kurikulum_assessmentsetmanagement_assessmentsetmanagement",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 54,
+      "community_name": "CurriculumList.tsx",
       "norm_label": "assessmentsetmanagement()"
     },
     {
@@ -1185,8 +1295,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_addstudentform",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "addstudentform.tsx"
     },
     {
@@ -1196,8 +1306,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_addstudentform_props",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "props"
     },
     {
@@ -1207,8 +1317,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_addstudentform_addstudentform",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "addstudentform()"
     },
     {
@@ -1218,8 +1328,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_allparentsview",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 67,
+      "community_name": "AllParentsView.tsx",
       "norm_label": "allparentsview.tsx"
     },
     {
@@ -1229,8 +1339,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_allparentsview_fmtdate",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 67,
+      "community_name": "AllParentsView.tsx",
       "norm_label": "fmtdate()"
     },
     {
@@ -1240,8 +1350,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_allparentsview_props",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 67,
+      "community_name": "AllParentsView.tsx",
       "norm_label": "props"
     },
     {
@@ -1251,8 +1361,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_allparentsview_allparentsview",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 67,
+      "community_name": "AllParentsView.tsx",
       "norm_label": "allparentsview()"
     },
     {
@@ -1262,8 +1372,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentdetailmodal",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "studentdetailmodal.tsx"
     },
     {
@@ -1273,8 +1383,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentdetailmodal_props",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "props"
     },
     {
@@ -1284,8 +1394,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentdetailmodal_studentdetailmodal",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "studentdetailmodal()"
     },
     {
@@ -1295,8 +1405,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentlist",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 24,
+      "community_name": "Admin Student List",
       "norm_label": "studentlist.tsx"
     },
     {
@@ -1306,8 +1416,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentlist_fmtdate",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 24,
+      "community_name": "Admin Student List",
       "norm_label": "fmtdate()"
     },
     {
@@ -1317,8 +1427,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentlist_studentitem",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 24,
+      "community_name": "Admin Student List",
       "norm_label": "studentitem"
     },
     {
@@ -1328,8 +1438,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentlist_props",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 24,
+      "community_name": "Admin Student List",
       "norm_label": "props"
     },
     {
@@ -1339,8 +1449,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentlist_sortdir",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 24,
+      "community_name": "Admin Student List",
       "norm_label": "sortdir"
     },
     {
@@ -1350,8 +1460,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentlist_studentlist",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 24,
+      "community_name": "Admin Student List",
       "norm_label": "studentlist()"
     },
     {
@@ -1361,8 +1471,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_addtutorform",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "addtutorform.tsx"
     },
     {
@@ -1372,8 +1482,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_addtutorform_day_labels",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "day_labels"
     },
     {
@@ -1383,8 +1493,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_addtutorform_props",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "props"
     },
     {
@@ -1394,8 +1504,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_addtutorform_addtutorform",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "addtutorform()"
     },
     {
@@ -1504,8 +1614,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_tutorlist",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 58,
+      "community_name": "TutorList.tsx",
       "norm_label": "tutorlist.tsx"
     },
     {
@@ -1515,8 +1625,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_tutorlist_tutoritem",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 58,
+      "community_name": "TutorList.tsx",
       "norm_label": "tutoritem"
     },
     {
@@ -1526,8 +1636,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_tutorlist_props",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 58,
+      "community_name": "TutorList.tsx",
       "norm_label": "props"
     },
     {
@@ -1537,8 +1647,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_tutorlist_tutorlist",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 58,
+      "community_name": "TutorList.tsx",
       "norm_label": "tutorlist()"
     },
     {
@@ -1603,8 +1713,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_hooks_useadmindashboard",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "useadmindashboard.ts"
     },
     {
@@ -1614,8 +1724,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "app_dashboard_admin_hooks_useadmindashboard_tutoroption",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "tutoroption"
     },
     {
@@ -1625,8 +1735,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "app_dashboard_admin_hooks_useadmindashboard_studentitem",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "studentitem"
     },
     {
@@ -1647,8 +1757,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_page",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "admin/page.tsx"
     },
     {
@@ -1658,8 +1768,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "app_dashboard_admin_page_page",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "page()"
     },
     {
@@ -1669,8 +1779,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_dashboard_content",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "dashboard-content.tsx"
     },
     {
@@ -1680,8 +1790,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "app_dashboard_dashboard_content_studentwithdetails",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "studentwithdetails"
     },
     {
@@ -1691,8 +1801,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "app_dashboard_dashboard_content_day_labels",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "day_labels"
     },
     {
@@ -1702,8 +1812,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "app_dashboard_dashboard_content_category_labels",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "category_labels"
     },
     {
@@ -1713,8 +1823,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "app_dashboard_dashboard_content_dashboardcontent",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "dashboardcontent()"
     },
     {
@@ -1724,8 +1834,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_page",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "dashboard/page.tsx"
     },
     {
@@ -1735,8 +1845,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_dashboard_page_page",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "page()"
     },
     {
@@ -1746,8 +1856,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_parent_page",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "parent/page.tsx"
     },
     {
@@ -1757,8 +1867,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_dashboard_parent_page_page",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "page()"
     },
     {
@@ -1768,8 +1878,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_parent_parent_dashboard",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "parent-dashboard.tsx"
     },
     {
@@ -1779,8 +1889,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "app_dashboard_parent_parent_dashboard_day_labels",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "day_labels"
     },
     {
@@ -1790,8 +1900,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "app_dashboard_parent_parent_dashboard_type_labels",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "type_labels"
     },
     {
@@ -1801,8 +1911,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "app_dashboard_parent_parent_dashboard_parentdashboard",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "parentdashboard()"
     },
     {
@@ -1812,8 +1922,8 @@
       "source_location": "L291",
       "_origin": "ast",
       "id": "app_dashboard_parent_parent_dashboard_overviewview",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "overviewview()"
     },
     {
@@ -1823,8 +1933,8 @@
       "source_location": "L396",
       "_origin": "ast",
       "id": "app_dashboard_parent_parent_dashboard_enrollmentview",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "enrollmentview()"
     },
     {
@@ -1834,8 +1944,8 @@
       "source_location": "L696",
       "_origin": "ast",
       "id": "app_dashboard_parent_parent_dashboard_addstudentmodal",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "addstudentmodal()"
     },
     {
@@ -1845,8 +1955,8 @@
       "source_location": "L791",
       "_origin": "ast",
       "id": "app_dashboard_parent_parent_dashboard_classdetailmodal",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "classdetailmodal()"
     },
     {
@@ -3077,8 +3187,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_jadwal_slot_page",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 64,
+      "community_name": "slot-grid.tsx",
       "norm_label": "jadwal-slot/page.tsx"
     },
     {
@@ -3088,8 +3198,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_dashboard_tutor_jadwal_slot_page_page",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 64,
+      "community_name": "slot-grid.tsx",
       "norm_label": "page()"
     },
     {
@@ -3099,8 +3209,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_jadwal_slot_slot_grid",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 64,
+      "community_name": "slot-grid.tsx",
       "norm_label": "slot-grid.tsx"
     },
     {
@@ -3110,8 +3220,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "app_dashboard_tutor_jadwal_slot_slot_grid_day_labels",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 64,
+      "community_name": "slot-grid.tsx",
       "norm_label": "day_labels"
     },
     {
@@ -3121,8 +3231,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "app_dashboard_tutor_jadwal_slot_slot_grid_days",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 64,
+      "community_name": "slot-grid.tsx",
       "norm_label": "days"
     },
     {
@@ -3132,8 +3242,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "app_dashboard_tutor_jadwal_slot_slot_grid_hours",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 64,
+      "community_name": "slot-grid.tsx",
       "norm_label": "hours"
     },
     {
@@ -3143,8 +3253,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "app_dashboard_tutor_jadwal_slot_slot_grid_fmt",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 64,
+      "community_name": "slot-grid.tsx",
       "norm_label": "fmt()"
     },
     {
@@ -3154,8 +3264,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "app_dashboard_tutor_jadwal_slot_slot_grid_isinrange",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 64,
+      "community_name": "slot-grid.tsx",
       "norm_label": "isinrange()"
     },
     {
@@ -3165,8 +3275,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "app_dashboard_tutor_jadwal_slot_slot_grid_slotgrid",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 64,
+      "community_name": "slot-grid.tsx",
       "norm_label": "slotgrid()"
     },
     {
@@ -3176,8 +3286,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_id_curriculum_detail",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "curriculum-detail.tsx"
     },
     {
@@ -3187,8 +3297,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_id_curriculum_detail_curriculumdetail",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "curriculumdetail()"
     },
     {
@@ -3198,8 +3308,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_id_page",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 68,
+      "community_name": "[id]/page.tsx",
       "norm_label": "[id]/page.tsx"
     },
     {
@@ -3209,8 +3319,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_id_page_page",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 68,
+      "community_name": "[id]/page.tsx",
       "norm_label": "page()"
     },
     {
@@ -3220,8 +3330,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_id_page_generatestaticparams",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 68,
+      "community_name": "[id]/page.tsx",
       "norm_label": "generatestaticparams()"
     },
     {
@@ -3231,8 +3341,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_kurikulum_list",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "kurikulum-list.tsx"
     },
     {
@@ -3242,8 +3352,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_kurikulum_list_category_labels",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "category_labels"
     },
     {
@@ -3253,8 +3363,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_kurikulum_list_kurikulumlist",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "kurikulumlist()"
     },
     {
@@ -3264,8 +3374,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_page",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "kurikulum/page.tsx"
     },
     {
@@ -3275,8 +3385,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_page_page",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "page()"
     },
     {
@@ -3286,8 +3396,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_page",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "tutor/page.tsx"
     },
     {
@@ -3297,8 +3407,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_dashboard_tutor_page_page",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "page()"
     },
     {
@@ -3308,8 +3418,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_attendance_segment",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 3,
+      "community_name": "Tutor Attendance",
       "norm_label": "tutor-attendance-segment.tsx"
     },
     {
@@ -3319,8 +3429,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_attendance_segment_theme",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 3,
+      "community_name": "Tutor Attendance",
       "norm_label": "theme"
     },
     {
@@ -3330,8 +3440,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_attendance_segment_attendance_labels",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 3,
+      "community_name": "Tutor Attendance",
       "norm_label": "attendance_labels"
     },
     {
@@ -3341,8 +3451,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_attendance_segment_day_labels",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 3,
+      "community_name": "Tutor Attendance",
       "norm_label": "day_labels"
     },
     {
@@ -3352,8 +3462,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_attendance_segment_date_presets",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 3,
+      "community_name": "Tutor Attendance",
       "norm_label": "date_presets"
     },
     {
@@ -3363,8 +3473,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_attendance_segment_props",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 3,
+      "community_name": "Tutor Attendance",
       "norm_label": "props"
     },
     {
@@ -3374,8 +3484,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_attendance_segment_schedulegroup",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 3,
+      "community_name": "Tutor Attendance",
       "norm_label": "schedulegroup"
     },
     {
@@ -3385,8 +3495,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_attendance_segment_getpresetrange",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 3,
+      "community_name": "Tutor Attendance",
       "norm_label": "getpresetrange()"
     },
     {
@@ -3396,8 +3506,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_attendance_segment_fmtdate",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 3,
+      "community_name": "Tutor Attendance",
       "norm_label": "fmtdate()"
     },
     {
@@ -3407,8 +3517,8 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_attendance_segment_tutorattendancesegment",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 3,
+      "community_name": "Tutor Attendance",
       "norm_label": "tutorattendancesegment()"
     },
     {
@@ -3418,8 +3528,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 66,
+      "community_name": "tutor-classes-segment.tsx",
       "norm_label": "tutor-classes-segment.tsx"
     },
     {
@@ -3429,8 +3539,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment_day_labels",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 66,
+      "community_name": "tutor-classes-segment.tsx",
       "norm_label": "day_labels"
     },
     {
@@ -3440,8 +3550,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment_category_labels",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 66,
+      "community_name": "tutor-classes-segment.tsx",
       "norm_label": "category_labels"
     },
     {
@@ -3451,8 +3561,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment_theme",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 66,
+      "community_name": "tutor-classes-segment.tsx",
       "norm_label": "theme"
     },
     {
@@ -3462,8 +3572,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment_classwithdetails",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 66,
+      "community_name": "tutor-classes-segment.tsx",
       "norm_label": "classwithdetails"
     },
     {
@@ -3473,8 +3583,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment_card",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 66,
+      "community_name": "tutor-classes-segment.tsx",
       "norm_label": "card()"
     },
     {
@@ -3484,8 +3594,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment_tutorclassessegment",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 66,
+      "community_name": "tutor-classes-segment.tsx",
       "norm_label": "tutorclassessegment()"
     },
     {
@@ -3495,8 +3605,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_content",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "tutor-content.tsx"
     },
     {
@@ -3506,8 +3616,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_content_nav_items",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "nav_items"
     },
     {
@@ -3517,8 +3627,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_content_mobile_nav",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "mobile_nav"
     },
     {
@@ -3528,8 +3638,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_content_tutordashboard",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "tutordashboard()"
     },
     {
@@ -3638,8 +3748,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_roadmap_segment",
-      "community": 15,
-      "community_name": "Student Learning Path",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "tutor-roadmap-segment.tsx"
     },
     {
@@ -3649,8 +3759,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_roadmap_segment_props",
-      "community": 15,
-      "community_name": "Student Learning Path",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "props"
     },
     {
@@ -3660,8 +3770,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_roadmap_segment_status_styles",
-      "community": 15,
-      "community_name": "Student Learning Path",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "status_styles"
     },
     {
@@ -3671,8 +3781,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_roadmap_segment_tutorroadmapsegment",
-      "community": 15,
-      "community_name": "Student Learning Path",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "tutorroadmapsegment()"
     },
     {
@@ -3682,8 +3792,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_schedule_detail_modal",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "tutor-schedule-detail-modal.tsx"
     },
     {
@@ -3693,8 +3803,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_schedule_detail_modal_day_labels",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "day_labels"
     },
     {
@@ -3704,8 +3814,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_schedule_detail_modal_theme",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "theme"
     },
     {
@@ -3715,8 +3825,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_schedule_detail_modal_tutorscheduledetailmodal",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "tutorscheduledetailmodal()"
     },
     {
@@ -3748,8 +3858,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_forgot_password_page",
-      "community": 57,
-      "community_name": "api",
+      "community": 60,
+      "community_name": "register-content.tsx",
       "norm_label": "forgot-password/page.tsx"
     },
     {
@@ -3759,8 +3869,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "app_forgot_password_page_forgotpasswordpage",
-      "community": 57,
-      "community_name": "api",
+      "community": 60,
+      "community_name": "register-content.tsx",
       "norm_label": "forgotpasswordpage()"
     },
     {
@@ -3957,7 +4067,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_register_page",
-      "community": 59,
+      "community": 60,
       "community_name": "register-content.tsx",
       "norm_label": "register/page.tsx"
     },
@@ -3968,7 +4078,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_register_page_page",
-      "community": 59,
+      "community": 60,
       "community_name": "register-content.tsx",
       "norm_label": "page()"
     },
@@ -3979,7 +4089,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_register_register_content",
-      "community": 59,
+      "community": 60,
       "community_name": "register-content.tsx",
       "norm_label": "register-content.tsx"
     },
@@ -3990,7 +4100,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "app_register_register_content_logo_exts",
-      "community": 59,
+      "community": 60,
       "community_name": "register-content.tsx",
       "norm_label": "logo_exts"
     },
@@ -4001,7 +4111,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "app_register_register_content_registercontent",
-      "community": 59,
+      "community": 60,
       "community_name": "register-content.tsx",
       "norm_label": "registercontent()"
     },
@@ -4012,7 +4122,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_reset_password_page",
-      "community": 57,
+      "community": 59,
       "community_name": "api",
       "norm_label": "reset-password/page.tsx"
     },
@@ -4023,7 +4133,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "app_reset_password_page_resetpasswordcontent",
-      "community": 57,
+      "community": 59,
       "community_name": "api",
       "norm_label": "resetpasswordcontent()"
     },
@@ -4034,7 +4144,7 @@
       "source_location": "L123",
       "_origin": "ast",
       "id": "app_reset_password_page_resetpasswordpage",
-      "community": 57,
+      "community": 59,
       "community_name": "api",
       "norm_label": "resetpasswordpage()"
     },
@@ -4045,8 +4155,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_verify_email_page",
-      "community": 57,
-      "community_name": "api",
+      "community": 69,
+      "community_name": "verify-email/page.tsx",
       "norm_label": "verify-email/page.tsx"
     },
     {
@@ -4056,8 +4166,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "app_verify_email_page_verifyemailcontent",
-      "community": 57,
-      "community_name": "api",
+      "community": 69,
+      "community_name": "verify-email/page.tsx",
       "norm_label": "verifyemailcontent()"
     },
     {
@@ -4067,8 +4177,8 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "app_verify_email_page_verifyemailpage",
-      "community": 57,
-      "community_name": "api",
+      "community": 69,
+      "community_name": "verify-email/page.tsx",
       "norm_label": "verifyemailpage()"
     },
     {
@@ -4485,8 +4595,8 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "components_roadmap_unitsection_unitsection",
-      "community": 15,
-      "community_name": "Student Learning Path",
+      "community": 2,
+      "community_name": "Roadmap & Icons",
       "norm_label": "unitsection()"
     },
     {
@@ -4793,8 +4903,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usebilling",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 57,
+      "community_name": "AddTutorForm.tsx",
       "norm_label": "usebilling.ts"
     },
     {
@@ -4804,59 +4914,48 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "hooks_usebilling_invoiceformpayload",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 57,
+      "community_name": "AddTutorForm.tsx",
       "norm_label": "invoiceformpayload"
     },
     {
       "label": "ManualPaymentPayload",
       "file_type": "code",
       "source_file": "hooks/useBilling.ts",
-      "source_location": "L20",
+      "source_location": "L21",
       "_origin": "ast",
       "id": "hooks_usebilling_manualpaymentpayload",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 57,
+      "community_name": "AddTutorForm.tsx",
       "norm_label": "manualpaymentpayload"
     },
     {
       "label": "InvoicePaymentMethod",
       "file_type": "code",
       "source_file": "hooks/useBilling.ts",
-      "source_location": "L27",
+      "source_location": "L28",
       "_origin": "ast",
       "id": "hooks_usebilling_invoicepaymentmethod",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 57,
+      "community_name": "AddTutorForm.tsx",
       "norm_label": "invoicepaymentmethod"
     },
     {
       "label": "SubmitInvoiceResult",
       "file_type": "code",
       "source_file": "hooks/useBilling.ts",
-      "source_location": "L35",
+      "source_location": "L36",
       "_origin": "ast",
       "id": "hooks_usebilling_submitinvoiceresult",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 57,
+      "community_name": "AddTutorForm.tsx",
       "norm_label": "submitinvoiceresult"
-    },
-    {
-      "label": "createPaymentForInvoice()",
-      "file_type": "code",
-      "source_file": "hooks/useBilling.ts",
-      "source_location": "L37",
-      "_origin": "ast",
-      "id": "hooks_usebilling_createpaymentforinvoice",
-      "community": 6,
-      "community_name": "Certificate Preview",
-      "norm_label": "createpaymentforinvoice()"
     },
     {
       "label": "useBilling()",
       "file_type": "code",
       "source_file": "hooks/useBilling.ts",
-      "source_location": "L55",
+      "source_location": "L38",
       "_origin": "ast",
       "id": "hooks_usebilling_usebilling",
       "community": 6,
@@ -4925,8 +5024,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usestudentdashboard",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "usestudentdashboard.ts"
     },
     {
@@ -4947,8 +5046,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usetutordashboard",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "usetutordashboard.ts"
     },
     {
@@ -4958,8 +5057,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "hooks_usetutordashboard_classwithdetails",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "classwithdetails"
     },
     {
@@ -4969,8 +5068,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "hooks_usetutordashboard_usetutordashboard",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "usetutordashboard()"
     },
     {
@@ -5222,8 +5321,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "lib_api_authuser",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "authuser"
     },
     {
@@ -5244,8 +5343,8 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "lib_api_parentprofile",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "parentprofile"
     },
     {
@@ -5277,8 +5376,8 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "lib_api_enrollment",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "enrollment"
     },
     {
@@ -5299,8 +5398,8 @@
       "source_location": "L141",
       "_origin": "ast",
       "id": "lib_api_payment",
-      "community": 28,
-      "community_name": "Register Page",
+      "community": 57,
+      "community_name": "AddTutorForm.tsx",
       "norm_label": "payment"
     },
     {
@@ -5310,8 +5409,8 @@
       "source_location": "L159",
       "_origin": "ast",
       "id": "lib_api_midtranschargemethod",
-      "community": 9,
-      "community_name": "Login Page",
+      "community": 57,
+      "community_name": "AddTutorForm.tsx",
       "norm_label": "midtranschargemethod"
     },
     {
@@ -5321,8 +5420,8 @@
       "source_location": "L160",
       "_origin": "ast",
       "id": "lib_api_midtransbank",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 65,
+      "community_name": "PaymentMethodModal.tsx",
       "norm_label": "midtransbank"
     },
     {
@@ -5343,8 +5442,8 @@
       "source_location": "L183",
       "_origin": "ast",
       "id": "lib_api_schedule",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "schedule"
     },
     {
@@ -5354,8 +5453,8 @@
       "source_location": "L197",
       "_origin": "ast",
       "id": "lib_api_attendance",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "attendance"
     },
     {
@@ -5376,8 +5475,8 @@
       "source_location": "L221",
       "_origin": "ast",
       "id": "lib_api_certificate",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "certificate"
     },
     {
@@ -5387,8 +5486,8 @@
       "source_location": "L233",
       "_origin": "ast",
       "id": "lib_api_category",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "category"
     },
     {
@@ -5431,8 +5530,8 @@
       "source_location": "L268",
       "_origin": "ast",
       "id": "lib_api_topictask",
-      "community": 15,
-      "community_name": "Student Learning Path",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "topictask"
     },
     {
@@ -5442,8 +5541,8 @@
       "source_location": "L280",
       "_origin": "ast",
       "id": "lib_api_topic",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 66,
+      "community_name": "tutor-classes-segment.tsx",
       "norm_label": "topic"
     },
     {
@@ -5486,8 +5585,8 @@
       "source_location": "L315",
       "_origin": "ast",
       "id": "lib_api_announcement",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "announcement"
     },
     {
@@ -5519,8 +5618,8 @@
       "source_location": "L342",
       "_origin": "ast",
       "id": "lib_api_tutorslot",
-      "community": 31,
-      "community_name": "Create Class Form",
+      "community": 17,
+      "community_name": "Admin Tutor Management",
       "norm_label": "tutorslot"
     },
     {
@@ -5530,8 +5629,8 @@
       "source_location": "L353",
       "_origin": "ast",
       "id": "lib_api_requestclass",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 62,
+      "community_name": "ApproveRejectModal.tsx",
       "norm_label": "requestclass"
     },
     {
@@ -5541,8 +5640,8 @@
       "source_location": "L380",
       "_origin": "ast",
       "id": "lib_api_assessmentset",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 54,
+      "community_name": "CurriculumList.tsx",
       "norm_label": "assessmentset"
     },
     {
@@ -5552,8 +5651,8 @@
       "source_location": "L389",
       "_origin": "ast",
       "id": "lib_api_assessmentaspect",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 54,
+      "community_name": "CurriculumList.tsx",
       "norm_label": "assessmentaspect"
     },
     {
@@ -5596,8 +5695,8 @@
       "source_location": "L433",
       "_origin": "ast",
       "id": "lib_api_gallery",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "gallery"
     },
     {
@@ -5618,8 +5717,8 @@
       "source_location": "L450",
       "_origin": "ast",
       "id": "lib_api_readfromstorage",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "readfromstorage()"
     },
     {
@@ -5629,8 +5728,8 @@
       "source_location": "L465",
       "_origin": "ast",
       "id": "lib_api_getstoredsession",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "getstoredsession()"
     },
     {
@@ -5651,8 +5750,8 @@
       "source_location": "L484",
       "_origin": "ast",
       "id": "lib_api_clearsession",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 1,
+      "community_name": "Student Dashboard",
       "norm_label": "clearsession()"
     },
     {
@@ -5739,8 +5838,8 @@
       "source_location": "L687",
       "_origin": "ast",
       "id": "lib_api_checkemail",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "checkemail()"
     },
     {
@@ -5761,8 +5860,8 @@
       "source_location": "L702",
       "_origin": "ast",
       "id": "lib_api_api",
-      "community": 57,
-      "community_name": "api",
+      "community": 60,
+      "community_name": "register-content.tsx",
       "norm_label": "api"
     },
     {
@@ -7625,171 +7724,6 @@
       "norm_label": "source nodes"
     },
     {
-      "label": "query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view__bu.md",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view__bu.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view_bu",
-      "community": 3,
-      "community_name": "Tutor Attendance",
-      "norm_label": "query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view__bu.md"
-    },
-    {
-      "label": "Q: Bagaimana detail invoice dirender sebagai view (bukan modal) di halaman billing admin?",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view__bu.md",
-      "source_location": "L10",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view_bu_q_bagaimana_detail_invoice_dirender_sebagai_view_bukan_modal_di_halaman_billing_admin",
-      "community": 3,
-      "community_name": "Tutor Attendance",
-      "norm_label": "q: bagaimana detail invoice dirender sebagai view (bukan modal) di halaman billing admin?"
-    },
-    {
-      "label": "Answer",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view__bu.md",
-      "source_location": "L12",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view_bu_answer",
-      "community": 3,
-      "community_name": "Tutor Attendance",
-      "norm_label": "answer"
-    },
-    {
-      "label": "Outcome",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view__bu.md",
-      "source_location": "L16",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view_bu_outcome",
-      "community": 3,
-      "community_name": "Tutor Attendance",
-      "norm_label": "outcome"
-    },
-    {
-      "label": "Source Nodes",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view__bu.md",
-      "source_location": "L20",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view_bu_source_nodes",
-      "community": 3,
-      "community_name": "Tutor Attendance",
-      "norm_label": "source nodes"
-    },
-    {
-      "label": "query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete.md",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete",
-      "community": 60,
-      "community_name": "Q: Bagaimana alur ubah metode pembayaran invoice setelah tombol bayar dihapus dari detail view?",
-      "norm_label": "query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete.md"
-    },
-    {
-      "label": "Q: Bagaimana alur ubah metode pembayaran invoice setelah tombol bayar dihapus dari detail view?",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete.md",
-      "source_location": "L10",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete_q_bagaimana_alur_ubah_metode_pembayaran_invoice_setelah_tombol_bayar_dihapus_dari_detail_view",
-      "community": 60,
-      "community_name": "Q: Bagaimana alur ubah metode pembayaran invoice setelah tombol bayar dihapus dari detail view?",
-      "norm_label": "q: bagaimana alur ubah metode pembayaran invoice setelah tombol bayar dihapus dari detail view?"
-    },
-    {
-      "label": "Answer",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete.md",
-      "source_location": "L12",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete_answer",
-      "community": 60,
-      "community_name": "Q: Bagaimana alur ubah metode pembayaran invoice setelah tombol bayar dihapus dari detail view?",
-      "norm_label": "answer"
-    },
-    {
-      "label": "Outcome",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete.md",
-      "source_location": "L16",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete_outcome",
-      "community": 60,
-      "community_name": "Q: Bagaimana alur ubah metode pembayaran invoice setelah tombol bayar dihapus dari detail view?",
-      "norm_label": "outcome"
-    },
-    {
-      "label": "Source Nodes",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete.md",
-      "source_location": "L20",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete_source_nodes",
-      "community": 60,
-      "community_name": "Q: Bagaimana alur ubah metode pembayaran invoice setelah tombol bayar dihapus dari detail view?",
-      "norm_label": "source nodes"
-    },
-    {
-      "label": "query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to",
-      "community": 24,
-      "community_name": "Admin Student List",
-      "norm_label": "query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md"
-    },
-    {
-      "label": "Q: Bagaimana alur ganti metode pembayaran invoice (tombol Ganti Metode di Riwayat Pembayaran) dan validasi wajib pilih metode saat nominal berubah?",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "source_location": "L10",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_q_bagaimana_alur_ganti_metode_pembayaran_invoice_tombol_ganti_metode_di_riwayat_pembayaran_dan_validasi_wajib_pilih_metode_saat_nominal_berubah",
-      "community": 24,
-      "community_name": "Admin Student List",
-      "norm_label": "q: bagaimana alur ganti metode pembayaran invoice (tombol ganti metode di riwayat pembayaran) dan validasi wajib pilih metode saat nominal berubah?"
-    },
-    {
-      "label": "Answer",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "source_location": "L12",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_answer",
-      "community": 24,
-      "community_name": "Admin Student List",
-      "norm_label": "answer"
-    },
-    {
-      "label": "Outcome",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "source_location": "L16",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_outcome",
-      "community": 24,
-      "community_name": "Admin Student List",
-      "norm_label": "outcome"
-    },
-    {
-      "label": "Source Nodes",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "source_location": "L20",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_source_nodes",
-      "community": 24,
-      "community_name": "Admin Student List",
-      "norm_label": "source nodes"
-    },
-    {
       "label": "README.md",
       "file_type": "document",
       "source_file": "README.md",
@@ -8485,7 +8419,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/admin/admin-dashboard.tsx",
-      "source_location": "L28",
+      "source_location": "L30",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_admin_dashboard",
@@ -8496,7 +8430,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/admin/admin-dashboard.tsx",
-      "source_location": "L392",
+      "source_location": "L403",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_admin_dashboard",
@@ -8584,7 +8518,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_admin_dashboard",
-      "target": "app_dashboard_admin_components_billing_invoicedetailview",
+      "target": "app_dashboard_admin_components_billing_invoicedetailmodal",
       "confidence_score": 1.0
     },
     {
@@ -8621,6 +8555,30 @@
       "_origin": "ast",
       "source": "app_dashboard_admin_admin_dashboard",
       "target": "app_dashboard_admin_components_billing_invoicelist",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/admin-dashboard.tsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_admin_dashboard",
+      "target": "app_dashboard_admin_components_billing_paymentformmodal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/admin-dashboard.tsx",
+      "source_location": "L27",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_admin_dashboard",
+      "target": "app_dashboard_admin_components_billing_paymentmethodmodal",
       "confidence_score": 1.0
     },
     {
@@ -8820,7 +8778,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/admin/admin-dashboard.tsx",
-      "source_location": "L26",
+      "source_location": "L28",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_admin_dashboard",
@@ -8832,7 +8790,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/admin/admin-dashboard.tsx",
-      "source_location": "L26",
+      "source_location": "L28",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_admin_dashboard",
@@ -8857,7 +8815,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/dashboard/admin/admin-dashboard.tsx",
-      "source_location": "L29",
+      "source_location": "L31",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_admin_dashboard_admindashboard",
@@ -8869,7 +8827,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/dashboard/admin/admin-dashboard.tsx",
-      "source_location": "L30",
+      "source_location": "L32",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_admin_dashboard_admindashboard",
@@ -8881,7 +8839,7 @@
       "deferred": true,
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/admin/admin-dashboard.tsx",
-      "source_location": "L31",
+      "source_location": "L33",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_admin_dashboard_admindashboard",
@@ -8894,7 +8852,7 @@
       "deferred": true,
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/admin/admin-dashboard.tsx",
-      "source_location": "L450",
+      "source_location": "L461",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_admin_dashboard_allenrollmentsview",
@@ -9200,67 +9158,56 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
-      "source_location": "L303",
+      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailModal.tsx",
+      "source_location": "L232",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "app_dashboard_admin_components_billing_invoicedetailview",
-      "target": "app_dashboard_admin_components_billing_invoicedetailview_info",
+      "source": "app_dashboard_admin_components_billing_invoicedetailmodal",
+      "target": "app_dashboard_admin_components_billing_invoicedetailmodal_info",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
-      "source_location": "L23",
+      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailModal.tsx",
+      "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "app_dashboard_admin_components_billing_invoicedetailview",
-      "target": "app_dashboard_admin_components_billing_invoicedetailview_invoicedetailview",
+      "source": "app_dashboard_admin_components_billing_invoicedetailmodal",
+      "target": "app_dashboard_admin_components_billing_invoicedetailmodal_invoicedetailmodal",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
-      "source_location": "L257",
+      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailModal.tsx",
+      "source_location": "L199",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "app_dashboard_admin_components_billing_invoicedetailview",
-      "target": "app_dashboard_admin_components_billing_invoicedetailview_paymentexpiry",
+      "source": "app_dashboard_admin_components_billing_invoicedetailmodal",
+      "target": "app_dashboard_admin_components_billing_invoicedetailmodal_paymentmethoddetail",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
-      "source_location": "L270",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_dashboard_admin_components_billing_invoicedetailview",
-      "target": "app_dashboard_admin_components_billing_invoicedetailview_paymentmethoddetail",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
+      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailModal.tsx",
       "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "app_dashboard_admin_components_billing_invoicedetailview",
-      "target": "app_dashboard_admin_components_billing_invoicedetailview_props",
+      "source": "app_dashboard_admin_components_billing_invoicedetailmodal",
+      "target": "app_dashboard_admin_components_billing_invoicedetailmodal_props",
       "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
+      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailModal.tsx",
       "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "app_dashboard_admin_components_billing_invoicedetailview",
+      "source": "app_dashboard_admin_components_billing_invoicedetailmodal",
       "target": "app_dashboard_admin_components_billing_invoicelist",
       "confidence_score": 1.0
     },
@@ -9268,11 +9215,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
+      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailModal.tsx",
       "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "app_dashboard_admin_components_billing_invoicedetailview",
+      "source": "app_dashboard_admin_components_billing_invoicedetailmodal",
       "target": "app_dashboard_admin_components_billing_invoicelist_formatidr",
       "confidence_score": 1.0
     },
@@ -9280,11 +9227,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
+      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailModal.tsx",
       "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "app_dashboard_admin_components_billing_invoicedetailview",
+      "source": "app_dashboard_admin_components_billing_invoicedetailmodal",
       "target": "app_dashboard_admin_components_billing_invoicelist_invoice_status_colors",
       "confidence_score": 1.0
     },
@@ -9292,11 +9239,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
+      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailModal.tsx",
       "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "app_dashboard_admin_components_billing_invoicedetailview",
+      "source": "app_dashboard_admin_components_billing_invoicedetailmodal",
       "target": "app_dashboard_admin_components_billing_invoicelist_payment_status_colors",
       "confidence_score": 1.0
     },
@@ -9304,11 +9251,11 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
+      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailModal.tsx",
       "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "app_dashboard_admin_components_billing_invoicedetailview",
+      "source": "app_dashboard_admin_components_billing_invoicedetailmodal",
       "target": "lib_api",
       "confidence_score": 1.0
     },
@@ -9316,11 +9263,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
+      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailModal.tsx",
       "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "app_dashboard_admin_components_billing_invoicedetailview",
+      "source": "app_dashboard_admin_components_billing_invoicedetailmodal",
       "target": "lib_api_invoice",
       "confidence_score": 1.0
     },
@@ -9328,11 +9275,11 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
+      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailModal.tsx",
       "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "app_dashboard_admin_components_billing_invoicedetailview",
+      "source": "app_dashboard_admin_components_billing_invoicedetailmodal",
       "target": "lib_api_payment",
       "confidence_score": 1.0
     },
@@ -9340,31 +9287,19 @@
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
-      "source_location": "L204",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_dashboard_admin_components_billing_invoicedetailview_invoicedetailview",
-      "target": "app_dashboard_admin_components_billing_invoicedetailview_paymentexpiry",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
-      "source_location": "L149",
+      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailModal.tsx",
+      "source_location": "L118",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "app_dashboard_admin_components_billing_invoicedetailview_invoicedetailview",
+      "source": "app_dashboard_admin_components_billing_invoicedetailmodal_invoicedetailmodal",
       "target": "app_dashboard_admin_components_billing_invoicelist_formatidr"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L21",
+      "source_location": "L19",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_components_billing_invoiceformmodal",
@@ -9375,7 +9310,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L341",
+      "source_location": "L323",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_components_billing_invoiceformmodal",
@@ -9386,7 +9321,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L35",
+      "source_location": "L33",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_components_billing_invoiceformmodal",
@@ -9397,7 +9332,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L317",
+      "source_location": "L299",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_components_billing_invoiceformmodal",
@@ -9408,7 +9343,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L19",
+      "source_location": "L17",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_components_billing_invoiceformmodal",
@@ -9430,7 +9365,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L332",
+      "source_location": "L314",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_components_billing_invoiceformmodal",
@@ -9441,7 +9376,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L29",
+      "source_location": "L27",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_components_billing_invoiceformmodal",
@@ -9582,7 +9517,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/admin/components/billing/InvoiceList.tsx",
-      "source_location": "L120",
+      "source_location": "L124",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_components_billing_invoicelist",
@@ -9647,15 +9582,294 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentFormModal.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentformmodal",
+      "target": "app_dashboard_admin_components_billing_invoicelist",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentmethodmodal",
+      "target": "app_dashboard_admin_components_billing_invoicelist",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/admin/components/billing/InvoiceList.tsx",
-      "source_location": "L104",
+      "source_location": "L105",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_components_billing_invoicelist_invoicelist",
       "target": "app_dashboard_admin_components_billing_invoicelist_formatidr",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentFormModal.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentformmodal",
+      "target": "app_dashboard_admin_components_billing_invoicelist_formatidr",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/dashboard/admin/components/billing/PaymentFormModal.tsx",
+      "source_location": "L56",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentformmodal_paymentformmodal",
+      "target": "app_dashboard_admin_components_billing_invoicelist_formatidr"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentmethodmodal",
+      "target": "app_dashboard_admin_components_billing_invoicelist_formatidr",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L58",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentmethodmodal_paymentmethodmodal",
+      "target": "app_dashboard_admin_components_billing_invoicelist_formatidr"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentFormModal.tsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentformmodal",
+      "target": "app_dashboard_admin_components_billing_paymentformmodal_methods",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentFormModal.tsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentformmodal",
+      "target": "app_dashboard_admin_components_billing_paymentformmodal_paymentformmodal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentFormModal.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentformmodal",
+      "target": "app_dashboard_admin_components_billing_paymentformmodal_props",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentFormModal.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentformmodal",
+      "target": "hooks_usebilling",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentFormModal.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentformmodal",
+      "target": "hooks_usebilling_manualpaymentpayload",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentFormModal.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentformmodal",
+      "target": "lib_api",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentFormModal.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentformmodal",
+      "target": "lib_api_invoice",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentmethodmodal",
+      "target": "app_dashboard_admin_components_billing_paymentmethodmodal_banks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L129",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentmethodmodal",
+      "target": "app_dashboard_admin_components_billing_paymentmethodmodal_chargeresult",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentmethodmodal",
+      "target": "app_dashboard_admin_components_billing_paymentmethodmodal_ewallets",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L32",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentmethodmodal",
+      "target": "app_dashboard_admin_components_billing_paymentmethodmodal_paymentmethodmodal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L196",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentmethodmodal",
+      "target": "app_dashboard_admin_components_billing_paymentmethodmodal_pendingpayments",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentmethodmodal",
+      "target": "app_dashboard_admin_components_billing_paymentmethodmodal_props",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentmethodmodal",
+      "target": "lib_api",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentmethodmodal",
+      "target": "lib_api_invoice",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentmethodmodal",
+      "target": "lib_api_midtransbank",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentmethodmodal",
+      "target": "lib_api_midtranschargemethod",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/dashboard/admin/components/billing/PaymentMethodModal.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_dashboard_admin_components_billing_paymentmethodmodal",
+      "target": "lib_api_payment",
       "confidence_score": 1.0
     },
     {
@@ -18782,17 +18996,6 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hooks/useBilling.ts",
-      "source_location": "L37",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "hooks_usebilling",
-      "target": "hooks_usebilling_createpaymentforinvoice",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "hooks/useBilling.ts",
       "source_location": "L11",
       "weight": 1.0,
       "_origin": "ast",
@@ -18804,7 +19007,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hooks/useBilling.ts",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0,
       "_origin": "ast",
       "source": "hooks_usebilling",
@@ -18815,7 +19018,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hooks/useBilling.ts",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0,
       "_origin": "ast",
       "source": "hooks_usebilling",
@@ -18826,7 +19029,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hooks/useBilling.ts",
-      "source_location": "L35",
+      "source_location": "L36",
       "weight": 1.0,
       "_origin": "ast",
       "source": "hooks_usebilling",
@@ -18837,7 +19040,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hooks/useBilling.ts",
-      "source_location": "L55",
+      "source_location": "L38",
       "weight": 1.0,
       "_origin": "ast",
       "source": "hooks_usebilling",
@@ -18893,6 +19096,30 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "hooks/useBilling.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "hooks_usebilling",
+      "target": "lib_api_midtranschargemethod",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "hooks/useBilling.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "hooks_usebilling",
+      "target": "lib_api_payment",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -18944,21 +19171,9 @@
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
-      "source_file": "hooks/useBilling.ts",
-      "source_location": "L175",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "hooks_usebilling_usebilling",
-      "target": "hooks_usebilling_createpaymentforinvoice",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "hooks/useBilling.ts",
-      "source_location": "L246",
+      "source_location": "L262",
       "weight": 1.0,
       "_origin": "ast",
       "source": "hooks_usebilling_usebilling",
@@ -18970,7 +19185,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "hooks/useBilling.ts",
-      "source_location": "L248",
+      "source_location": "L264",
       "weight": 1.0,
       "_origin": "ast",
       "source": "hooks_usebilling_usebilling",
@@ -18982,7 +19197,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "hooks/useBilling.ts",
-      "source_location": "L245",
+      "source_location": "L261",
       "weight": 1.0,
       "_origin": "ast",
       "source": "hooks_usebilling_usebilling",
@@ -22021,138 +22236,6 @@
       "_origin": "ast",
       "source": "graphify_out_memory_query_20260731_074127_bagaimana_alur_pembayaran_midtrans_charge_di_ui_bi_q_bagaimana_alur_pembayaran_midtrans_charge_di_ui_billing_admin",
       "target": "graphify_out_memory_query_20260731_074127_bagaimana_alur_pembayaran_midtrans_charge_di_ui_bi_source_nodes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view__bu.md",
-      "source_location": "L10",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view_bu",
-      "target": "graphify_out_memory_query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view_bu_q_bagaimana_detail_invoice_dirender_sebagai_view_bukan_modal_di_halaman_billing_admin",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view__bu.md",
-      "source_location": "L12",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view_bu_q_bagaimana_detail_invoice_dirender_sebagai_view_bukan_modal_di_halaman_billing_admin",
-      "target": "graphify_out_memory_query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view_bu_answer",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view__bu.md",
-      "source_location": "L16",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view_bu_q_bagaimana_detail_invoice_dirender_sebagai_view_bukan_modal_di_halaman_billing_admin",
-      "target": "graphify_out_memory_query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view_bu_outcome",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view__bu.md",
-      "source_location": "L20",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view_bu_q_bagaimana_detail_invoice_dirender_sebagai_view_bukan_modal_di_halaman_billing_admin",
-      "target": "graphify_out_memory_query_20260731_175955_bagaimana_detail_invoice_dirender_sebagai_view_bu_source_nodes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete.md",
-      "source_location": "L10",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete",
-      "target": "graphify_out_memory_query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete_q_bagaimana_alur_ubah_metode_pembayaran_invoice_setelah_tombol_bayar_dihapus_dari_detail_view",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete.md",
-      "source_location": "L12",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete_q_bagaimana_alur_ubah_metode_pembayaran_invoice_setelah_tombol_bayar_dihapus_dari_detail_view",
-      "target": "graphify_out_memory_query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete_answer",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete.md",
-      "source_location": "L16",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete_q_bagaimana_alur_ubah_metode_pembayaran_invoice_setelah_tombol_bayar_dihapus_dari_detail_view",
-      "target": "graphify_out_memory_query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete_outcome",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete.md",
-      "source_location": "L20",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete_q_bagaimana_alur_ubah_metode_pembayaran_invoice_setelah_tombol_bayar_dihapus_dari_detail_view",
-      "target": "graphify_out_memory_query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete_source_nodes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "source_location": "L10",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to",
-      "target": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_q_bagaimana_alur_ganti_metode_pembayaran_invoice_tombol_ganti_metode_di_riwayat_pembayaran_dan_validasi_wajib_pilih_metode_saat_nominal_berubah",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "source_location": "L12",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_q_bagaimana_alur_ganti_metode_pembayaran_invoice_tombol_ganti_metode_di_riwayat_pembayaran_dan_validasi_wajib_pilih_metode_saat_nominal_berubah",
-      "target": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_answer",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "source_location": "L16",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_q_bagaimana_alur_ganti_metode_pembayaran_invoice_tombol_ganti_metode_di_riwayat_pembayaran_dan_validasi_wajib_pilih_metode_saat_nominal_berubah",
-      "target": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_outcome",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "source_location": "L20",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_q_bagaimana_alur_ganti_metode_pembayaran_invoice_tombol_ganti_metode_di_riwayat_pembayaran_dan_validasi_wajib_pilih_metode_saat_nominal_berubah",
-      "target": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_source_nodes",
       "confidence_score": 1.0
     },
     {

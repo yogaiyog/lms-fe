@@ -20,9 +20,17 @@ import CurriculumList from "./components/kurikulum/CurriculumList";
 import TopicManagement from "./components/kurikulum/TopicManagement";
 import AssessmentSetManagement from "./components/kurikulum/AssessmentSetManagement";
 import AdminAttendance from "./components/attendance/AdminAttendance";
+import InvoiceList from "./components/billing/InvoiceList";
+import InvoiceFormModal from "./components/billing/InvoiceFormModal";
+import InvoiceDetailView from "./components/billing/InvoiceDetailView";
+import NewTrialWizard from "./components/trial/NewTrialWizard";
+import { Plus, X } from "lucide-react";
+import { useBilling } from "../../../hooks/useBilling";
 
 export default function AdminDashboard() {
   const h = useAdminDashboard();
+  const billing = useBilling();
+  const [trialOpen, setTrialOpen] = useState(false);
   const [editingParent, setEditingParent] = useState<import("@/lib/api").ParentProfile | null>(null);
   const [parentForm, setParentForm] = useState({ fullName: "", phone: "", email: "" });
   const [parentSaving, setParentSaving] = useState(false);
@@ -36,6 +44,9 @@ export default function AdminDashboard() {
     if (h.mainMenu === "students" && h.studentSegment === "parent") {
       h.fetchAllParents();
     }
+    if (h.mainMenu === "billing") {
+      billing.fetchInvoices();
+    }
   }, [h.mainMenu, h.studentSegment]);
 
   if (h.loading) {
@@ -47,11 +58,11 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 print:bg-white">
       <AdminNavbar mainMenu={h.mainMenu} onChange={(m) => { h.setMainMenu(m); h.setSegment("classes"); h.setTutorSegment("list"); h.setCurriculumSegment("list"); }}
         email={h.user?.email} onLogout={h.logout} />
 
-      <div className="mx-auto flex max-w-full gap-6 px-10 py-6">
+      <div className="mx-auto flex max-w-full gap-6 px-10 py-6 print:gap-0 print:px-0 print:py-0">
         <AdminSidebar mainMenu={h.mainMenu} segment={h.segment} onSegmentChange={h.setSegment}
           tutorSegment={h.tutorSegment} onTutorSegmentChange={h.setTutorSegment}
           curriculumSegment={h.curriculumSegment} onCurriculumSegmentChange={h.setCurriculumSegment}
@@ -166,6 +177,55 @@ export default function AdminDashboard() {
           {h.mainMenu === "attendance" && (
             <AdminAttendance />
           )}
+
+          {h.mainMenu === "billing" && (
+            billing.selectedInvoice ? (
+              <InvoiceDetailView
+                invoice={billing.selectedInvoice}
+                loading={billing.detailLoading}
+                pdfBusy={billing.pdfBusy}
+                emailSending={billing.emailSending}
+                deleting={billing.deleting}
+                onClose={billing.closeInvoice}
+                onEdit={billing.openEditInvoice}
+                onChangePayment={billing.openChangePayment}
+                onRefresh={billing.refreshSelected}
+                onDownloadPdf={async () => {
+                  const ok = await billing.downloadPdf(billing.selectedInvoice!);
+                  if (ok) h.showToast("PDF invoice diunduh", "success");
+                  else h.showToast("Gagal membuat PDF", "error");
+                }}
+                onSendEmail={async () => {
+                  const res = await billing.sendInvoiceEmail(billing.selectedInvoice!);
+                  if (res.ok) h.showToast(`Email terkirim ke ${res.to}`, "success");
+                  else h.showToast("Gagal mengirim email", "error");
+                }}
+                onDelete={async () => {
+                  const res = await billing.deleteInvoice(billing.selectedInvoice!);
+                  if (res.ok) h.showToast("Invoice dihapus", "success");
+                  else h.showToast(res.message ?? "Gagal menghapus invoice", "error");
+                }}
+                onCheckStatus={async (paymentId: string) => {
+                  const res = await billing.checkPaymentStatus(paymentId);
+                  h.showToast(res.message, res.ok ? "success" : "error");
+                }}
+                onDeletePayment={async (paymentId: string) => {
+                  const res = await billing.deletePayment(paymentId);
+                  h.showToast(res.ok ? "Payment dihapus" : (res.message ?? "Gagal menghapus payment"), res.ok ? "success" : "error");
+                }}
+                checkingPaymentIds={billing.checkingPaymentIds}
+              />
+            ) : (
+              <InvoiceList
+                invoices={billing.invoices}
+                loading={billing.invoicesLoading}
+                error={billing.invoicesError}
+                onRefresh={billing.fetchInvoices}
+                onCreate={billing.openCreateInvoice}
+                onOpen={billing.openInvoice}
+              />
+            )
+          )}
         </main>
       </div>
 
@@ -211,12 +271,79 @@ export default function AdminDashboard() {
         />
       )}
 
+      {billing.invoiceFormOpen && (
+        <InvoiceFormModal
+          key={billing.editingInvoice?.id ?? "create"}
+          editing={billing.editingInvoice}
+          initialStep={billing.invoiceFormInitialStep}
+          saving={billing.formSaving}
+          error={billing.formError}
+          students={h.studentsFull}
+          curriculums={h.curriculums}
+          onClose={billing.closeInvoiceForm}
+          onSubmit={async (payload) => {
+            const res = await billing.submitInvoice(payload);
+            if (res.ok) h.showToast(billing.editingInvoice ? "Invoice diperbarui" : "Invoice dibuat", "success");
+            else h.showToast("Gagal menyimpan invoice", "error");
+            return res;
+          }}
+          onSubmitWithPayment={async (payload, choice) => {
+            const res = await billing.submitInvoiceWithPayment(payload, choice);
+            if (res.ok) h.showToast("Invoice dibuat & pembayaran tersimpan", "success");
+            else if (res.invoice) h.showToast(res.message ?? "Invoice dibuat, gagal membuat pembayaran", "error");
+            else h.showToast("Gagal menyimpan invoice", "error");
+            return res;
+          }}
+          onSubmitEditWithPayment={async (payload, choice) => {
+            const res = await billing.submitInvoiceEditWithPayment(payload, choice);
+            if (res.ok) h.showToast("Invoice diperbarui & metode pembayaran tersimpan", "success");
+            else if (res.invoice) h.showToast(res.message ?? "Invoice diperbarui, gagal membuat pembayaran", "error");
+            else h.showToast("Gagal memperbarui invoice", "error");
+            return res;
+          }}
+        />
+      )}
+
       {h.toast && (
-        <div className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-2xl px-5 py-3 text-sm font-bold text-white shadow-lg transition-all ${
+        <div className={`fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-2xl px-5 py-3 text-sm font-bold text-white shadow-lg transition-all print:hidden ${
           h.toast.type === "success" ? "bg-emerald-600" : "bg-red-600"
         }`}>
-          {h.toast.message}
+          <span>{h.toast.message}</span>
+          <button
+            onClick={h.dismissToast}
+            className="shrink-0 rounded-lg p-1 text-white/80 transition-colors hover:bg-white/20 hover:text-white"
+            title="Tutup"
+          >
+            <X size={14} />
+          </button>
         </div>
+      )}
+
+      <button
+        onClick={() => setTrialOpen(true)}
+        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30 transition hover:bg-blue-700 hover:scale-105 active:scale-95 print:hidden"
+        title="Buat Akun Trial"
+      >
+        <Plus size={26} />
+      </button>
+
+      {trialOpen && (
+        <NewTrialWizard
+          categories={h.categories}
+          curriculums={h.curriculums}
+          tutors={h.tutors}
+          parents={h.allParents}
+          SLOT_DAYS={h.SLOT_DAYS}
+          SLOT_DAY_LABELS={h.SLOT_DAY_LABELS}
+          SLOT_HOURS={h.SLOT_HOURS}
+          fmt={h.fmt}
+          isInRange={h.isInRange}
+          onClose={() => setTrialOpen(false)}
+          onDone={() => {
+            setTrialOpen(false);
+            window.location.reload();
+          }}
+        />
       )}
 
       {editingTutor && (
@@ -369,7 +496,7 @@ function AllEnrollmentsView({ enrollments, loading, onRefresh, onSelectStudent }
                           if (!val && val !== 0) return;
                           try {
                             const { api } = await import("@/lib/api");
-                            await api.enrollments.update(enr.id, { totalMeetPurchased: val, verified: true });
+                            await api.enrollments.update(enr.id, { totalMeetPurchased: val });
                             setEditingId(null);
                             onRefresh();
                           } catch {}
@@ -385,14 +512,25 @@ function AllEnrollmentsView({ enrollments, loading, onRefresh, onSelectStudent }
                   </td>
                   <td className="px-3 py-2.5 text-center text-slate-600">{enr.totalMeetLeft}</td>
                   <td className="px-3 py-2.5 text-center">
-                    {enr.verified ? (
-                      <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700">
-                        Terverifikasi
-                      </span>
+                    {enr.invoices && enr.invoices.length > 0 ? (
+                      (() => {
+                        const latest = enr.invoices[0];
+                        const colors: Record<string, string> = {
+                          DRAFT: "bg-slate-100 text-slate-600",
+                          UNPAID: "bg-amber-100 text-amber-700",
+                          PAID: "bg-green-100 text-green-700",
+                          PARTIAL: "bg-blue-100 text-blue-700",
+                          REFUNDED: "bg-rose-100 text-rose-700",
+                          CANCELLED: "bg-gray-100 text-gray-500",
+                        };
+                        return (
+                          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${colors[latest.status] ?? "bg-slate-100 text-slate-600"}`}>
+                            {latest.status}
+                          </span>
+                        );
+                      })()
                     ) : (
-                      <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
-                        Menunggu
-                      </span>
+                      <span className="text-[10px] text-slate-400">-</span>
                     )}
                   </td>
                 </tr>

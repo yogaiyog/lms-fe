@@ -1,8 +1,123 @@
 {
-  "generated_at": "2026-07-27T07:12:15.638498+00:00",
+  "generated_at": "2026-07-31T20:06:49.644810+00:00",
   "nodes": {
+    "app_dashboard_admin_admin_dashboard": {
+      "code_fingerprint": "7e30ba0bc0fc3ae99765f872d5389aada0f3370d72d5d9d9cbe3bec70120a959",
+      "label": "admin-dashboard.tsx",
+      "last": "2026-07-31T19:47:34.128849+00:00",
+      "provenance": [
+        {
+          "date": "2026-07-31T19:47:34.128849+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana alur ganti metode pembayaran invoice (tombol Ganti Metode di Riwayat Pembayaran) dan validasi wajib pilih metode saat nominal berubah?"
+        },
+        {
+          "date": "2026-07-31T18:14:36.880041+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana alur ubah metode pembayaran invoice setelah tombol bayar dihapus dari detail view?"
+        },
+        {
+          "date": "2026-07-31T07:06:37.800635+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana state billing admin di frontend dan komponennya?"
+        }
+      ],
+      "score": 2.985451904,
+      "source_file": "app/dashboard/admin/admin-dashboard.tsx",
+      "status": "preferred",
+      "uses": 3
+    },
+    "app_dashboard_admin_components_billing_invoicedetailview": {
+      "code_fingerprint": "dbc8bb08579c57e553b404fe7ed34efe0405c3a0e47a2e951558184f48bf875f",
+      "label": "InvoiceDetailView.tsx",
+      "last": "2026-07-31T19:47:34.128849+00:00",
+      "provenance": [
+        {
+          "date": "2026-07-31T19:47:34.128849+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana alur ganti metode pembayaran invoice (tombol Ganti Metode di Riwayat Pembayaran) dan validasi wajib pilih metode saat nominal berubah?"
+        },
+        {
+          "date": "2026-07-31T18:14:36.880041+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana alur ubah metode pembayaran invoice setelah tombol bayar dihapus dari detail view?"
+        }
+      ],
+      "score": 1.9978922,
+      "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
+      "status": "preferred",
+      "uses": 2
+    },
+    "app_dashboard_admin_components_billing_invoiceformmodal": {
+      "code_fingerprint": "22424be381d6a12d0ec67237cdf91b38e9f3c72f9140155f1d49eed287c7f1ba",
+      "label": "InvoiceFormModal.tsx",
+      "last": "2026-07-31T20:06:45.972786+00:00",
+      "provenance": [
+        {
+          "date": "2026-07-31T20:06:45.972786+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana info panel enrollment di step 1 invoice form menampilkan detail Total Meet Purchased, Total Meet Left, Total Topics, Sisa Kuota dan validasi meetCount + totalMeetPurchased tidak boleh melebihi total topics?"
+        },
+        {
+          "date": "2026-07-31T19:47:34.128849+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana alur ganti metode pembayaran invoice (tombol Ganti Metode di Riwayat Pembayaran) dan validasi wajib pilih metode saat nominal berubah?"
+        },
+        {
+          "date": "2026-07-31T18:14:36.880041+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana alur ubah metode pembayaran invoice setelah tombol bayar dihapus dari detail view?"
+        }
+      ],
+      "score": 2.997891218,
+      "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
+      "status": "preferred",
+      "uses": 3
+    },
+    "app_dashboard_admin_components_billing_invoicelist": {
+      "code_fingerprint": "316030972d94e3bbd8152642c56eb14f1e5709e6f27c4f0322564e6c268f6f72",
+      "label": "InvoiceList.tsx",
+      "last": "2026-07-31T07:06:37.800635+00:00",
+      "provenance": [
+        {
+          "date": "2026-07-31T07:06:37.800635+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana state billing admin di frontend dan komponennya?"
+        }
+      ],
+      "score": 0.987559704,
+      "source_file": "app/dashboard/admin/components/billing/InvoiceList.tsx",
+      "status": "tentative",
+      "uses": 1
+    },
+    "hooks_usebilling": {
+      "code_fingerprint": "bb9b795f9b979eb6fe7f4ba703a0f610eca33b82b0878754e504e80b3c302096",
+      "label": "useBilling.ts",
+      "last": "2026-07-31T19:47:34.128849+00:00",
+      "provenance": [
+        {
+          "date": "2026-07-31T19:47:34.128849+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana alur ganti metode pembayaran invoice (tombol Ganti Metode di Riwayat Pembayaran) dan validasi wajib pilih metode saat nominal berubah?"
+        },
+        {
+          "date": "2026-07-31T18:14:36.880041+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana alur ubah metode pembayaran invoice setelah tombol bayar dihapus dari detail view?"
+        },
+        {
+          "date": "2026-07-31T07:06:37.800635+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana state billing admin di frontend dan komponennya?"
+        }
+      ],
+      "score": 2.985451904,
+      "source_file": "hooks/useBilling.ts",
+      "status": "preferred",
+      "uses": 3
+    },
     "lib_api_api": {
-      "code_fingerprint": "4186592d98e9dc64d392f1ece3f9ad5840423dbf2f7bfcafb36f8459b23a6d5e",
+      "code_fingerprint": "81c0da17726f2d1713f0ffecce2b4c387db0164dfb74cbed5d57251ca8c0e91a",
       "label": "api",
       "last": "2026-07-27T07:12:15.296128+00:00",
       "provenance": [
@@ -12,7 +127,7 @@
           "q": "Apa peran api (lib/api.ts) sebagai god node 37 edges?"
         }
       ],
-      "score": 0.999999908,
+      "score": 0.900461656,
       "source_file": "lib/api.ts",
       "status": "tentative",
       "uses": 1

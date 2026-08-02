@@ -1,11 +1,11 @@
 # Graph Report - frontend  (2026-08-01)
 
 ## Corpus Check
-- 141 files · ~117,061 words
+- 140 files · ~116,715 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 728 nodes · 1243 edges · 60 communities (47 shown, 13 thin omitted)
+- 723 nodes · 1239 edges · 64 communities (49 shown, 15 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 17 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
@@ -41,6 +41,7 @@
 - UI Components (Nav, Button)
 - Admin Student List
 - Android Instrumented Tests
+- Admin Navbar
 - Home Page
 - Register Page
 - Android Unit Tests
@@ -62,13 +63,16 @@
 - Q: Bagaimana alur Theme type di frontend?
 - Q: Apa hubungan Parent Dashboard dan Student Dashboard?
 - Q: Bagaimana alur Capacitor Android build pipeline?
+- CurriculumList.tsx
 - Q: Bagaimana state billing admin di frontend dan komponennya?
 - ClassesTable.tsx
 - api
+- TutorList.tsx
 - register-content.tsx
 - Q: Bagaimana alur ubah metode pembayaran invoice setelah tombol bayar dihapus dari detail view?
 - Q: Bagaimana alur pembayaran Midtrans charge di UI billing admin?
 - tutor-content.tsx
+- AllParentsView.tsx
 
 ## God Nodes (most connected - your core abstractions)
 1. `api` - 40 edges
@@ -89,10 +93,10 @@
   android/app/src/main/res/drawable/splash.png → capacitor.config.ts
 - `QuizPage()` --calls--> `getStoredSession()`  [EXTRACTED]
   app/dashboard/student/quiz/[taskId]/page.tsx → lib/api.ts
+- `AdminDashboard()` --calls--> `useBilling()`  [EXTRACTED]
+  app/dashboard/admin/admin-dashboard.tsx → hooks/useBilling.ts
 - `ImagePicker()` --calls--> `uploadImage()`  [EXTRACTED]
   app/dashboard/admin/components/kurikulum/TopicManagement.tsx → lib/api.ts
-- `useAdminDashboard()` --calls--> `clearSession()`  [EXTRACTED]
-  app/dashboard/admin/hooks/useAdminDashboard.ts → lib/api.ts
 
 ## Import Cycles
 - None detected.
@@ -103,11 +107,11 @@
 - **Android Adaptive Launcher Icons (all density variants)** — android_mipmap_ic_launcher, android_mipmap_ic_launcher_round, android_mipmap_ic_launcher_foreground [INFERRED 0.95]
 - **Capacitor Android Native Assets** — android_drawable_splash, android_mipmap_ic_launcher, android_mipmap_ic_launcher_round, android_mipmap_ic_launcher_foreground, android_main_activity, capacitor_android_config [INFERRED 0.95]
 
-## Communities (60 total, 13 thin omitted)
+## Communities (64 total, 15 thin omitted)
 
 ### Community 0 - "Parent Dashboard"
-Cohesion: 0.09
-Nodes (26): Props, Card(), CATEGORY_LABELS, Props, TYPE_LABELS, MobileBottomNav(), Props, MobileDrawer() (+18 more)
+Cohesion: 0.07
+Nodes (31): DAY_LABELS, TYPE_LABELS, Props, Card(), CATEGORY_LABELS, Props, TYPE_LABELS, MobileBottomNav() (+23 more)
 
 ### Community 1 - "Student Dashboard"
 Cohesion: 0.24
@@ -131,7 +135,7 @@ Nodes (36): @capacitor/assets, @capacitor/cli, eslint, eslint-config-next, devDe
 
 ### Community 6 - "Certificate Preview"
 Cohesion: 0.06
-Nodes (40): PreviewMode, AdminDashboard(), BANKS, InvoiceFormModal(), MethodKey, Props, WALLETS, CertificatePreviewModal() (+32 more)
+Nodes (41): PreviewMode, BANKS, InvoiceFormModal(), MethodKey, Props, WALLETS, CertificatePreviewModal(), PreviewMode (+33 more)
 
 ### Community 7 - "Capacitor Plugins"
 Cohesion: 0.06
@@ -154,16 +158,16 @@ Cohesion: 0.14
 Nodes (15): BLOCK_TYPES, extractCollapseContent(), findEarliestBlockStart(), parseChoices(), parseQuiz(), parseStepMarkdown(), Category, ContentSegment (+7 more)
 
 ### Community 12 - "Admin Dashboard"
-Cohesion: 0.16
-Nodes (12): MOBILE_NAV, NAV_ITEMS, TutorDashboard(), DAY_LABELS, Theme, ClassWithDetails, useTutorDashboard(), Announcement (+4 more)
+Cohesion: 0.22
+Nodes (6): AllEnrollmentsView(), AdminSidebar(), Props, ApproveRejectModal(), Props, RequestClass
 
 ### Community 13 - "Admin Student Management"
-Cohesion: 0.25
-Nodes (5): CATEGORY_LABELS, ClassWithDetails, DAY_LABELS, Theme, Topic
+Cohesion: 0.24
+Nodes (6): Props, Props, AddStudentModal(), Category, checkEmail(), ParentProfile
 
 ### Community 14 - "Admin Class Management"
-Cohesion: 0.05
-Nodes (27): AllEnrollmentsView(), items, MainMenu, Props, AdminSidebar(), Props, ApproveRejectModal(), Props (+19 more)
+Cohesion: 0.17
+Nodes (8): DAY_NAMES, Props, Props, Props, CATEGORY_LABELS, CLASS_TYPE_LABELS, DAY_LABELS, STATUS_LABELS
 
 ### Community 15 - "Student Learning Path"
 Cohesion: 0.18
@@ -174,8 +178,8 @@ Cohesion: 0.21
 Nodes (11): Android APK Build Process, Android SDK Requirement, Capacitor Framework, Capacitor Build Rules, create-next-app, Geist Font, Java JDK 21 Requirement, Next.js Framework (+3 more)
 
 ### Community 17 - "Admin Tutor Management"
-Cohesion: 0.27
-Nodes (9): DAY_LABELS, DAYS, fmt(), HOURS, isInRange(), Props, TutorDetailModal(), TutorItem (+1 more)
+Cohesion: 0.24
+Nodes (10): AdminDashboard(), DAY_LABELS, DAYS, fmt(), HOURS, isInRange(), Props, TutorDetailModal() (+2 more)
 
 ### Community 18 - "Android Native Assets"
 Cohesion: 0.29
@@ -203,11 +207,15 @@ Nodes (4): NavProps, Button(), ButtonProps, variants
 
 ### Community 24 - "Admin Student List"
 Cohesion: 0.40
-Nodes (4): Answer, Outcome, Q: Bagaimana alur ganti metode pembayaran invoice (tombol Ganti Metode di Riwayat Pembayaran) dan validasi wajib pilih metode saat nominal berubah?, Source Nodes
+Nodes (5): fmtDate(), Props, SortDir, StudentItem, StudentList()
 
 ### Community 25 - "Android Instrumented Tests"
 Cohesion: 0.60
 Nodes (3): ExampleInstrumentedTest, Test, RunWith
+
+### Community 26 - "Admin Navbar"
+Cohesion: 0.40
+Nodes (3): items, MainMenu, Props
 
 ### Community 28 - "Register Page"
 Cohesion: 0.20
@@ -218,8 +226,8 @@ Cohesion: 0.83
 Nodes (3): gradlew script, die(), warn()
 
 ### Community 31 - "Create Class Form"
-Cohesion: 0.40
-Nodes (3): Props, Curriculum, TutorSlot
+Cohesion: 0.14
+Nodes (9): Props, Props, Props, StudentItem, TutorOption, AssessmentAspect, AssessmentSet, Curriculum (+1 more)
 
 ### Community 35 - "Public SVG Assets"
 Cohesion: 0.67
@@ -266,40 +274,42 @@ Cohesion: 0.40
 Nodes (4): Answer, Outcome, Q: Bagaimana alur pembayaran Midtrans charge di UI billing admin?, Source Nodes
 
 ### Community 63 - "tutor-content.tsx"
-Cohesion: 0.05
-Nodes (34): Props, Props, AllParentsView(), fmtDate(), Props, Props, StudentItem, TutorOption (+26 more)
+Cohesion: 0.06
+Nodes (30): CATEGORY_LABELS, DashboardContent(), DAY_LABELS, StudentWithDetails, ParentDashboard(), DAY_LABELS, DAYS, fmt() (+22 more)
+
+### Community 67 - "AllParentsView.tsx"
+Cohesion: 0.67
+Nodes (3): AllParentsView(), fmtDate(), Props
 
 ## Ambiguous Edges - Review These
 - `Seamless Background JPG` → `App Branding Asset Group`  [AMBIGUOUS]
   public/seamless.jpg · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **265 isolated node(s):** `PreviewMode`, `MainMenu`, `Props`, `items`, `Props` (+260 more)
+- **262 isolated node(s):** `PreviewMode`, `MainMenu`, `Props`, `items`, `Props` (+257 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **15 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Work-memory lessons
 
 **Preferred sources** — corroborated by past sessions; start here.
-- `admin-dashboard.tsx` (3× useful, score=2.986372283)
-- `useBilling.ts` (3× useful, score=2.986372283)
-- `InvoiceDetailView.tsx` (2× useful, score=1.998508127)
-- `InvoiceFormModal.tsx` (2× useful, score=1.998508127) _(code changed — re-verify)_
+- `admin-dashboard.tsx` (2× useful, score=1.989337862) _(code changed — re-verify)_
+- `useBilling.ts` (2× useful, score=1.989337862) _(code changed — re-verify)_
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **What is the exact relationship between `Seamless Background JPG` and `App Branding Asset Group`?**
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
-- **Why does `api` connect `api` to `Parent Dashboard`, `Student Dashboard`, `Tutor Student Segment`, `Certificate Preview`, `Login Page`, `Admin Dashboard`, `Admin Student Management`, `Admin Class Management`, `Student Learning Path`, `login-content.tsx`, `Admin Tutor Management`, `Admin Attendance`, `Admin Curriculum`, `Topic Management`, `ClassesTable.tsx`, `register-content.tsx`, `tutor-content.tsx`?**
-  _High betweenness centrality (0.057) - this node is a cross-community bridge._
-- **Why does `getStoredSession()` connect `tutor-content.tsx` to `Parent Dashboard`, `Login Page`, `Admin Dashboard`, `Admin Tutor Management`, `Topic Management`, `ClassesTable.tsx`?**
+- **Why does `api` connect `api` to `Parent Dashboard`, `Student Dashboard`, `Tutor Student Segment`, `Certificate Preview`, `Login Page`, `Admin Student Management`, `Admin Class Management`, `Student Learning Path`, `login-content.tsx`, `Admin Tutor Management`, `Admin Attendance`, `Admin Curriculum`, `Topic Management`, `ClassesTable.tsx`, `register-content.tsx`, `tutor-content.tsx`, `Create Class Form`?**
+  _High betweenness centrality (0.058) - this node is a cross-community bridge._
+- **Why does `getStoredSession()` connect `tutor-content.tsx` to `Parent Dashboard`, `Login Page`, `Admin Tutor Management`, `Topic Management`, `ClassesTable.tsx`, `Create Class Form`?**
   _High betweenness centrality (0.011) - this node is a cross-community bridge._
 - **Why does `RoadmapItem` connect `Roadmap & Icons` to `Parent Dashboard`?**
   _High betweenness centrality (0.007) - this node is a cross-community bridge._
 - **What connects `PreviewMode`, `MainMenu`, `Props` to the rest of the system?**
-  _265 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _262 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Parent Dashboard` be split into smaller, more focused modules?**
-  _Cohesion score 0.0858843537414966 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07364114552893045 - nodes in this community are weakly interconnected._
 - **Should `Roadmap & Icons` be split into smaller, more focused modules?**
   _Cohesion score 0.08970099667774087 - nodes in this community are weakly interconnected._

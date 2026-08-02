@@ -1,7 +1,7 @@
 "use client";
 
 type Props = {
-  mainMenu: "classes" | "tutors" | "curriculums" | "students" | "attendance";
+  mainMenu: "classes" | "tutors" | "curriculums" | "students" | "attendance" | "billing";
   segment: "classes" | "requests" | "create";
   onSegmentChange: (seg: Props["segment"]) => void;
   tutorSegment: "list" | "add";
@@ -19,7 +19,7 @@ export default function AdminSidebar({
   studentSegment, onStudentSegmentChange,
 }: Props) {
   return (
-    <aside className="w-56 shrink-0">
+    <aside className="w-56 shrink-0 print:hidden">
       <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-2">
         {mainMenu === "classes" && (
           <div className="flex flex-col gap-1">
@@ -76,6 +76,11 @@ export default function AdminSidebar({
         {mainMenu === "attendance" && (
           <div className="rounded-2xl bg-slate-50 p-3">
             <div className="text-sm font-semibold text-slate-400">Semua Absensi</div>
+          </div>
+        )}
+        {mainMenu === "billing" && (
+          <div className="rounded-2xl bg-slate-50 p-3">
+            <div className="text-sm font-semibold text-slate-400">Invoice &amp; Pembayaran</div>
           </div>
         )}
       </div>

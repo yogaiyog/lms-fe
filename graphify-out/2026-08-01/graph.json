@@ -371,8 +371,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_admin_dashboard",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "admin-dashboard.tsx"
     },
     {
@@ -382,8 +382,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "app_dashboard_admin_admin_dashboard_admindashboard",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 17,
+      "community_name": "Admin Tutor Management",
       "norm_label": "admindashboard()"
     },
     {
@@ -393,8 +393,8 @@
       "source_location": "L392",
       "_origin": "ast",
       "id": "app_dashboard_admin_admin_dashboard_allenrollmentsview",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "allenrollmentsview()"
     },
     {
@@ -404,8 +404,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminnavbar",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 26,
+      "community_name": "Admin Navbar",
       "norm_label": "adminnavbar.tsx"
     },
     {
@@ -415,8 +415,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminnavbar_mainmenu",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 26,
+      "community_name": "Admin Navbar",
       "norm_label": "mainmenu"
     },
     {
@@ -426,8 +426,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminnavbar_props",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 26,
+      "community_name": "Admin Navbar",
       "norm_label": "props"
     },
     {
@@ -437,8 +437,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminnavbar_items",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 26,
+      "community_name": "Admin Navbar",
       "norm_label": "items"
     },
     {
@@ -448,8 +448,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminnavbar_adminnavbar",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 26,
+      "community_name": "Admin Navbar",
       "norm_label": "adminnavbar()"
     },
     {
@@ -459,8 +459,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminsidebar",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "adminsidebar.tsx"
     },
     {
@@ -470,8 +470,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminsidebar_props",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "props"
     },
     {
@@ -481,8 +481,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminsidebar_adminsidebar",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "adminsidebar()"
     },
     {
@@ -492,8 +492,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_approverejectmodal",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "approverejectmodal.tsx"
     },
     {
@@ -503,8 +503,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_approverejectmodal_props",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "props"
     },
     {
@@ -514,8 +514,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_approverejectmodal_approverejectmodal",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "approverejectmodal()"
     },
     {
@@ -753,7 +753,7 @@
       "label": "MethodCard()",
       "file_type": "code",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L317",
+      "source_location": "L307",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_billing_invoiceformmodal_methodcard",
       "community": 6,
@@ -764,7 +764,7 @@
       "label": "SummaryRow()",
       "file_type": "code",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L332",
+      "source_location": "L322",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_billing_invoiceformmodal_summaryrow",
       "community": 6,
@@ -775,7 +775,7 @@
       "label": "EditFields()",
       "file_type": "code",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L341",
+      "source_location": "L331",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_billing_invoiceformmodal_editfields",
       "community": 6,
@@ -1020,8 +1020,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_kurikulum_assessmentsetmanagement",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "assessmentsetmanagement.tsx"
     },
     {
@@ -1031,8 +1031,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_kurikulum_assessmentsetmanagement_props",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "props"
     },
     {
@@ -1042,8 +1042,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_kurikulum_assessmentsetmanagement_assessmentsetmanagement",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "assessmentsetmanagement()"
     },
     {
@@ -1053,8 +1053,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_kurikulum_curriculumlist",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "curriculumlist.tsx"
     },
     {
@@ -1064,8 +1064,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_kurikulum_curriculumlist_props",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "props"
     },
     {
@@ -1075,8 +1075,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_kurikulum_curriculumlist_curriculumlist",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "curriculumlist()"
     },
     {
@@ -1185,8 +1185,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_addstudentform",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "addstudentform.tsx"
     },
     {
@@ -1196,8 +1196,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_addstudentform_props",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "props"
     },
     {
@@ -1207,8 +1207,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_addstudentform_addstudentform",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "addstudentform()"
     },
     {
@@ -1218,8 +1218,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_allparentsview",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 67,
+      "community_name": "AllParentsView.tsx",
       "norm_label": "allparentsview.tsx"
     },
     {
@@ -1229,8 +1229,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_allparentsview_fmtdate",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 67,
+      "community_name": "AllParentsView.tsx",
       "norm_label": "fmtdate()"
     },
     {
@@ -1240,8 +1240,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_allparentsview_props",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 67,
+      "community_name": "AllParentsView.tsx",
       "norm_label": "props"
     },
     {
@@ -1251,8 +1251,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_allparentsview_allparentsview",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 67,
+      "community_name": "AllParentsView.tsx",
       "norm_label": "allparentsview()"
     },
     {
@@ -1262,8 +1262,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentdetailmodal",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "studentdetailmodal.tsx"
     },
     {
@@ -1273,8 +1273,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentdetailmodal_props",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "props"
     },
     {
@@ -1284,8 +1284,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentdetailmodal_studentdetailmodal",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "studentdetailmodal()"
     },
     {
@@ -1295,8 +1295,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentlist",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 24,
+      "community_name": "Admin Student List",
       "norm_label": "studentlist.tsx"
     },
     {
@@ -1306,8 +1306,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentlist_fmtdate",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 24,
+      "community_name": "Admin Student List",
       "norm_label": "fmtdate()"
     },
     {
@@ -1317,8 +1317,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentlist_studentitem",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 24,
+      "community_name": "Admin Student List",
       "norm_label": "studentitem"
     },
     {
@@ -1328,8 +1328,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentlist_props",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 24,
+      "community_name": "Admin Student List",
       "norm_label": "props"
     },
     {
@@ -1339,8 +1339,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentlist_sortdir",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 24,
+      "community_name": "Admin Student List",
       "norm_label": "sortdir"
     },
     {
@@ -1350,8 +1350,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentlist_studentlist",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 24,
+      "community_name": "Admin Student List",
       "norm_label": "studentlist()"
     },
     {
@@ -1361,8 +1361,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_addtutorform",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 54,
+      "community_name": "CurriculumList.tsx",
       "norm_label": "addtutorform.tsx"
     },
     {
@@ -1372,8 +1372,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_addtutorform_day_labels",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 54,
+      "community_name": "CurriculumList.tsx",
       "norm_label": "day_labels"
     },
     {
@@ -1383,8 +1383,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_addtutorform_props",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 54,
+      "community_name": "CurriculumList.tsx",
       "norm_label": "props"
     },
     {
@@ -1394,8 +1394,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_addtutorform_addtutorform",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 54,
+      "community_name": "CurriculumList.tsx",
       "norm_label": "addtutorform()"
     },
     {
@@ -1504,8 +1504,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_tutorlist",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 58,
+      "community_name": "TutorList.tsx",
       "norm_label": "tutorlist.tsx"
     },
     {
@@ -1515,8 +1515,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_tutorlist_tutoritem",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 58,
+      "community_name": "TutorList.tsx",
       "norm_label": "tutoritem"
     },
     {
@@ -1526,8 +1526,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_tutorlist_props",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 58,
+      "community_name": "TutorList.tsx",
       "norm_label": "props"
     },
     {
@@ -1537,8 +1537,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_tutorlist_tutorlist",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 58,
+      "community_name": "TutorList.tsx",
       "norm_label": "tutorlist()"
     },
     {
@@ -1603,8 +1603,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_hooks_useadmindashboard",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "useadmindashboard.ts"
     },
     {
@@ -1614,8 +1614,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "app_dashboard_admin_hooks_useadmindashboard_tutoroption",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "tutoroption"
     },
     {
@@ -1625,8 +1625,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "app_dashboard_admin_hooks_useadmindashboard_studentitem",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "studentitem"
     },
     {
@@ -1647,8 +1647,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_page",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "admin/page.tsx"
     },
     {
@@ -1658,8 +1658,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "app_dashboard_admin_page_page",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "page()"
     },
     {
@@ -1768,8 +1768,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_parent_parent_dashboard",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "parent-dashboard.tsx"
     },
     {
@@ -1779,8 +1779,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "app_dashboard_parent_parent_dashboard_day_labels",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "day_labels"
     },
     {
@@ -1790,8 +1790,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "app_dashboard_parent_parent_dashboard_type_labels",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "type_labels"
     },
     {
@@ -1812,8 +1812,8 @@
       "source_location": "L291",
       "_origin": "ast",
       "id": "app_dashboard_parent_parent_dashboard_overviewview",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "overviewview()"
     },
     {
@@ -1823,8 +1823,8 @@
       "source_location": "L396",
       "_origin": "ast",
       "id": "app_dashboard_parent_parent_dashboard_enrollmentview",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "enrollmentview()"
     },
     {
@@ -1834,8 +1834,8 @@
       "source_location": "L696",
       "_origin": "ast",
       "id": "app_dashboard_parent_parent_dashboard_addstudentmodal",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "addstudentmodal()"
     },
     {
@@ -1845,8 +1845,8 @@
       "source_location": "L791",
       "_origin": "ast",
       "id": "app_dashboard_parent_parent_dashboard_classdetailmodal",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "classdetailmodal()"
     },
     {
@@ -2164,8 +2164,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_student_component_reporttab",
-      "community": 0,
-      "community_name": "Parent Dashboard",
+      "community": 6,
+      "community_name": "Certificate Preview",
       "norm_label": "reporttab.tsx"
     },
     {
@@ -2175,8 +2175,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "app_dashboard_student_component_reporttab_topic_colors",
-      "community": 0,
-      "community_name": "Parent Dashboard",
+      "community": 6,
+      "community_name": "Certificate Preview",
       "norm_label": "topic_colors"
     },
     {
@@ -2186,8 +2186,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "app_dashboard_student_component_reporttab_props",
-      "community": 0,
-      "community_name": "Parent Dashboard",
+      "community": 6,
+      "community_name": "Certificate Preview",
       "norm_label": "props"
     },
     {
@@ -3286,8 +3286,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_page",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "tutor/page.tsx"
     },
     {
@@ -3297,8 +3297,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_dashboard_tutor_page_page",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "page()"
     },
     {
@@ -3418,8 +3418,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "tutor-classes-segment.tsx"
     },
     {
@@ -3429,8 +3429,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment_day_labels",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "day_labels"
     },
     {
@@ -3440,8 +3440,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment_category_labels",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "category_labels"
     },
     {
@@ -3451,8 +3451,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment_theme",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "theme"
     },
     {
@@ -3462,8 +3462,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment_classwithdetails",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "classwithdetails"
     },
     {
@@ -3473,8 +3473,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment_card",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "card()"
     },
     {
@@ -3484,8 +3484,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment_tutorclassessegment",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "tutorclassessegment()"
     },
     {
@@ -3495,8 +3495,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_content",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "tutor-content.tsx"
     },
     {
@@ -3506,8 +3506,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_content_nav_items",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "nav_items"
     },
     {
@@ -3517,8 +3517,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_content_mobile_nav",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "mobile_nav"
     },
     {
@@ -3528,8 +3528,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_content_tutordashboard",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "tutordashboard()"
     },
     {
@@ -3682,8 +3682,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_schedule_detail_modal",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "tutor-schedule-detail-modal.tsx"
     },
     {
@@ -3693,8 +3693,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_schedule_detail_modal_day_labels",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "day_labels"
     },
     {
@@ -3704,8 +3704,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_schedule_detail_modal_theme",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "theme"
     },
     {
@@ -3715,8 +3715,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_schedule_detail_modal_tutorscheduledetailmodal",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "tutorscheduledetailmodal()"
     },
     {
@@ -4925,8 +4925,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usestudentdashboard",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "usestudentdashboard.ts"
     },
     {
@@ -4947,8 +4947,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usetutordashboard",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "usetutordashboard.ts"
     },
     {
@@ -4958,8 +4958,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "hooks_usetutordashboard_classwithdetails",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "classwithdetails"
     },
     {
@@ -4969,8 +4969,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "hooks_usetutordashboard_usetutordashboard",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "usetutordashboard()"
     },
     {
@@ -5244,8 +5244,8 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "lib_api_parentprofile",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "parentprofile"
     },
     {
@@ -5277,8 +5277,8 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "lib_api_enrollment",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "enrollment"
     },
     {
@@ -5343,8 +5343,8 @@
       "source_location": "L183",
       "_origin": "ast",
       "id": "lib_api_schedule",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "schedule"
     },
     {
@@ -5354,8 +5354,8 @@
       "source_location": "L197",
       "_origin": "ast",
       "id": "lib_api_attendance",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "attendance"
     },
     {
@@ -5376,8 +5376,8 @@
       "source_location": "L221",
       "_origin": "ast",
       "id": "lib_api_certificate",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "certificate"
     },
     {
@@ -5387,8 +5387,8 @@
       "source_location": "L233",
       "_origin": "ast",
       "id": "lib_api_category",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "category"
     },
     {
@@ -5442,8 +5442,8 @@
       "source_location": "L280",
       "_origin": "ast",
       "id": "lib_api_topic",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "topic"
     },
     {
@@ -5486,8 +5486,8 @@
       "source_location": "L315",
       "_origin": "ast",
       "id": "lib_api_announcement",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "announcement"
     },
     {
@@ -5530,8 +5530,8 @@
       "source_location": "L353",
       "_origin": "ast",
       "id": "lib_api_requestclass",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "requestclass"
     },
     {
@@ -5541,8 +5541,8 @@
       "source_location": "L380",
       "_origin": "ast",
       "id": "lib_api_assessmentset",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "assessmentset"
     },
     {
@@ -5552,8 +5552,8 @@
       "source_location": "L389",
       "_origin": "ast",
       "id": "lib_api_assessmentaspect",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "assessmentaspect"
     },
     {
@@ -5596,8 +5596,8 @@
       "source_location": "L433",
       "_origin": "ast",
       "id": "lib_api_gallery",
-      "community": 12,
-      "community_name": "Admin Dashboard",
+      "community": 6,
+      "community_name": "Certificate Preview",
       "norm_label": "gallery"
     },
     {
@@ -5739,8 +5739,8 @@
       "source_location": "L687",
       "_origin": "ast",
       "id": "lib_api_checkemail",
-      "community": 63,
-      "community_name": "tutor-content.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "checkemail()"
     },
     {
@@ -7735,61 +7735,6 @@
       "norm_label": "source nodes"
     },
     {
-      "label": "query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to",
-      "community": 24,
-      "community_name": "Admin Student List",
-      "norm_label": "query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md"
-    },
-    {
-      "label": "Q: Bagaimana alur ganti metode pembayaran invoice (tombol Ganti Metode di Riwayat Pembayaran) dan validasi wajib pilih metode saat nominal berubah?",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "source_location": "L10",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_q_bagaimana_alur_ganti_metode_pembayaran_invoice_tombol_ganti_metode_di_riwayat_pembayaran_dan_validasi_wajib_pilih_metode_saat_nominal_berubah",
-      "community": 24,
-      "community_name": "Admin Student List",
-      "norm_label": "q: bagaimana alur ganti metode pembayaran invoice (tombol ganti metode di riwayat pembayaran) dan validasi wajib pilih metode saat nominal berubah?"
-    },
-    {
-      "label": "Answer",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "source_location": "L12",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_answer",
-      "community": 24,
-      "community_name": "Admin Student List",
-      "norm_label": "answer"
-    },
-    {
-      "label": "Outcome",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "source_location": "L16",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_outcome",
-      "community": 24,
-      "community_name": "Admin Student List",
-      "norm_label": "outcome"
-    },
-    {
-      "label": "Source Nodes",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "source_location": "L20",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_source_nodes",
-      "community": 24,
-      "community_name": "Admin Student List",
-      "norm_label": "source nodes"
-    },
-    {
       "label": "README.md",
       "file_type": "document",
       "source_file": "README.md",
@@ -9375,7 +9320,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L341",
+      "source_location": "L331",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_components_billing_invoiceformmodal",
@@ -9397,7 +9342,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L317",
+      "source_location": "L307",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_components_billing_invoiceformmodal",
@@ -9430,7 +9375,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
-      "source_location": "L332",
+      "source_location": "L322",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_admin_components_billing_invoiceformmodal",
@@ -22109,50 +22054,6 @@
       "_origin": "ast",
       "source": "graphify_out_memory_query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete_q_bagaimana_alur_ubah_metode_pembayaran_invoice_setelah_tombol_bayar_dihapus_dari_detail_view",
       "target": "graphify_out_memory_query_20260731_181436_bagaimana_alur_ubah_metode_pembayaran_invoice_sete_source_nodes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "source_location": "L10",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to",
-      "target": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_q_bagaimana_alur_ganti_metode_pembayaran_invoice_tombol_ganti_metode_di_riwayat_pembayaran_dan_validasi_wajib_pilih_metode_saat_nominal_berubah",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "source_location": "L12",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_q_bagaimana_alur_ganti_metode_pembayaran_invoice_tombol_ganti_metode_di_riwayat_pembayaran_dan_validasi_wajib_pilih_metode_saat_nominal_berubah",
-      "target": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_answer",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "source_location": "L16",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_q_bagaimana_alur_ganti_metode_pembayaran_invoice_tombol_ganti_metode_di_riwayat_pembayaran_dan_validasi_wajib_pilih_metode_saat_nominal_berubah",
-      "target": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_outcome",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice__to.md",
-      "source_location": "L20",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_q_bagaimana_alur_ganti_metode_pembayaran_invoice_tombol_ganti_metode_di_riwayat_pembayaran_dan_validasi_wajib_pilih_metode_saat_nominal_berubah",
-      "target": "graphify_out_memory_query_20260731_194734_bagaimana_alur_ganti_metode_pembayaran_invoice_to_source_nodes",
       "confidence_score": 1.0
     },
     {

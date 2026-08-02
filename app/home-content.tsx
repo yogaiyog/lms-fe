@@ -28,15 +28,8 @@ export default function HomeContent() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-5">
       {/* Hero card */}
-      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white shadow-sm p-8 sm:p-10 text-center">
-        {logoSrc ? (
-          <img src={logoSrc} alt="Logo" className="mx-auto mb-5 h-20 w-20 rounded-3xl object-cover" />
-        ) : (
-          <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-600 to-blue-700 shadow-sm shadow-blue-600/30">
-            <Rocket size={36} className="text-white" />
-          </div>
-        )}
-
+      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white shadow-sm p-8 sm:p-10 text-center h-fit">
+          <img src={logoSrc || "/logo.png"} alt="Logo" className="mx-auto mb-5 h-20 w-20 object-contain" />
         <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
           {process.env.NEXT_PUBLIC_COMPANY_NAME || "JTCourse"}
         </h1>

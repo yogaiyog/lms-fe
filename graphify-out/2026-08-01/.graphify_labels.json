@@ -25,6 +25,7 @@
   "23": "UI Components (Nav, Button)",
   "24": "Admin Student List",
   "25": "Android Instrumented Tests",
+  "26": "Admin Navbar",
   "27": "Home Page",
   "28": "Register Page",
   "29": "Android Unit Tests",
@@ -52,11 +53,14 @@
   "51": "Q: Bagaimana alur Theme type di frontend?",
   "52": "Q: Apa hubungan Parent Dashboard dan Student Dashboard?",
   "53": "Q: Bagaimana alur Capacitor Android build pipeline?",
+  "54": "CurriculumList.tsx",
   "55": "Q: Bagaimana state billing admin di frontend dan komponennya?",
   "56": "ClassesTable.tsx",
   "57": "api",
+  "58": "TutorList.tsx",
   "59": "register-content.tsx",
   "60": "Q: Bagaimana alur ubah metode pembayaran invoice setelah tombol bayar dihapus dari detail view?",
   "61": "Q: Bagaimana alur pembayaran Midtrans charge di UI billing admin?",
-  "63": "tutor-content.tsx"
+  "63": "tutor-content.tsx",
+  "67": "AllParentsView.tsx"
 }
