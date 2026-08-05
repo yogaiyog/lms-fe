@@ -170,24 +170,54 @@ export default function StudentDashboard() {
 
   const topicColors = ["#22c55e", "#6366f1", "#0ea5e9", "#f59e0b", "#ec4899", "#8b5cf6", "#14b8a6", "#f97316"];
 
-  const sortedTopics = [...(selectedClass?.curriculum?.topics ?? [])].sort((a, b) => a.order - b.order);
-  const firstIncompleteIndex = sortedTopics.findIndex((topic) => {
+  const orderedTopics = useMemo(() => {
+    const topics = [...(selectedClass?.curriculum?.topics ?? [])];
+    const earliestSchedule = new Map<string, string>();
+    const earliestStart = new Map<string, string>();
+    for (const s of filteredSchedules) {
+      if (!s.topicId || !earliestSchedule.has(s.topicId)) {
+        if (s.topicId) {
+          earliestSchedule.set(s.topicId, s.date);
+          earliestStart.set(s.topicId, s.startTime);
+        }
+        continue;
+      }
+      const cur = earliestSchedule.get(s.topicId)!;
+      if (s.date < cur || (s.date === cur && s.startTime < earliestStart.get(s.topicId)!)) {
+        earliestSchedule.set(s.topicId, s.date);
+        earliestStart.set(s.topicId, s.startTime);
+      }
+    }
+    return topics.sort((a, b) => {
+      const da = earliestSchedule.get(a.id);
+      const db = earliestSchedule.get(b.id);
+      if (da && db) {
+        if (da !== db) return da.localeCompare(db);
+        return earliestStart.get(a.id)!.localeCompare(earliestStart.get(b.id)!);
+      }
+      if (da) return -1;
+      if (db) return 1;
+      return a.order - b.order;
+    });
+  }, [selectedClass?.curriculum?.topics, filteredSchedules]);
+
+  const firstIncompleteIndex = orderedTopics.findIndex((topic) => {
     const topicSchedules = filteredSchedules.filter((s) => s.topicId === topic.id);
     const completed = topicSchedules.length > 0 && topicSchedules.every((s) => s.isDone);
     const prevCompleted = (() => {
-      const idx = sortedTopics.indexOf(topic);
+      const idx = orderedTopics.indexOf(topic);
       if (idx === 0) return true;
-      const prev = sortedTopics[idx - 1];
+      const prev = orderedTopics[idx - 1];
       return filteredSchedules.filter((s) => s.topicId === prev.id).every((s) => s.isDone);
     })();
     return !completed && prevCompleted;
   });
 
-  const roadmapItems: RoadmapItem[] = sortedTopics.map((topic, index) => {
+  const roadmapItems: RoadmapItem[] = orderedTopics.map((topic, index) => {
     const topicSchedules = filteredSchedules.filter((s) => s.topicId === topic.id);
     const completed = topicSchedules.length > 0 && topicSchedules.every((s) => s.isDone);
     const prevCompleted = index === 0 ? true : (() => {
-      const prev = sortedTopics[index - 1];
+      const prev = orderedTopics[index - 1];
       return filteredSchedules.filter((s) => s.topicId === prev.id).every((s) => s.isDone);
     })();
     const locked = !prevCompleted && index > 0;

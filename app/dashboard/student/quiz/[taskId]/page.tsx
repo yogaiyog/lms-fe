@@ -273,7 +273,7 @@ function Header() {
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-4xl items-center gap-3 px-6 py-3.5">
-        <img src="/logo.png" alt={COMPANY} className="h-8 w-auto" />
+        <img src="/logo.png" alt={COMPANY} className="h-8 w-auto object-contain" />
         <span className="text-sm font-extrabold text-slate-800">{COMPANY}</span>
         <span className="text-sm text-slate-300">/</span>
         <span className="text-sm font-semibold text-slate-500">Quiz</span>

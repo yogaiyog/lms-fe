@@ -14,7 +14,7 @@ export function Nav({ userEmail, onLogout }: NavProps) {
       <Link href="/">
         <div>
           <span className="text-xs font-bold uppercase tracking-widest text-indigo-600">
-            LMS Coding
+            {process.env.NEXT_PUBLIC_COMPANY_NAME || "LMS Coding"}
           </span>
           <p className="text-sm text-gray-600">Belajar Coding Bareng</p>
         </div>
