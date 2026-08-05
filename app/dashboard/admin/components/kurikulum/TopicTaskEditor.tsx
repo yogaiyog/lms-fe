@@ -30,6 +30,7 @@ export default function TopicTaskEditor({ topicId }: Props) {
   const [editUrl, setEditUrl] = useState("");
   const [editOrder, setEditOrder] = useState(0);
   const [editIsCapstone, setEditIsCapstone] = useState(false);
+  const [editAutoComplete, setEditAutoComplete] = useState(false);
   const [editInstructions, setEditInstructions] = useState("");
   const [editDefaultCode, setEditDefaultCode] = useState("");
 
@@ -62,6 +63,7 @@ export default function TopicTaskEditor({ topicId }: Props) {
     setEditUrl("");
     setEditOrder(tasks.length);
     setEditIsCapstone(false);
+    setEditAutoComplete(false);
     setEditInstructions("");
     setEditDefaultCode("");
   }
@@ -74,6 +76,7 @@ export default function TopicTaskEditor({ topicId }: Props) {
     setEditUrl(task.url ?? "");
     setEditOrder(task.order);
     setEditIsCapstone(task.isCapstone);
+    setEditAutoComplete(Boolean(task.autoComplete));
     setEditInstructions(task.instructions ?? "");
     setEditDefaultCode(task.defaultCode ?? "");
     setError("");
@@ -93,6 +96,7 @@ export default function TopicTaskEditor({ topicId }: Props) {
           url: editUrl || null,
           order: editOrder,
           isCapstone: editIsCapstone,
+          autoComplete: editAutoComplete,
           instructions: editInstructions || null,
           defaultCode: editDefaultCode || null,
         });
@@ -105,6 +109,7 @@ export default function TopicTaskEditor({ topicId }: Props) {
           url: editUrl || null,
           order: editOrder,
           isCapstone: editIsCapstone,
+          autoComplete: editAutoComplete,
           instructions: editInstructions || null,
           defaultCode: editDefaultCode || null,
         });
@@ -251,6 +256,9 @@ export default function TopicTaskEditor({ topicId }: Props) {
                     </span>
                     {task.isCapstone && (
                       <span className="ml-1 inline-block rounded-md bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold text-amber-700">Capstone</span>
+                    )}
+                    {task.autoComplete && (
+                      <span className="ml-1 inline-block rounded-md bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold text-emerald-700">⚡ Auto</span>
                     )}
                     <span className="ml-1">Order: {task.order}</span>
                   </p>
@@ -456,6 +464,14 @@ export default function TopicTaskEditor({ topicId }: Props) {
                 <span className="font-semibold text-slate-600">Capstone</span>
               </label>
             </div>
+          </div>
+          <div className="mb-2 flex items-center gap-2">
+            <label className="flex items-center gap-1 text-xs">
+              <input type="checkbox" checked={editAutoComplete} onChange={(e) => setEditAutoComplete(e.target.checked)}
+                className="rounded accent-blue-600" />
+              <span className="font-semibold text-slate-600">Auto Complete</span>
+            </label>
+            <p className="text-[10px] text-slate-400">Klik task langsung menandai selesai (buka link, tanpa editor)</p>
           </div>
           <div className="mb-2">
             <label className="mb-0.5 block text-xs font-semibold text-slate-600">URL (opsional)</label>
