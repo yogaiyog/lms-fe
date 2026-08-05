@@ -272,6 +272,7 @@ export type TopicTask = {
   label: string;
   url: string | null;
   isCapstone: boolean;
+  autoComplete?: boolean;
   order: number;
   type: "SCRATCH" | "QUIZ" | "PYTHON";
   instructions?: string | null;
@@ -1146,6 +1147,7 @@ export const api = {
       url?: string | null;
       order?: number;
       isCapstone?: boolean;
+      autoComplete?: boolean;
       instructions?: string | null;
       defaultCode?: string | null;
     }) {
@@ -1161,6 +1163,7 @@ export const api = {
       url: string | null;
       order: number;
       isCapstone: boolean;
+      autoComplete: boolean;
       instructions: string | null;
       defaultCode: string | null;
     }>) {

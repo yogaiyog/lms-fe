@@ -31,6 +31,7 @@ function mapCurriculumToUnits(
         status: getTaskStatus(t.code),
         instructions: t.instructions,
         defaultCode: t.defaultCode,
+        autoComplete: t.autoComplete,
       }));
     const capstoneTask = topic.tasks?.find((t: TopicTask) => t.isCapstone);
     return {
@@ -105,9 +106,14 @@ export default function LearningPathView({
     [units, selectedTopicId],
   );
 
-  const handleLevelClick = (level: { id: string; label: string; url: string | null; type: "SCRATCH" | "QUIZ" | "PYTHON"; status: string; instructions?: string | null; defaultCode?: string | null }) => {
+  const handleLevelClick = (level: { id: string; label: string; url: string | null; type: "SCRATCH" | "QUIZ" | "PYTHON"; status: string; instructions?: string | null; defaultCode?: string | null; autoComplete?: boolean }) => {
     if (level.type === "QUIZ") {
       window.open(`/dashboard/student/quiz/${level.id}`, "_blank");
+      return;
+    }
+    if (level.autoComplete) {
+      if (level.url) window.open(level.url, "_blank");
+      if (level.status !== "completed") setTaskStatus(level.id, "completed");
       return;
     }
     if (level.type === "PYTHON") {
