@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { api } from "@/lib/api";
+import { api, API_BASE_URL } from "@/lib/api";
 
 const SCRATCH_GUI_ORIGIN =
   process.env.NEXT_PUBLIC_SCRATCH_GUI_URL ?? "http://localhost:8601";
@@ -167,8 +167,19 @@ export function useProgressTracker(studentId: string) {
     ) => {
       if (!studentId) return;
 
-      const effectiveUrl =
-        options?.type === "PYTHON" ? url : `${url}#0`;
+      const fallbackUrl = `${API_BASE_URL}/api/v1/academic/student-topic-progress`;
+
+      let effectiveUrl = url;
+      if (options?.type !== "PYTHON") {
+        const params = new URLSearchParams({
+          studentId,
+          projectId,
+          taskCode: levelId,
+          fallbackUrl,
+        });
+        const base = url.split("#")[0];
+        effectiveUrl = `${base}${base.includes("?") ? "&" : "?"}${params.toString()}#0`;
+      }
 
       const tutorialWindow = window.open(
         effectiveUrl,
@@ -200,8 +211,7 @@ export function useProgressTracker(studentId: string) {
                   defaultCode: options.defaultCode ?? undefined,
                   title: options.title ?? undefined,
                   studentId,
-                  token: `token-${studentId}`,
-                  fallbackUrl: `${window.location.origin}/api/v1/academic/student-topic-progress`,
+                  fallbackUrl,
                   taskCode: levelId,
                   projectId,
                 },
@@ -213,10 +223,10 @@ export function useProgressTracker(studentId: string) {
               {
                 type: "scratch-integration-config",
                 payload: {
-                  fallbackUrl: `${window.location.origin}/api/v1/academic/student-topic-progress`,
+                  fallbackUrl,
                   studentId,
-                  token: `token-${studentId}`,
                   projectId,
+                  taskCode: levelId,
                 },
               },
               "*",

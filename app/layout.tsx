@@ -18,8 +18,10 @@ const lexend = Lexend({
   subsets: ["latin"],
 });
 
+const COMPANY_NAME = process.env.NEXT_PUBLIC_COMPANY_NAME || "LMS Coding";
+
 export const metadata: Metadata = {
-  title: "LMS Coding",
+  title: COMPANY_NAME,
   description: "Platform belajar coding untuk anak-anak Indonesia",
   icons: [{ rel: "icon", url: "/logo.png" }, { rel: "shortcut icon", url: "/favicon.ico" }],
 };

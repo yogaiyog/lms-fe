@@ -381,8 +381,8 @@ export function useAdminDashboard() {
     return DAY_ORDER[new Date(date).getDay()];
   }
 
-  function generateScheduleSlots(topics: { id: string; title: string }[], slots: { dayOfWeek: string; startTime: string; endTime: string }[], startDate: string, classType: string = "BATCH") {
-    const sorted = [...topics].sort((a, b) => a.title.localeCompare(b.title));
+  function generateScheduleSlots(topics: { id: string; title: string; order: number }[], slots: { dayOfWeek: string; startTime: string; endTime: string }[], startDate: string, classType: string = "BATCH") {
+    const sorted = [...topics].sort((a, b) => a.order - b.order);
     const topicsToUse = classType === "MAKEUP" ? [sorted[0]] : sorted;
     const start = new Date(startDate);
     return topicsToUse.map((topic, i) => {

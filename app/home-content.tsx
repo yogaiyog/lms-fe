@@ -1,35 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Rocket, LogIn, UserPlus } from "lucide-react";
 
-const LOGO_EXTS = ["jpeg", "png", "jpg", "webp", "svg"];
-
 export default function HomeContent() {
-  const [logoSrc, setLogoSrc] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    const tryExt = (i: number) => {
-      if (i >= LOGO_EXTS.length || cancelled) {
-        if (!cancelled) setLogoSrc(null);
-        return;
-      }
-      const img = new Image();
-      img.onload = () => { if (!cancelled) setLogoSrc(`/logo.${LOGO_EXTS[i]}`); };
-      img.onerror = () => { if (!cancelled) tryExt(i + 1); };
-      img.src = `/logo.${LOGO_EXTS[i]}`;
-    };
-    tryExt(0);
-    return () => { cancelled = true; };
-  }, []);
-
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-5">
       {/* Hero card */}
       <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white shadow-sm p-8 sm:p-10 text-center h-fit">
-          <img src={logoSrc || "/logo.png"} alt="Logo" className="mx-auto mb-5 h-20 w-20 object-contain" />
+          <img src="/logo.png" alt="Logo" className="mx-auto mb-5 h-20 w-20 object-contain" />
         <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
           {process.env.NEXT_PUBLIC_COMPANY_NAME || "JTCourse"}
         </h1>

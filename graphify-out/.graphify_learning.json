@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-31T20:06:49.644810+00:00",
+  "generated_at": "2026-08-02T10:09:15.979122+00:00",
   "nodes": {
     "app_dashboard_admin_admin_dashboard": {
-      "code_fingerprint": "7e30ba0bc0fc3ae99765f872d5389aada0f3370d72d5d9d9cbe3bec70120a959",
+      "code_fingerprint": "245e4c89141653a6fa532893c7af964abf9efbd006e430de2f73baad113da6b1",
       "label": "admin-dashboard.tsx",
       "last": "2026-07-31T19:47:34.128849+00:00",
       "provenance": [
@@ -22,13 +22,13 @@
           "q": "Bagaimana state billing admin di frontend dan komponennya?"
         }
       ],
-      "score": 2.985451904,
+      "score": 2.878096755,
       "source_file": "app/dashboard/admin/admin-dashboard.tsx",
       "status": "preferred",
       "uses": 3
     },
     "app_dashboard_admin_components_billing_invoicedetailview": {
-      "code_fingerprint": "dbc8bb08579c57e553b404fe7ed34efe0405c3a0e47a2e951558184f48bf875f",
+      "code_fingerprint": "34830ad61816136ff78fecf0fba26a540507e80ac567685f7b4c28d9cd4b00af",
       "label": "InvoiceDetailView.tsx",
       "last": "2026-07-31T19:47:34.128849+00:00",
       "provenance": [
@@ -43,13 +43,13 @@
           "q": "Bagaimana alur ubah metode pembayaran invoice setelah tombol bayar dihapus dari detail view?"
         }
       ],
-      "score": 1.9978922,
+      "score": 1.926049135,
       "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
       "status": "preferred",
       "uses": 2
     },
     "app_dashboard_admin_components_billing_invoiceformmodal": {
-      "code_fingerprint": "22424be381d6a12d0ec67237cdf91b38e9f3c72f9140155f1d49eed287c7f1ba",
+      "code_fingerprint": "9d4f16ab6167585c00be5f1173992c0a496c05e623ba5b87252a09c18e006adf",
       "label": "InvoiceFormModal.tsx",
       "last": "2026-07-31T20:06:45.972786+00:00",
       "provenance": [
@@ -69,7 +69,7 @@
           "q": "Bagaimana alur ubah metode pembayaran invoice setelah tombol bayar dihapus dari detail view?"
         }
       ],
-      "score": 2.997891218,
+      "score": 2.890088759,
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
       "status": "preferred",
       "uses": 3
@@ -85,13 +85,13 @@
           "q": "Bagaimana state billing admin di frontend dan komponennya?"
         }
       ],
-      "score": 0.987559704,
+      "score": 0.952047619,
       "source_file": "app/dashboard/admin/components/billing/InvoiceList.tsx",
       "status": "tentative",
       "uses": 1
     },
     "hooks_usebilling": {
-      "code_fingerprint": "bb9b795f9b979eb6fe7f4ba703a0f610eca33b82b0878754e504e80b3c302096",
+      "code_fingerprint": "efcda4f6781c6aca105b5b3a7bef1bd04bed0e93628bfb8eb36924a823fc358b",
       "label": "useBilling.ts",
       "last": "2026-07-31T19:47:34.128849+00:00",
       "provenance": [
@@ -111,26 +111,31 @@
           "q": "Bagaimana state billing admin di frontend dan komponennya?"
         }
       ],
-      "score": 2.985451904,
+      "score": 2.878096755,
       "source_file": "hooks/useBilling.ts",
       "status": "preferred",
       "uses": 3
     },
     "lib_api_api": {
-      "code_fingerprint": "81c0da17726f2d1713f0ffecce2b4c387db0164dfb74cbed5d57251ca8c0e91a",
+      "code_fingerprint": "5da0666176ba29d8edadb94890efbee32d9aee297ccf032942b5515252784e93",
       "label": "api",
-      "last": "2026-07-27T07:12:15.296128+00:00",
+      "last": "2026-08-02T10:09:09.044670+00:00",
       "provenance": [
+        {
+          "date": "2026-08-02T10:09:09.044670+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana hapus payment CANCELLED dari riwayat pembayaran invoice?"
+        },
         {
           "date": "2026-07-27T07:12:15.296128+00:00",
           "outcome": "useful",
           "q": "Apa peran api (lib/api.ts) sebagai god node 37 edges?"
         }
       ],
-      "score": 0.900461656,
+      "score": 1.868079713,
       "source_file": "lib/api.ts",
-      "status": "tentative",
-      "uses": 1
+      "status": "preferred",
+      "uses": 2
     }
   },
   "version": 1

@@ -1,11 +1,9 @@
 "use client";
 
-import { FormEvent, useState, useEffect } from "react";
+import { FormEvent, useState } from "react";
 import { api } from "@/lib/api";
 import Link from "next/link";
-import { CheckCircle, UserPlus } from "lucide-react";
-
-const LOGO_EXTS = ["jpeg", "png", "jpg", "webp", "svg"];
+import { CheckCircle } from "lucide-react";
 
 export default function RegisterContent() {
   const [fullName, setFullName] = useState("");
@@ -14,24 +12,7 @@ export default function RegisterContent() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [logoSrc, setLogoSrc] = useState<string | null>(null);
   const [registered, setRegistered] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    const tryExt = (i: number) => {
-      if (i >= LOGO_EXTS.length || cancelled) {
-        if (!cancelled) setLogoSrc(null);
-        return;
-      }
-      const img = new Image();
-      img.onload = () => { if (!cancelled) setLogoSrc(`/logo.${LOGO_EXTS[i]}`); };
-      img.onerror = () => { if (!cancelled) tryExt(i + 1); };
-      img.src = `/logo.${LOGO_EXTS[i]}`;
-    };
-    tryExt(0);
-    return () => { cancelled = true; };
-  }, []);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -92,13 +73,7 @@ export default function RegisterContent() {
         {/* Card */}
         <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-7 sm:p-8">
           <div className="mb-6 text-center">
-            {logoSrc ? (
-              <img src={logoSrc} alt="Logo" className="mx-auto mb-4 h-16 w-16 rounded-2xl object-cover" />
-            ) : (
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50">
-                <UserPlus size={28} className="text-blue-600" />
-              </div>
-            )}
+            <img src="/logo.png" alt="Logo" className="mx-auto mb-4 h-16 w-16 rounded-2xl object-contain" />
             <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Daftar Akun</h1>
             <p className="mt-1 text-sm text-slate-500">Buat akun baru untuk memulai</p>
           </div>
