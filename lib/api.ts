@@ -139,6 +139,21 @@ export type Invoice = {
   enrollment?: Enrollment;
 };
 
+export type PaginatedMeta = { take: number; skip: number; count: number; total: number; sum?: number | string | null; byType?: Record<string, { count: number; sum: number }> };
+
+export type InvoiceListParams = {
+  take?: number;
+  skip?: number;
+  search?: string;
+  status?: string;
+  sortBy?: string;
+  sortDir?: "asc" | "desc";
+};
+
+export type ExpenseRow = Attendance & {
+  cost: number;
+};
+
 export type Payment = {
   id: string;
   invoiceId: string;
@@ -184,6 +199,7 @@ export type Class = {
 export type Schedule = {
   id: string;
   classId: string;
+  class?: Class | null;
   dayOfWeek: string;
   startTime: string;
   endTime: string;
@@ -655,6 +671,64 @@ async function authenticatedRequest<T>(
     if (message.toLowerCase().includes("token") || message.toLowerCase().includes("unauthorized")) {
       const nextAccessToken = await refreshAccessToken();
       return request<T>(path, options, nextAccessToken);
+    }
+
+    throw error;
+  }
+}
+
+type ApiSuccessWithMeta<T, M> = { success: true; data: T; meta?: M };
+
+async function requestPaged<T>(
+  path: string,
+  options: RequestInit = {},
+  token?: string,
+): Promise<{ data: T; meta: PaginatedMeta }> {
+  const headers = new Headers(options.headers);
+  headers.set("Content-Type", "application/json");
+
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  const separator = path.includes("?") ? "&" : "?";
+  const url = `${API_BASE_URL}${path}${separator}_t=${Date.now()}`;
+
+  const response = await fetch(url, {
+    ...options,
+    headers,
+    cache: "no-store",
+  });
+
+  const payload = (await response.json()) as ApiSuccessWithMeta<T, PaginatedMeta> | ApiError;
+
+  if (!response.ok) {
+    const errorPayload = payload as ApiError;
+    throw new Error(errorPayload.message ?? "Request failed");
+  }
+
+  const ok = payload as ApiSuccessWithMeta<T, PaginatedMeta>;
+  return { data: ok.data, meta: ok.meta ?? { take: 0, skip: 0, count: 0, total: 0 } };
+}
+
+async function authenticatedRequestPaged<T>(
+  path: string,
+  options: RequestInit = {},
+): Promise<{ data: T; meta: PaginatedMeta }> {
+  const session = getStoredSession();
+
+  if (!session) {
+    throw new Error("Silakan login dulu");
+  }
+
+  try {
+    return await requestPaged<T>(path, options, session.accessToken);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Request failed";
+
+    if (message.toLowerCase().includes("token") || message.toLowerCase().includes("unauthorized")) {
+      const nextAccessToken = await refreshAccessToken();
+      return requestPaged<T>(path, options, nextAccessToken);
     }
 
     throw error;
@@ -1449,8 +1523,16 @@ export const api = {
     },
   },
   invoices: {
-    async list() {
-      return authenticatedRequest<Invoice[]>("/api/v1/academic/invoices");
+    async list(params: InvoiceListParams = {}) {
+      const qs = new URLSearchParams();
+      if (params.take != null) qs.set("take", String(params.take));
+      if (params.skip != null) qs.set("skip", String(params.skip));
+      if (params.search) qs.set("search", params.search);
+      if (params.status) qs.set("status", params.status);
+      if (params.sortBy) qs.set("sortBy", params.sortBy);
+      if (params.sortDir) qs.set("sortDir", params.sortDir);
+      const q = qs.toString();
+      return authenticatedRequestPaged<Invoice[]>(`/api/v1/academic/invoices${q ? `?${q}` : ""}`);
     },
     async get(id: string) {
       return authenticatedRequest<Invoice>(`/api/v1/academic/invoices/${id}`);
@@ -1489,6 +1571,16 @@ export const api = {
   payments: {
     async list() {
       return authenticatedRequest<Payment[]>("/api/v1/academic/payments");
+    },
+    async income(params: { take?: number; skip?: number; from?: string; to?: string; status?: string } = {}) {
+      const qs = new URLSearchParams();
+      if (params.take != null) qs.set("take", String(params.take));
+      if (params.skip != null) qs.set("skip", String(params.skip));
+      if (params.from) qs.set("from", params.from);
+      if (params.to) qs.set("to", params.to);
+      if (params.status) qs.set("status", params.status);
+      const q = qs.toString();
+      return authenticatedRequestPaged<Payment[]>(`/api/v1/academic/payments/income${q ? `?${q}` : ""}`);
     },
     async get(id: string) {
       return authenticatedRequest<Payment>(`/api/v1/academic/payments/${id}`);
@@ -1529,6 +1621,18 @@ export const api = {
         `/api/v1/academic/payments/${id}/check-status`,
         { method: "POST" },
       );
+    },
+  },
+  expenses: {
+    async list(params: { take?: number; skip?: number; from?: string; to?: string; tutorId?: string } = {}) {
+      const qs = new URLSearchParams();
+      if (params.take != null) qs.set("take", String(params.take));
+      if (params.skip != null) qs.set("skip", String(params.skip));
+      if (params.from) qs.set("from", params.from);
+      if (params.to) qs.set("to", params.to);
+      if (params.tutorId) qs.set("tutorId", params.tutorId);
+      const q = qs.toString();
+      return authenticatedRequestPaged<ExpenseRow[]>(`/api/v1/academic/expenses${q ? `?${q}` : ""}`);
     },
   },
   trial: {

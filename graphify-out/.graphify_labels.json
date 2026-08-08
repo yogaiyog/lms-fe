@@ -18,13 +18,13 @@
   "16": "Android Build Config",
   "17": "Admin Tutor Management",
   "18": "Android Native Assets",
-  "19": "Admin Attendance",
   "20": "App Layout & Fonts",
   "21": "Admin Curriculum",
   "22": "Topic Management",
   "23": "UI Components (Nav, Button)",
   "24": "Admin Student List",
   "25": "Android Instrumented Tests",
+  "26": "NewTrialWizard.tsx",
   "27": "Home Page",
   "28": "Register Page",
   "29": "Android Unit Tests",
@@ -55,8 +55,11 @@
   "55": "Q: Bagaimana state billing admin di frontend dan komponennya?",
   "56": "ClassesTable.tsx",
   "57": "api",
-  "59": "register-content.tsx",
   "60": "Q: Bagaimana alur ubah metode pembayaran invoice setelah tombol bayar dihapus dari detail view?",
   "61": "Q: Bagaimana alur pembayaran Midtrans charge di UI billing admin?",
-  "63": "tutor-content.tsx"
+  "64": "Q: Bagaimana info panel enrollment di step 1 invoice form menampilkan detail Total Meet Purchased, Total Meet Left, Total Topics, Sisa Kuota dan validasi meetCount + totalMeetPurchased tidak boleh melebihi total topics?",
+  "65": "Q: Bagaimana cetak invoice PDF dari FE (window.print) tanpa mengubah tombol lama?",
+  "66": "Q: Bagaimana toast error dibuat menetap sampai diklik X?",
+  "67": "Q: Bagaimana hapus payment CANCELLED dari riwayat pembayaran invoice?",
+  "68": "AddTutorForm.tsx"
 }

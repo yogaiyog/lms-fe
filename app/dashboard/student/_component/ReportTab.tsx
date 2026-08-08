@@ -54,7 +54,7 @@ export default function ReportTab({ theme, studentId, savedReports: reports, gal
               </div>
               <button
                 onClick={() => setViewing(report)}
-                className="shrink-0 rounded-xl bg-blue-100 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-200 transition-colors">
+                className="shrink-0 rounded-xl bg-brand-blue-100 px-3 py-2 text-xs font-semibold text-brand-blue-700 hover:bg-brand-blue-200 transition-colors">
                 Lihat
               </button>
             </div>
@@ -70,7 +70,7 @@ export default function ReportTab({ theme, studentId, savedReports: reports, gal
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {galleries.map((item, i) => (
               <div key={item.id} onClick={() => setPreviewImage(item)}
-                className="group cursor-pointer rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow">
+                className={`group cursor-pointer rounded-2xl overflow-hidden border ${theme.border} ${theme.card} shadow-sm hover:shadow-md transition-shadow`}>
                 <img src={item.imageUrl} alt={item.caption ?? ""}
                   className="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 {item.caption && (
@@ -95,7 +95,7 @@ export default function ReportTab({ theme, studentId, savedReports: reports, gal
       {previewImage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
           onClick={() => setPreviewImage(null)}>
-          <div className="relative max-w-3xl w-full rounded-3xl overflow-hidden bg-white shadow-2xl"
+          <div className={`relative max-w-3xl w-full rounded-3xl overflow-hidden ${theme.card} shadow-2xl`}
             onClick={(e) => e.stopPropagation()}>
             <button onClick={() => setPreviewImage(null)}
               className="absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition">
@@ -126,7 +126,7 @@ export default function ReportTab({ theme, studentId, savedReports: reports, gal
             <img src={previewImage.imageUrl} alt={previewImage.caption ?? ""}
               className="w-full max-h-[70vh] object-contain bg-slate-100" />
             {previewImage.caption && (
-              <div className="px-5 py-4 border-t border-slate-200">
+              <div className={`px-5 py-4 border-t ${theme.border}`}>
                 <p className="text-sm font-semibold text-slate-900">{previewImage.caption}</p>
                 <p className="mt-1 text-xs text-slate-400">
                   {new Date(previewImage.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}

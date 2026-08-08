@@ -42,22 +42,22 @@ export default function BadgesTab({ theme, studentBadges, certificates, enrollme
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {certificates.map((cert) => (
               <Card key={cert.id} theme={theme} className="p-5 flex items-center gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-100">
-                  <FileText size={22} className="text-blue-600" />
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-blue-100">
+                  <FileText size={22} className="text-brand-blue-600" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className={`text-sm font-bold ${theme.text}`}>
                     {cert.certificateNumber}
                   </p>
                   {cert.grade && (
-                    <p className={`text-xs font-semibold text-blue-600`}>Grade: {cert.grade}</p>
+                    <p className={`text-xs font-semibold text-brand-blue-600`}>Grade: {cert.grade}</p>
                   )}
                   <p className={`text-[10px] ${theme.textMuted}`}>
                     {new Date(cert.issuedAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
                   </p>
                 </div>
                 <button onClick={() => handlePreview(cert)}
-                  className="rounded-lg p-2 text-blue-600 transition hover:bg-blue-50">
+                  className="rounded-lg p-2 text-brand-blue-600 transition hover:bg-brand-blue-50">
                   <Eye size={18} />
                 </button>
               </Card>
@@ -86,7 +86,7 @@ export default function BadgesTab({ theme, studentBadges, certificates, enrollme
                 </div>
                 <p className={`text-sm font-bold ${theme.text}`}>{sb.badge.title}</p>
                 <p className={`mt-0.5 text-[10px] ${theme.textMuted}`}>{sb.badge.description}</p>
-                <p className={`mt-2 text-xs font-semibold text-blue-600`}>+{sb.badge.xpBonus} XP</p>
+                <p className={`mt-2 text-xs font-semibold text-brand-blue-600`}>+{sb.badge.xpBonus} XP</p>
               </Card>
             ))}
           </div>

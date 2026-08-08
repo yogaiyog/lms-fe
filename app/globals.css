@@ -3,7 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: var(--font-geist-mono);
+  --font-sans: var(--font-poppins), Arial, sans-serif;
   --color-tea-green-50: #eafde8;
   --color-tea-green-100: #d5fbd0;
   --color-tea-green-200: #abf7a1;
@@ -63,6 +63,30 @@
   --color-dark-amethyst-800: #32095d;
   --color-dark-amethyst-900: #19052e;
   --color-dark-amethyst-950: #110320;
+
+  --color-brand-blue-50: #e6eef9;
+  --color-brand-blue-100: #c0d5f0;
+  --color-brand-blue-200: #96b9e5;
+  --color-brand-blue-300: #6b9cda;
+  --color-brand-blue-400: #4a84d1;
+  --color-brand-blue-500: #013798;
+  --color-brand-blue-600: #012f82;
+  --color-brand-blue-700: #01256b;
+  --color-brand-blue-800: #011b54;
+  --color-brand-blue-900: #01113d;
+  --color-brand-blue-950: #010a2a;
+
+  --color-brand-yellow-50: #fffce6;
+  --color-brand-yellow-100: #fff8b3;
+  --color-brand-yellow-200: #fff380;
+  --color-brand-yellow-300: #ffed4d;
+  --color-brand-yellow-400: #ffe81a;
+  --color-brand-yellow-500: #FFD100;
+  --color-brand-yellow-600: #d4b000;
+  --color-brand-yellow-700: #a98e00;
+  --color-brand-yellow-800: #7f6b00;
+  --color-brand-yellow-900: #554900;
+  --color-brand-yellow-950: #3a3100;
 }
 
 @layer base {

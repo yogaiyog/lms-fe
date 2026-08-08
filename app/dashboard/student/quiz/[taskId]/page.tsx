@@ -64,7 +64,7 @@ export default function QuizPage() {
       <div className="min-h-screen bg-slate-50">
         <Header />
         <div className="flex items-center justify-center py-16">
-          <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+          <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-brand-blue-600 border-t-transparent" />
         </div>
       </div>
     );
@@ -193,7 +193,7 @@ export default function QuizPage() {
                   onClick={() => handleChoiceSelect(index)}
                   className={`w-full rounded-lg border p-4 text-left transition-colors ${
                     isSelected && !submitted
-                      ? "border-blue-500 bg-blue-50"
+                      ? "border-brand-blue-500 bg-brand-blue-50"
                       : "border-slate-200"
                   } ${showCorrect ? "border-emerald-500 bg-emerald-50" : ""}
                     ${showWrong ? "border-red-500 bg-red-50" : ""}
@@ -202,7 +202,7 @@ export default function QuizPage() {
                     <span className="inline-flex items-start gap-3">
                       <span className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
                         isSelected && !submitted
-                          ? "bg-blue-600 text-white"
+                          ? "bg-brand-blue-600 text-white"
                           : showCorrect
                             ? "bg-emerald-600 text-white"
                             : showWrong

@@ -11,7 +11,7 @@ export default function Card({ children, className = "", theme, onClick }: {
   return (
     <div
       onClick={onClick}
-      className={`rounded-3xl border ${theme.border} ${theme.card} shadow-sm ${onClick ? "cursor-pointer hover:shadow-md transition-shadow" : ""} ${className}`}
+      className={`rounded-[1.75rem] border ${theme.border} ${theme.card} shadow-sm ${onClick ? "cursor-pointer hover:shadow-md hover:shadow-brand-blue-500/10 hover:-translate-y-0.5 transition-all duration-200" : ""} ${className}`}
     >
       {children}
     </div>

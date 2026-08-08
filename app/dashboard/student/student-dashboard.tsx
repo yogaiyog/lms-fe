@@ -239,7 +239,7 @@ export default function StudentDashboard() {
   if (loading || dataLoading) {
     return (
       <div className={`flex min-h-screen items-center justify-center ${theme.bg}`}>
-        <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+        <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-brand-blue-600 border-t-transparent" />
       </div>
     );
   }

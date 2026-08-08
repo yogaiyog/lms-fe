@@ -23,6 +23,8 @@ import AdminAttendance from "./components/attendance/AdminAttendance";
 import InvoiceList from "./components/billing/InvoiceList";
 import InvoiceFormModal from "./components/billing/InvoiceFormModal";
 import InvoiceDetailView from "./components/billing/InvoiceDetailView";
+import Pemasukan from "./components/billing/Pemasukan";
+import Pengeluaran from "./components/billing/Pengeluaran";
 import NewTrialWizard from "./components/trial/NewTrialWizard";
 import { Plus, X } from "lucide-react";
 import { useBilling } from "../../../hooks/useBilling";
@@ -66,7 +68,8 @@ export default function AdminDashboard() {
         <AdminSidebar mainMenu={h.mainMenu} segment={h.segment} onSegmentChange={h.setSegment}
           tutorSegment={h.tutorSegment} onTutorSegmentChange={h.setTutorSegment}
           curriculumSegment={h.curriculumSegment} onCurriculumSegmentChange={h.setCurriculumSegment}
-          studentSegment={h.studentSegment} onStudentSegmentChange={h.setStudentSegment} />
+          studentSegment={h.studentSegment} onStudentSegmentChange={h.setStudentSegment}
+          billingSegment={h.billingSegment} onBillingSegmentChange={h.setBillingSegment} />
 
         <main className="min-w-0 flex-1">
           {h.mainMenu === "classes" && h.segment === "classes" && (
@@ -178,7 +181,13 @@ export default function AdminDashboard() {
             <AdminAttendance />
           )}
 
-          {h.mainMenu === "billing" && (
+          {h.mainMenu === "billing" && h.billingSegment === "pemasukan" && (
+            <Pemasukan />
+          )}
+          {h.mainMenu === "billing" && h.billingSegment === "pengeluaran" && (
+            <Pengeluaran />
+          )}
+          {h.mainMenu === "billing" && h.billingSegment !== "pemasukan" && h.billingSegment !== "pengeluaran" && (
             billing.selectedInvoice ? (
               <InvoiceDetailView
                 invoice={billing.selectedInvoice}
@@ -220,6 +229,19 @@ export default function AdminDashboard() {
                 invoices={billing.invoices}
                 loading={billing.invoicesLoading}
                 error={billing.invoicesError}
+                total={billing.total}
+                page={billing.page}
+                pageSize={billing.pageSize}
+                search={billing.search}
+                statusFilter={billing.statusFilter}
+                sortBy={billing.sortBy}
+                sortDir={billing.sortDir}
+                onSearchChange={billing.onSearchChange}
+                onStatusChange={billing.onStatusChange}
+                onSortChange={billing.onSortChange}
+                onPageChange={billing.onPageChange}
+                onPageSizeChange={billing.onPageSizeChange}
+                onReset={billing.onReset}
                 onRefresh={billing.fetchInvoices}
                 onCreate={billing.openCreateInvoice}
                 onOpen={billing.openInvoice}

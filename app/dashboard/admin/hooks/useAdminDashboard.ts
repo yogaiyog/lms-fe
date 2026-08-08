@@ -82,6 +82,9 @@ export function useAdminDashboard() {
   const [studentSegment, setStudentSegment] = useState<"list" | "enrollment" | "parent" | "add">(
     initialMenu === "students" && ["list", "enrollment", "parent", "add"].includes(segParam ?? "") ? segParam as "list" | "enrollment" | "parent" | "add" : "list"
   );
+  const [billingSegment, setBillingSegment] = useState<"invoices" | "pemasukan" | "pengeluaran">(
+    initialMenu === "billing" && (segParam === "invoices" || segParam === "pemasukan" || segParam === "pengeluaran") ? segParam as "invoices" | "pemasukan" | "pengeluaran" : "invoices"
+  );
   const [tutors, setTutors] = useState<TutorOption[]>([]);
   const [tutorsFull, setTutorsFull] = useState<{ id: string; fullName: string; phone: string; email?: string; bio?: string | null }[]>([]);
   const [registering, setRegistering] = useState(false);
@@ -160,13 +163,14 @@ export function useAdminDashboard() {
       : mainMenu === "tutors" ? tutorSegment
       : mainMenu === "students" ? studentSegment
       : mainMenu === "curriculums" ? curriculumSegment
+      : mainMenu === "billing" ? billingSegment
       : "";
     const params = new URLSearchParams({ menu: mainMenu });
     if (seg) params.set("seg", seg);
     const qs = params.toString();
     const url = qs ? `?${qs}` : window.location.pathname;
     router.replace(url, { scroll: false });
-  }, [mainMenu, segment, tutorSegment, studentSegment, curriculumSegment, router]);
+  }, [mainMenu, segment, tutorSegment, studentSegment, curriculumSegment, billingSegment, router]);
 
   useEffect(() => {
     const session = getStoredSession();
@@ -1010,6 +1014,7 @@ export function useAdminDashboard() {
     studentDetailLoading, refreshStudentEnrollments,
     studentsFull,
     studentSegment, setStudentSegment,
+    billingSegment, setBillingSegment,
     categories,
     handleRegisterStudent, handleCreateParent,
     handleArchiveStudent, handleRestoreStudent, handleDeleteStudent,

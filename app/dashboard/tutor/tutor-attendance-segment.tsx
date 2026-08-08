@@ -1,8 +1,17 @@
 "use client";
 
 import { Fragment, useEffect, useState, useMemo } from "react";
-import { CalendarDays, ChevronDown, ChevronRight, Search } from "lucide-react";
-import { api, type Attendance, type Schedule } from "@/lib/api";
+import { CalendarDays, ChevronDown, ChevronRight, Search, Wallet } from "lucide-react";
+import { api, type Attendance, type Schedule, type ExpenseRow } from "@/lib/api";
+
+function formatIDR(value: number | string | null | undefined): string {
+  const n = Number(value ?? 0);
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(n);
+}
 
 type Theme = {
   dark: boolean;
@@ -24,6 +33,17 @@ const ATTENDANCE_LABELS: Record<string, { label: string; color: string }> = {
 const DAY_LABELS: Record<string, string> = {
   MONDAY: "Senin", TUESDAY: "Selasa", WEDNESDAY: "Rabu",
   THURSDAY: "Kamis", FRIDAY: "Jumat", SATURDAY: "Sabtu", SUNDAY: "Minggu",
+};
+
+const TYPE_LABELS: Record<string, string> = {
+  TRIAL: "Trial", BATCH: "Batch", PRIVATE: "Private", MAKEUP: "Make Up",
+};
+
+const TYPE_CARD_STYLES: Record<string, { border: string; bg: string; text: string }> = {
+  TRIAL: { border: "border-slate-200", bg: "bg-slate-50", text: "text-slate-700" },
+  BATCH: { border: "border-emerald-100", bg: "bg-emerald-50", text: "text-emerald-700" },
+  PRIVATE: { border: "border-indigo-100", bg: "bg-indigo-50", text: "text-indigo-700" },
+  MAKEUP: { border: "border-amber-100", bg: "bg-amber-50", text: "text-amber-700" },
 };
 
 const DATE_PRESETS = [
@@ -81,6 +101,11 @@ export default function TutorAttendanceSegment({ theme, tutorId }: Props) {
   const [preset, setPreset] = useState<string>("month");
   const [customStart, setCustomStart] = useState(fmtDate(new Date()));
   const [customEnd, setCustomEnd] = useState(fmtDate(new Date()));
+  const [income, setIncome] = useState<number | null>(null);
+  const [showIncomeDetail, setShowIncomeDetail] = useState(false);
+  const [incomeRows, setIncomeRows] = useState<ExpenseRow[]>([]);
+  const [incomeByType, setIncomeByType] = useState<Record<string, { count: number; sum: number }>>({});
+  const [incomeDetailLoading, setIncomeDetailLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -99,6 +124,57 @@ export default function TutorAttendanceSegment({ theme, tutorId }: Props) {
     if (preset !== "custom") return getPresetRange(preset);
     return { start: new Date(customStart + "T00:00:00"), end: new Date(customEnd + "T23:59:59.999") };
   }, [preset, customStart, customEnd]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setShowIncomeDetail(false);
+    setIncomeRows([]);
+    setIncomeByType({});
+  }, [dateRange]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await api.expenses.list({
+          tutorId,
+          from: dateRange.start.toISOString(),
+          to: dateRange.end.toISOString(),
+          take: 1,
+        });
+        if (!cancelled) setIncome(Number(res.meta.sum ?? 0));
+      } catch (e) {
+        console.error("Failed to load tutor income", e);
+        if (!cancelled) setIncome(null);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [tutorId, dateRange]);
+
+  async function toggleIncomeDetail() {
+    if (showIncomeDetail) {
+      setShowIncomeDetail(false);
+      return;
+    }
+    setShowIncomeDetail(true);
+    setIncomeDetailLoading(true);
+    try {
+      const res = await api.expenses.list({
+        tutorId,
+        from: dateRange.start.toISOString(),
+        to: dateRange.end.toISOString(),
+        take: 100,
+      });
+      setIncomeRows(res.data);
+      setIncomeByType(res.meta.byType ?? {});
+    } catch (e) {
+      console.error("Failed to load tutor income detail", e);
+      setIncomeRows([]);
+      setIncomeByType({});
+    } finally {
+      setIncomeDetailLoading(false);
+    }
+  }
 
   const grouped = useMemo(() => {
     const myAttendances = attendances.filter((att) => att.teachedBy === tutorId);
@@ -209,7 +285,100 @@ export default function TutorAttendanceSegment({ theme, tutorId }: Props) {
           <p className={`text-2xl font-extrabold text-amber-600`}>{totalAttendanceRecords}</p>
           <p className={`text-[10px] font-semibold ${theme.textMuted}`}>Total Absensi Siswa</p>
         </div>
+        <button
+          type="button"
+          onClick={toggleIncomeDetail}
+          className={`rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-center transition hover:bg-emerald-100 ${
+            showIncomeDetail ? "ring-2 ring-emerald-300" : ""
+          }`}
+        >
+          <div className="mb-1 flex items-center justify-center gap-1.5 text-emerald-700">
+            <Wallet size={14} />
+            <span className="text-[10px] font-semibold">Pendapatan</span>
+            {showIncomeDetail ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+          </div>
+          <p className="text-xl font-extrabold text-emerald-800">
+            {income == null ? "—" : formatIDR(income)}
+          </p>
+        </button>
       </div>
+
+      {showIncomeDetail && (
+        <div className="mb-5 rounded-2xl border border-emerald-100 bg-white p-4 shadow-sm">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-sm font-extrabold text-slate-900">Rincian Pendapatan</h3>
+            <button
+              type="button"
+              onClick={() => setShowIncomeDetail(false)}
+              className="text-xs font-semibold text-slate-400 hover:text-slate-600"
+            >
+              Tutup
+            </button>
+          </div>
+
+          {incomeDetailLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-emerald-600 border-t-transparent" />
+            </div>
+          ) : incomeRows.length === 0 ? (
+            <p className="py-6 text-center text-xs text-slate-400">Belum ada pendapatan di periode ini</p>
+          ) : (
+            <>
+              <div className="mb-4 grid gap-2 sm:grid-cols-4">
+                {(["TRIAL", "BATCH", "PRIVATE", "MAKEUP"] as const).map((type) => {
+                  const info = incomeByType[type] ?? { count: 0, sum: 0 };
+                  const style = TYPE_CARD_STYLES[type];
+                  return (
+                    <div key={type} className={`rounded-xl border ${style.border} ${style.bg} p-3`}>
+                      <div className={`text-[10px] font-bold ${style.text}`}>{TYPE_LABELS[type]}</div>
+                      <div className={`text-sm font-extrabold ${style.text}`}>{formatIDR(info.sum)}</div>
+                      <div className={`text-[10px] ${style.text} opacity-70`}>{info.count} absensi</div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="overflow-x-auto rounded-xl border border-slate-200">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="bg-slate-100 text-slate-500">
+                      <th className="text-left py-2.5 px-3 font-semibold whitespace-nowrap">Tanggal</th>
+                      <th className="text-left py-2.5 px-3 font-semibold whitespace-nowrap">Siswa</th>
+                      <th className="text-left py-2.5 px-3 font-semibold whitespace-nowrap">Kelas</th>
+                      <th className="text-left py-2.5 px-3 font-semibold whitespace-nowrap">Tipe</th>
+                      <th className="text-left py-2.5 px-3 font-semibold whitespace-nowrap">Status</th>
+                      <th className="text-right py-2.5 px-3 font-semibold whitespace-nowrap">Biaya</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {incomeRows.map((r) => {
+                      const info = ATTENDANCE_LABELS[r.status] ?? { label: r.status, color: "text-slate-600 bg-slate-100" };
+                      return (
+                        <tr key={r.id} className="border-t border-slate-100">
+                          <td className="py-2.5 px-3 whitespace-nowrap text-slate-600">
+                            {r.date ? new Date(r.date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) : "—"}
+                          </td>
+                          <td className="py-2.5 px-3 font-semibold text-slate-900">{r.student?.fullName ?? "—"}</td>
+                          <td className="py-2.5 px-3 text-slate-600">{r.schedule?.class?.name ?? "—"}</td>
+                          <td className="py-2.5 px-3">
+                            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ${TYPE_CARD_STYLES[r.schedule?.class?.type ?? ""].bg} ${TYPE_CARD_STYLES[r.schedule?.class?.type ?? ""].text}`}>
+                              {TYPE_LABELS[r.schedule?.class?.type ?? ""] ?? r.schedule?.class?.type ?? "—"}
+                            </span>
+                          </td>
+                          <td className="py-2.5 px-3 whitespace-nowrap">
+                            <span className={`inline-flex items-center rounded-full px-2 py-0.5 font-semibold ${info.color}`}>{info.label}</span>
+                          </td>
+                          <td className="py-2.5 px-3 text-right font-semibold text-emerald-700">{formatIDR(r.cost)}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </div>
+      )}
 
       {filtered.length === 0 ? (
         <div className={`rounded-3xl border ${theme.border} ${theme.card} p-8 text-center`}>
