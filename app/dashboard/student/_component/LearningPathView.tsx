@@ -173,7 +173,7 @@ export default function LearningPathView({
 
       {loading && (
         <div className="flex items-center justify-center py-16">
-          <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+          <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-brand-blue-600 border-t-transparent" />
         </div>
       )}
 
@@ -186,12 +186,12 @@ export default function LearningPathView({
       {!loading && !error && (
         <div className="flex flex-col gap-6">
           {!loaded && (
-            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-500">
+            <div className={`rounded-lg border ${theme.border} ${theme.dark ? "bg-slate-800 text-slate-400" : "bg-slate-50 text-slate-500"} p-4 text-center text-sm`}>
               Memuat progress...
             </div>
           )}
           {filteredUnits.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-slate-200 p-12 text-center">
+            <div className={`rounded-lg border border-dashed ${theme.border} p-12 text-center`}>
               <span className="text-5xl">📭</span>
               <h2 className={`mt-4 font-bold ${theme.text}`}>
                 Belum ada unit tersedia

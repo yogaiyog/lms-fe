@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-02T10:09:15.979122+00:00",
+  "generated_at": "2026-08-08T05:21:56.276636+00:00",
   "nodes": {
     "app_dashboard_admin_admin_dashboard": {
-      "code_fingerprint": "245e4c89141653a6fa532893c7af964abf9efbd006e430de2f73baad113da6b1",
+      "code_fingerprint": "e2107b611f4ecfdff2c317ba81078a026b465277dc28787f2b89ea190823a0db",
       "label": "admin-dashboard.tsx",
       "last": "2026-07-31T19:47:34.128849+00:00",
       "provenance": [
@@ -22,7 +22,7 @@
           "q": "Bagaimana state billing admin di frontend dan komponennya?"
         }
       ],
-      "score": 2.878096755,
+      "score": 2.517106419,
       "source_file": "app/dashboard/admin/admin-dashboard.tsx",
       "status": "preferred",
       "uses": 3
@@ -43,7 +43,7 @@
           "q": "Bagaimana alur ubah metode pembayaran invoice setelah tombol bayar dihapus dari detail view?"
         }
       ],
-      "score": 1.926049135,
+      "score": 1.684471043,
       "source_file": "app/dashboard/admin/components/billing/InvoiceDetailView.tsx",
       "status": "preferred",
       "uses": 2
@@ -69,13 +69,13 @@
           "q": "Bagaimana alur ubah metode pembayaran invoice setelah tombol bayar dihapus dari detail view?"
         }
       ],
-      "score": 2.890088759,
+      "score": 2.527594305,
       "source_file": "app/dashboard/admin/components/billing/InvoiceFormModal.tsx",
       "status": "preferred",
       "uses": 3
     },
     "app_dashboard_admin_components_billing_invoicelist": {
-      "code_fingerprint": "316030972d94e3bbd8152642c56eb14f1e5709e6f27c4f0322564e6c268f6f72",
+      "code_fingerprint": "27cc970714114fd15714691fa31c74ed8d8b4d8b3cc9662870e27f8c349173a1",
       "label": "InvoiceList.tsx",
       "last": "2026-07-31T07:06:37.800635+00:00",
       "provenance": [
@@ -85,13 +85,141 @@
           "q": "Bagaimana state billing admin di frontend dan komponennya?"
         }
       ],
-      "score": 0.952047619,
+      "score": 0.832635376,
       "source_file": "app/dashboard/admin/components/billing/InvoiceList.tsx",
       "status": "tentative",
       "uses": 1
     },
+    "app_dashboard_student_component_card": {
+      "code_fingerprint": "1cb1a65febc26c4d7c397de07fffcfb005f3bd07bbe4fd0c6b66a2fb6de9c714",
+      "label": "Card.tsx",
+      "last": "2026-08-08T05:21:51.343582+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-08T05:21:51.343582+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana redesign playful dashboard student dengan palete brand kustom?"
+        }
+      ],
+      "score": 0.999998681,
+      "source_file": "app/dashboard/student/_component/Card.tsx",
+      "status": "tentative",
+      "uses": 1
+    },
+    "app_dashboard_student_component_mobilebottomnav": {
+      "code_fingerprint": "9810662789a5aa571d72f8932678f0754aabb37f6616e63aacad3baecb9de525",
+      "label": "MobileBottomNav.tsx",
+      "last": "2026-08-08T05:21:51.343582+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-08T05:21:51.343582+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana redesign playful dashboard student dengan palete brand kustom?"
+        }
+      ],
+      "score": 0.999998681,
+      "source_file": "app/dashboard/student/_component/MobileBottomNav.tsx",
+      "status": "tentative",
+      "uses": 1
+    },
+    "app_dashboard_student_component_overviewtab": {
+      "code_fingerprint": "73da1d8c17eb0d41895666733d2e45bd39967ce839c5b92176a1feac61061faa",
+      "label": "OverviewTab.tsx",
+      "last": "2026-08-08T05:21:51.343582+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-08T05:21:51.343582+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana redesign playful dashboard student dengan palete brand kustom?"
+        }
+      ],
+      "score": 0.999998681,
+      "source_file": "app/dashboard/student/_component/OverviewTab.tsx",
+      "status": "tentative",
+      "uses": 1
+    },
+    "app_dashboard_student_component_sidebar": {
+      "code_fingerprint": "79679b9a6d7e31055d98c7478365de85da1214ddf16ca4483021c7b0b15418fb",
+      "label": "Sidebar.tsx",
+      "last": "2026-08-08T05:21:51.343582+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-08T05:21:51.343582+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana redesign playful dashboard student dengan palete brand kustom?"
+        }
+      ],
+      "score": 0.999998681,
+      "source_file": "app/dashboard/student/_component/Sidebar.tsx",
+      "status": "tentative",
+      "uses": 1
+    },
+    "app_dashboard_student_component_topbar": {
+      "code_fingerprint": "361b6f44350c60a5a117932ec8039d7a0dd4eff47b1b9b38c946d4eb8489f0d2",
+      "label": "Topbar.tsx",
+      "last": "2026-08-08T05:21:51.343582+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-08T05:21:51.343582+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana redesign playful dashboard student dengan palete brand kustom?"
+        }
+      ],
+      "score": 0.999998681,
+      "source_file": "app/dashboard/student/_component/Topbar.tsx",
+      "status": "tentative",
+      "uses": 1
+    },
+    "app_layout": {
+      "code_fingerprint": "ad1f8a4372337898901a51f2f1b79e0f4dc62f4eb7ecf8f1b9dcf8cc3d4fe5aa",
+      "label": "layout.tsx",
+      "last": "2026-08-08T04:47:28.513420+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-08T04:47:28.513420+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana konfigurasi font di frontend setelah migrasi ke Poppins?"
+        }
+      ],
+      "score": 0.999447196,
+      "source_file": "app/layout.tsx",
+      "status": "tentative",
+      "uses": 1
+    },
+    "app_layout_lexend": {
+      "code_fingerprint": "ad1f8a4372337898901a51f2f1b79e0f4dc62f4eb7ecf8f1b9dcf8cc3d4fe5aa",
+      "label": "lexend",
+      "last": "2026-08-08T04:47:28.513420+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-08T04:47:28.513420+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana konfigurasi font di frontend setelah migrasi ke Poppins?"
+        }
+      ],
+      "score": 0.999447196,
+      "source_file": "app/layout.tsx",
+      "status": "tentative",
+      "uses": 1
+    },
+    "app_layout_poppins": {
+      "code_fingerprint": "ad1f8a4372337898901a51f2f1b79e0f4dc62f4eb7ecf8f1b9dcf8cc3d4fe5aa",
+      "label": "poppins",
+      "last": "2026-08-08T04:47:28.513420+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-08T04:47:28.513420+00:00",
+          "outcome": "useful",
+          "q": "Bagaimana konfigurasi font di frontend setelah migrasi ke Poppins?"
+        }
+      ],
+      "score": 0.999447196,
+      "source_file": "app/layout.tsx",
+      "status": "tentative",
+      "uses": 1
+    },
     "hooks_usebilling": {
-      "code_fingerprint": "efcda4f6781c6aca105b5b3a7bef1bd04bed0e93628bfb8eb36924a823fc358b",
+      "code_fingerprint": "561f30a0dd67d77eb1779f4c18ef9668200cfc32b648dd59e0ff493cf42804d6",
       "label": "useBilling.ts",
       "last": "2026-07-31T19:47:34.128849+00:00",
       "provenance": [
@@ -111,13 +239,13 @@
           "q": "Bagaimana state billing admin di frontend dan komponennya?"
         }
       ],
-      "score": 2.878096755,
+      "score": 2.517106419,
       "source_file": "hooks/useBilling.ts",
       "status": "preferred",
       "uses": 3
     },
     "lib_api_api": {
-      "code_fingerprint": "5da0666176ba29d8edadb94890efbee32d9aee297ccf032942b5515252784e93",
+      "code_fingerprint": "43f89683c9b2dff0811841b4761221d1215b6e74096a448e27e39eda70fb6a79",
       "label": "api",
       "last": "2026-08-02T10:09:09.044670+00:00",
       "provenance": [
@@ -132,7 +260,7 @@
           "q": "Apa peran api (lib/api.ts) sebagai god node 37 edges?"
         }
       ],
-      "score": 1.868079713,
+      "score": 1.633772537,
       "source_file": "lib/api.ts",
       "status": "preferred",
       "uses": 2

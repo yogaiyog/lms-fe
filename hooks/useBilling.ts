@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { api, getStoredSession, type Invoice, type MidtransBank } from "@/lib/api";
+import { api, getStoredSession, type Invoice, type MidtransBank, type InvoiceListParams } from "@/lib/api";
 import {
   isNativePlatform,
   downloadFileCapacitor,
@@ -36,6 +36,42 @@ export type InvoicePaymentMethod =
 
 export type SubmitInvoiceResult = { ok: boolean; invoice?: Invoice | null; message?: string };
 
+const STORAGE_KEY = "lms.billing.invoiceFilters";
+
+type InvoiceFilters = {
+  search: string;
+  statusFilter: string;
+  sortBy: string;
+  sortDir: "asc" | "desc";
+  pageSize: number;
+};
+
+const DEFAULT_FILTERS: InvoiceFilters = {
+  search: "",
+  statusFilter: "ALL",
+  sortBy: "createdAt",
+  sortDir: "desc",
+  pageSize: 20,
+};
+
+function loadInvoiceFilters(): InvoiceFilters {
+  if (typeof window === "undefined") return DEFAULT_FILTERS;
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return DEFAULT_FILTERS;
+    const p = JSON.parse(raw) as Partial<InvoiceFilters>;
+    return {
+      search: typeof p.search === "string" ? p.search : DEFAULT_FILTERS.search,
+      statusFilter: typeof p.statusFilter === "string" ? p.statusFilter : DEFAULT_FILTERS.statusFilter,
+      sortBy: typeof p.sortBy === "string" ? p.sortBy : DEFAULT_FILTERS.sortBy,
+      sortDir: p.sortDir === "asc" ? "asc" : "desc",
+      pageSize: typeof p.pageSize === "number" && p.pageSize > 0 ? p.pageSize : DEFAULT_FILTERS.pageSize,
+    };
+  } catch {
+    return DEFAULT_FILTERS;
+  }
+}
+
 async function createPaymentForInvoice(invoice: Invoice, choice: InvoicePaymentMethod): Promise<void> {
   if (choice.method === "manual") {
     await api.payments.create({
@@ -55,9 +91,20 @@ async function createPaymentForInvoice(invoice: Invoice, choice: InvoicePaymentM
 }
 
 export function useBilling() {
+  const [initial] = useState(loadInvoiceFilters);
+
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [invoicesLoading, setInvoicesLoading] = useState(false);
   const [invoicesError, setInvoicesError] = useState("");
+
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(initial.pageSize);
+  const [search, setSearch] = useState(initial.search);
+  const [searchInput, setSearchInput] = useState(initial.search);
+  const [statusFilter, setStatusFilter] = useState(initial.statusFilter);
+  const [sortBy, setSortBy] = useState(initial.sortBy);
+  const [sortDir, setSortDir] = useState<"asc" | "desc">(initial.sortDir);
+  const [total, setTotal] = useState(0);
 
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
@@ -100,14 +147,84 @@ export function useBilling() {
     setInvoicesLoading(true);
     setInvoicesError("");
     try {
-      const list = await api.invoices.list();
-      setInvoices(list);
+      const params: InvoiceListParams = {
+        take: pageSize,
+        skip: (page - 1) * pageSize,
+        sortBy,
+        sortDir,
+      };
+      if (search.trim()) params.search = search.trim();
+      if (statusFilter !== "ALL") params.status = statusFilter;
+      const res = await api.invoices.list(params);
+      setInvoices(res.data);
+      setTotal(res.meta.total);
     } catch (error) {
       setInvoicesError(error instanceof Error ? error.message : "Gagal memuat invoice");
     } finally {
       setInvoicesLoading(false);
     }
+  }, [page, pageSize, search, statusFilter, sortBy, sortDir]);
+
+  const onSearchChange = useCallback((value: string) => {
+    setSearchInput(value);
   }, []);
+
+  const onStatusChange = useCallback((value: string) => {
+    setPage(1);
+    setStatusFilter(value);
+  }, []);
+
+  const onSortChange = useCallback((nextSortBy: string, nextSortDir: "asc" | "desc") => {
+    setSortBy(nextSortBy);
+    setSortDir(nextSortDir);
+  }, []);
+
+  const onPageChange = useCallback((nextPage: number) => {
+    setPage(nextPage);
+  }, []);
+
+  const onPageSizeChange = useCallback((size: number) => {
+    setPage(1);
+    setPageSize(size);
+  }, []);
+
+  const onReset = useCallback(() => {
+    setSearchInput("");
+    setSearch("");
+    setStatusFilter("ALL");
+    setSortBy("createdAt");
+    setSortDir("desc");
+    setPage(1);
+  }, []);
+
+  // Debounce search input → commit search + reset to page 1
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchInput !== search) {
+        setSearch(searchInput);
+        setPage(1);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput, search]);
+
+  // Auto-fetch when any server-side param changes
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchInvoices();
+  }, [fetchInvoices]);
+
+  // Persist filter/sort preferences (not page) across refresh
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ search, statusFilter, sortBy, sortDir, pageSize }),
+      );
+    } catch {
+      /* ignore storage errors */
+    }
+  }, [search, statusFilter, sortBy, sortDir, pageSize]);
 
   const openInvoice = useCallback(async (invoice: Invoice) => {
     setDetailLoading(true);
@@ -398,6 +515,19 @@ export function useBilling() {
     invoicesLoading,
     invoicesError,
     fetchInvoices,
+    page,
+    pageSize,
+    total,
+    search: searchInput,
+    statusFilter,
+    sortBy,
+    sortDir,
+    onSearchChange,
+    onStatusChange,
+    onSortChange,
+    onPageChange,
+    onPageSizeChange,
+    onReset,
     selectedInvoice,
     detailLoading,
     openInvoice,

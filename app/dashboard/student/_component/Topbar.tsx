@@ -26,11 +26,11 @@ export default function Topbar({ theme, segment, onToggleDark, onLogout, onMenuC
       <div className="flex items-center gap-1.5 sm:gap-2">
         <button
           onClick={onToggleDark}
-          className={`flex h-9 w-9 items-center justify-center rounded-full ${theme.textMuted} hover:bg-blue-50 hover:text-blue-600 transition-colors`}
+          className={`flex h-9 w-9 items-center justify-center rounded-full ${theme.textMuted} hover:bg-brand-blue-50 hover:text-brand-blue-600 transition-colors`}
         >
           {theme.dark ? <Sun size={18} /> : <Moon size={18} />}
         </button>
-        {/* <button className={`relative flex h-9 w-9 items-center justify-center rounded-full ${theme.textMuted} hover:bg-blue-50 hover:text-blue-600 transition-colors`}>
+        {/* <button className={`relative flex h-9 w-9 items-center justify-center rounded-full ${theme.textMuted} hover:bg-brand-blue-50 hover:text-brand-blue-600 transition-colors`}>
           <Bell size={18} />
         </button> */}
         <button onClick={onLogout} className={`flex h-9 w-9 items-center justify-center rounded-full ${theme.textMuted} hover:bg-red-50 hover:text-red-600 transition-colors`} title="Logout">

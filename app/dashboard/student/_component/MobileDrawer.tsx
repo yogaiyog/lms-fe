@@ -37,9 +37,9 @@ export default function MobileDrawer({ theme, open, segment, onNavigate, onClose
               <button
                 key={item.key}
                 onClick={() => { onNavigate(item.key); onClose(); }}
-                className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold ${
-                  active ? "bg-blue-600 text-white" : `${theme.text} hover:bg-blue-50 hover:text-blue-700`
-                }`}
+              className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition-all duration-200 ${
+                active ? "bg-brand-blue-500 text-white shadow-md shadow-brand-blue-500/30" : `${theme.text} hover:bg-brand-blue-50 hover:text-brand-blue-700`
+              }`}
               >
                 <Icon size={18} /> {item.label}
               </button>

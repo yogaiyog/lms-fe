@@ -404,8 +404,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminnavbar",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 62,
+      "community_name": "AdminNavbar.tsx",
       "norm_label": "adminnavbar.tsx"
     },
     {
@@ -415,8 +415,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminnavbar_mainmenu",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 62,
+      "community_name": "AdminNavbar.tsx",
       "norm_label": "mainmenu"
     },
     {
@@ -426,8 +426,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminnavbar_props",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 62,
+      "community_name": "AdminNavbar.tsx",
       "norm_label": "props"
     },
     {
@@ -437,8 +437,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminnavbar_items",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 62,
+      "community_name": "AdminNavbar.tsx",
       "norm_label": "items"
     },
     {
@@ -448,8 +448,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_adminnavbar_adminnavbar",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 62,
+      "community_name": "AdminNavbar.tsx",
       "norm_label": "adminnavbar()"
     },
     {
@@ -525,8 +525,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_attendance_adminattendance",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 19,
+      "community_name": "Admin Attendance",
       "norm_label": "adminattendance.tsx"
     },
     {
@@ -536,8 +536,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_attendance_adminattendance_attendance_labels",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 19,
+      "community_name": "Admin Attendance",
       "norm_label": "attendance_labels"
     },
     {
@@ -547,8 +547,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_attendance_adminattendance_day_labels",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 19,
+      "community_name": "Admin Attendance",
       "norm_label": "day_labels"
     },
     {
@@ -558,8 +558,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_attendance_adminattendance_date_presets",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 19,
+      "community_name": "Admin Attendance",
       "norm_label": "date_presets"
     },
     {
@@ -569,8 +569,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_attendance_adminattendance_tutoroption",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 19,
+      "community_name": "Admin Attendance",
       "norm_label": "tutoroption"
     },
     {
@@ -580,8 +580,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_attendance_adminattendance_schedulegroup",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 19,
+      "community_name": "Admin Attendance",
       "norm_label": "schedulegroup"
     },
     {
@@ -591,8 +591,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_attendance_adminattendance_getpresetrange",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 19,
+      "community_name": "Admin Attendance",
       "norm_label": "getpresetrange()"
     },
     {
@@ -602,8 +602,8 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_attendance_adminattendance_fmtdate",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 19,
+      "community_name": "Admin Attendance",
       "norm_label": "fmtdate()"
     },
     {
@@ -613,8 +613,8 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_attendance_adminattendance_adminattendance",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 19,
+      "community_name": "Admin Attendance",
       "norm_label": "adminattendance()"
     },
     {
@@ -1405,8 +1405,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_kurikulum_topicmanagement_imagepicker",
-      "community": 4,
-      "community_name": "Tutor Student Segment",
+      "community": 22,
+      "community_name": "Topic Management",
       "norm_label": "imagepicker()"
     },
     {
@@ -1427,8 +1427,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_kurikulum_topictaskeditor",
-      "community": 57,
-      "community_name": "api",
+      "community": 15,
+      "community_name": "Student Learning Path",
       "norm_label": "topictaskeditor.tsx"
     },
     {
@@ -1438,8 +1438,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_kurikulum_topictaskeditor_props",
-      "community": 57,
-      "community_name": "api",
+      "community": 15,
+      "community_name": "Student Learning Path",
       "norm_label": "props"
     },
     {
@@ -1449,8 +1449,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_kurikulum_topictaskeditor_taskwithquiz",
-      "community": 57,
-      "community_name": "api",
+      "community": 15,
+      "community_name": "Student Learning Path",
       "norm_label": "taskwithquiz"
     },
     {
@@ -1460,8 +1460,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_kurikulum_topictaskeditor_task_type_labels",
-      "community": 57,
-      "community_name": "api",
+      "community": 15,
+      "community_name": "Student Learning Path",
       "norm_label": "task_type_labels"
     },
     {
@@ -1471,8 +1471,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_kurikulum_topictaskeditor_topictaskeditor",
-      "community": 57,
-      "community_name": "api",
+      "community": 15,
+      "community_name": "Student Learning Path",
       "norm_label": "topictaskeditor()"
     },
     {
@@ -1482,8 +1482,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_addstudentform",
-      "community": 26,
-      "community_name": "NewTrialWizard.tsx",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "addstudentform.tsx"
     },
     {
@@ -1493,8 +1493,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_addstudentform_props",
-      "community": 26,
-      "community_name": "NewTrialWizard.tsx",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "props"
     },
     {
@@ -1504,8 +1504,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_addstudentform_addstudentform",
-      "community": 26,
-      "community_name": "NewTrialWizard.tsx",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "addstudentform()"
     },
     {
@@ -1515,8 +1515,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_allparentsview",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 69,
+      "community_name": "AllParentsView.tsx",
       "norm_label": "allparentsview.tsx"
     },
     {
@@ -1526,8 +1526,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_allparentsview_fmtdate",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 69,
+      "community_name": "AllParentsView.tsx",
       "norm_label": "fmtdate()"
     },
     {
@@ -1537,8 +1537,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_allparentsview_props",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 69,
+      "community_name": "AllParentsView.tsx",
       "norm_label": "props"
     },
     {
@@ -1548,8 +1548,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_allparentsview_allparentsview",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 69,
+      "community_name": "AllParentsView.tsx",
       "norm_label": "allparentsview()"
     },
     {
@@ -1559,8 +1559,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentdetailmodal",
-      "community": 26,
-      "community_name": "NewTrialWizard.tsx",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "studentdetailmodal.tsx"
     },
     {
@@ -1570,8 +1570,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentdetailmodal_props",
-      "community": 26,
-      "community_name": "NewTrialWizard.tsx",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "props"
     },
     {
@@ -1581,8 +1581,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentdetailmodal_studentdetailmodal",
-      "community": 26,
-      "community_name": "NewTrialWizard.tsx",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "studentdetailmodal()"
     },
     {
@@ -1592,8 +1592,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentlist",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 59,
+      "community_name": "register-content.tsx",
       "norm_label": "studentlist.tsx"
     },
     {
@@ -1603,8 +1603,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentlist_fmtdate",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 59,
+      "community_name": "register-content.tsx",
       "norm_label": "fmtdate()"
     },
     {
@@ -1614,8 +1614,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentlist_studentitem",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 59,
+      "community_name": "register-content.tsx",
       "norm_label": "studentitem"
     },
     {
@@ -1625,8 +1625,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentlist_props",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 59,
+      "community_name": "register-content.tsx",
       "norm_label": "props"
     },
     {
@@ -1636,8 +1636,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentlist_sortdir",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 59,
+      "community_name": "register-content.tsx",
       "norm_label": "sortdir"
     },
     {
@@ -1647,8 +1647,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_student_studentlist_studentlist",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 59,
+      "community_name": "register-content.tsx",
       "norm_label": "studentlist()"
     },
     {
@@ -1790,8 +1790,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_tutordetailmodal",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 17,
+      "community_name": "Admin Tutor Management",
       "norm_label": "tutordetailmodal.tsx"
     },
     {
@@ -1801,8 +1801,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_tutordetailmodal_tutoritem",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 17,
+      "community_name": "Admin Tutor Management",
       "norm_label": "tutoritem"
     },
     {
@@ -1812,8 +1812,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_tutordetailmodal_day_labels",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 17,
+      "community_name": "Admin Tutor Management",
       "norm_label": "day_labels"
     },
     {
@@ -1823,8 +1823,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_tutordetailmodal_days",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 17,
+      "community_name": "Admin Tutor Management",
       "norm_label": "days"
     },
     {
@@ -1834,8 +1834,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_tutordetailmodal_hours",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 17,
+      "community_name": "Admin Tutor Management",
       "norm_label": "hours"
     },
     {
@@ -1845,8 +1845,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_tutordetailmodal_fmt",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 17,
+      "community_name": "Admin Tutor Management",
       "norm_label": "fmt()"
     },
     {
@@ -1856,8 +1856,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_tutordetailmodal_isinrange",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 17,
+      "community_name": "Admin Tutor Management",
       "norm_label": "isinrange()"
     },
     {
@@ -1867,8 +1867,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_tutordetailmodal_props",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 17,
+      "community_name": "Admin Tutor Management",
       "norm_label": "props"
     },
     {
@@ -1878,8 +1878,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "app_dashboard_admin_components_tutor_tutordetailmodal_tutordetailmodal",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 17,
+      "community_name": "Admin Tutor Management",
       "norm_label": "tutordetailmodal()"
     },
     {
@@ -2010,8 +2010,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "app_dashboard_admin_hooks_useadmindashboard_studentitem",
-      "community": 6,
-      "community_name": "Certificate Preview",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "studentitem"
     },
     {
@@ -2021,8 +2021,8 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "app_dashboard_admin_hooks_useadmindashboard_useadmindashboard",
-      "community": 48,
-      "community_name": "login-content.tsx",
+      "community": 17,
+      "community_name": "Admin Tutor Management",
       "norm_label": "useadmindashboard()"
     },
     {
@@ -2054,8 +2054,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_dashboard_content",
-      "community": 31,
-      "community_name": "Create Class Form",
+      "community": 54,
+      "community_name": "dashboard-content.tsx",
       "norm_label": "dashboard-content.tsx"
     },
     {
@@ -2065,8 +2065,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "app_dashboard_dashboard_content_studentwithdetails",
-      "community": 31,
-      "community_name": "Create Class Form",
+      "community": 54,
+      "community_name": "dashboard-content.tsx",
       "norm_label": "studentwithdetails"
     },
     {
@@ -2076,8 +2076,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "app_dashboard_dashboard_content_day_labels",
-      "community": 31,
-      "community_name": "Create Class Form",
+      "community": 54,
+      "community_name": "dashboard-content.tsx",
       "norm_label": "day_labels"
     },
     {
@@ -2087,8 +2087,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "app_dashboard_dashboard_content_category_labels",
-      "community": 31,
-      "community_name": "Create Class Form",
+      "community": 54,
+      "community_name": "dashboard-content.tsx",
       "norm_label": "category_labels"
     },
     {
@@ -2098,8 +2098,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "app_dashboard_dashboard_content_dashboardcontent",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 54,
+      "community_name": "dashboard-content.tsx",
       "norm_label": "dashboardcontent()"
     },
     {
@@ -2109,8 +2109,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_page",
-      "community": 31,
-      "community_name": "Create Class Form",
+      "community": 54,
+      "community_name": "dashboard-content.tsx",
       "norm_label": "dashboard/page.tsx"
     },
     {
@@ -2120,8 +2120,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_dashboard_page_page",
-      "community": 31,
-      "community_name": "Create Class Form",
+      "community": 54,
+      "community_name": "dashboard-content.tsx",
       "norm_label": "page()"
     },
     {
@@ -2131,8 +2131,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_parent_page",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "parent/page.tsx"
     },
     {
@@ -2142,8 +2142,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_dashboard_parent_page_page",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "page()"
     },
     {
@@ -2186,8 +2186,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "app_dashboard_parent_parent_dashboard_parentdashboard",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "parentdashboard()"
     },
     {
@@ -2689,7 +2689,7 @@
       "label": "NavItem",
       "file_type": "code",
       "source_file": "app/dashboard/student/_component/Sidebar.tsx",
-      "source_location": "L6",
+      "source_location": "L7",
       "_origin": "ast",
       "id": "app_dashboard_student_component_sidebar_navitem",
       "community": 0,
@@ -2700,7 +2700,7 @@
       "label": "Props",
       "file_type": "code",
       "source_file": "app/dashboard/student/_component/Sidebar.tsx",
-      "source_location": "L8",
+      "source_location": "L9",
       "_origin": "ast",
       "id": "app_dashboard_student_component_sidebar_props",
       "community": 0,
@@ -2711,7 +2711,7 @@
       "label": "Sidebar()",
       "file_type": "code",
       "source_file": "app/dashboard/student/_component/Sidebar.tsx",
-      "source_location": "L17",
+      "source_location": "L18",
       "_origin": "ast",
       "id": "app_dashboard_student_component_sidebar_sidebar",
       "community": 0,
@@ -3077,8 +3077,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "app_dashboard_tutor_student_segment_component_gallery_upload_modal_galleryuploadmodal",
-      "community": 4,
-      "community_name": "Tutor Student Segment",
+      "community": 22,
+      "community_name": "Topic Management",
       "norm_label": "galleryuploadmodal()"
     },
     {
@@ -3473,8 +3473,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_jadwal_slot_page",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 58,
+      "community_name": "slot-grid.tsx",
       "norm_label": "jadwal-slot/page.tsx"
     },
     {
@@ -3484,8 +3484,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_dashboard_tutor_jadwal_slot_page_page",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 58,
+      "community_name": "slot-grid.tsx",
       "norm_label": "page()"
     },
     {
@@ -3495,8 +3495,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_jadwal_slot_slot_grid",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 58,
+      "community_name": "slot-grid.tsx",
       "norm_label": "slot-grid.tsx"
     },
     {
@@ -3506,8 +3506,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "app_dashboard_tutor_jadwal_slot_slot_grid_day_labels",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 58,
+      "community_name": "slot-grid.tsx",
       "norm_label": "day_labels"
     },
     {
@@ -3517,8 +3517,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "app_dashboard_tutor_jadwal_slot_slot_grid_days",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 58,
+      "community_name": "slot-grid.tsx",
       "norm_label": "days"
     },
     {
@@ -3528,8 +3528,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "app_dashboard_tutor_jadwal_slot_slot_grid_hours",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 58,
+      "community_name": "slot-grid.tsx",
       "norm_label": "hours"
     },
     {
@@ -3539,8 +3539,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "app_dashboard_tutor_jadwal_slot_slot_grid_fmt",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 58,
+      "community_name": "slot-grid.tsx",
       "norm_label": "fmt()"
     },
     {
@@ -3550,8 +3550,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "app_dashboard_tutor_jadwal_slot_slot_grid_isinrange",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 58,
+      "community_name": "slot-grid.tsx",
       "norm_label": "isinrange()"
     },
     {
@@ -3561,8 +3561,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "app_dashboard_tutor_jadwal_slot_slot_grid_slotgrid",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 58,
+      "community_name": "slot-grid.tsx",
       "norm_label": "slotgrid()"
     },
     {
@@ -3572,8 +3572,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_id_curriculum_detail",
-      "community": 31,
-      "community_name": "Create Class Form",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "curriculum-detail.tsx"
     },
     {
@@ -3583,8 +3583,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_id_curriculum_detail_curriculumdetail",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "curriculumdetail()"
     },
     {
@@ -3594,8 +3594,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_id_page",
-      "community": 31,
-      "community_name": "Create Class Form",
+      "community": 70,
+      "community_name": "[id]/page.tsx",
       "norm_label": "[id]/page.tsx"
     },
     {
@@ -3605,8 +3605,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_id_page_page",
-      "community": 31,
-      "community_name": "Create Class Form",
+      "community": 70,
+      "community_name": "[id]/page.tsx",
       "norm_label": "page()"
     },
     {
@@ -3616,8 +3616,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_id_page_generatestaticparams",
-      "community": 31,
-      "community_name": "Create Class Form",
+      "community": 70,
+      "community_name": "[id]/page.tsx",
       "norm_label": "generatestaticparams()"
     },
     {
@@ -3627,8 +3627,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_kurikulum_list",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "kurikulum-list.tsx"
     },
     {
@@ -3638,8 +3638,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_kurikulum_list_category_labels",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "category_labels"
     },
     {
@@ -3649,8 +3649,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_kurikulum_list_kurikulumlist",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "kurikulumlist()"
     },
     {
@@ -3660,8 +3660,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_page",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "kurikulum/page.tsx"
     },
     {
@@ -3671,8 +3671,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_dashboard_tutor_kurikulum_page_page",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "page()"
     },
     {
@@ -3682,8 +3682,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_page",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "tutor/page.tsx"
     },
     {
@@ -3693,8 +3693,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_dashboard_tutor_page_page",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "page()"
     },
     {
@@ -3847,8 +3847,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "tutor-classes-segment.tsx"
     },
     {
@@ -3858,8 +3858,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment_day_labels",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "day_labels"
     },
     {
@@ -3869,8 +3869,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment_category_labels",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "category_labels"
     },
     {
@@ -3880,8 +3880,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment_theme",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "theme"
     },
     {
@@ -3891,8 +3891,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment_classwithdetails",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "classwithdetails"
     },
     {
@@ -3902,8 +3902,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment_card",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "card()"
     },
     {
@@ -3913,8 +3913,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_classes_segment_tutorclassessegment",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 13,
+      "community_name": "Admin Student Management",
       "norm_label": "tutorclassessegment()"
     },
     {
@@ -3924,8 +3924,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_content",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "tutor-content.tsx"
     },
     {
@@ -3935,8 +3935,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_content_nav_items",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "nav_items"
     },
     {
@@ -3946,8 +3946,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_content_mobile_nav",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "mobile_nav"
     },
     {
@@ -3957,8 +3957,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_content_tutordashboard",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "tutordashboard()"
     },
     {
@@ -4067,8 +4067,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_roadmap_segment",
-      "community": 57,
-      "community_name": "api",
+      "community": 2,
+      "community_name": "Roadmap & Icons",
       "norm_label": "tutor-roadmap-segment.tsx"
     },
     {
@@ -4078,8 +4078,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_roadmap_segment_props",
-      "community": 57,
-      "community_name": "api",
+      "community": 2,
+      "community_name": "Roadmap & Icons",
       "norm_label": "props"
     },
     {
@@ -4089,8 +4089,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_roadmap_segment_status_styles",
-      "community": 57,
-      "community_name": "api",
+      "community": 2,
+      "community_name": "Roadmap & Icons",
       "norm_label": "status_styles"
     },
     {
@@ -4100,8 +4100,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_roadmap_segment_tutorroadmapsegment",
-      "community": 57,
-      "community_name": "api",
+      "community": 2,
+      "community_name": "Roadmap & Icons",
       "norm_label": "tutorroadmapsegment()"
     },
     {
@@ -4111,8 +4111,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_schedule_detail_modal",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "tutor-schedule-detail-modal.tsx"
     },
     {
@@ -4122,8 +4122,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_schedule_detail_modal_day_labels",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "day_labels"
     },
     {
@@ -4133,8 +4133,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_schedule_detail_modal_theme",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "theme"
     },
     {
@@ -4144,8 +4144,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "app_dashboard_tutor_tutor_schedule_detail_modal_tutorscheduledetailmodal",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "tutorscheduledetailmodal()"
     },
     {
@@ -4287,8 +4287,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_login_login_content",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 9,
+      "community_name": "Login Page",
       "norm_label": "login-content.tsx"
     },
     {
@@ -4298,8 +4298,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "app_login_login_content_logincontent",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 9,
+      "community_name": "Login Page",
       "norm_label": "logincontent()"
     },
     {
@@ -4309,8 +4309,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_login_page",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 9,
+      "community_name": "Login Page",
       "norm_label": "login/page.tsx"
     },
     {
@@ -4320,8 +4320,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_login_page_page",
-      "community": 13,
-      "community_name": "Admin Student Management",
+      "community": 9,
+      "community_name": "Login Page",
       "norm_label": "page()"
     },
     {
@@ -4353,8 +4353,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_register_page",
-      "community": 17,
-      "community_name": "Admin Tutor Management",
+      "community": 57,
+      "community_name": "api",
       "norm_label": "register/page.tsx"
     },
     {
@@ -4364,8 +4364,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "app_register_page_page",
-      "community": 17,
-      "community_name": "Admin Tutor Management",
+      "community": 57,
+      "community_name": "api",
       "norm_label": "page()"
     },
     {
@@ -4375,8 +4375,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_register_register_content",
-      "community": 17,
-      "community_name": "Admin Tutor Management",
+      "community": 57,
+      "community_name": "api",
       "norm_label": "register-content.tsx"
     },
     {
@@ -4386,8 +4386,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "app_register_register_content_registercontent",
-      "community": 17,
-      "community_name": "Admin Tutor Management",
+      "community": 57,
+      "community_name": "api",
       "norm_label": "registercontent()"
     },
     {
@@ -5343,8 +5343,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usestudentdashboard",
-      "community": 0,
-      "community_name": "Parent Dashboard",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "usestudentdashboard.ts"
     },
     {
@@ -5365,8 +5365,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usetutordashboard",
-      "community": 0,
-      "community_name": "Parent Dashboard",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "usetutordashboard.ts"
     },
     {
@@ -5376,8 +5376,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "hooks_usetutordashboard_classwithdetails",
-      "community": 0,
-      "community_name": "Parent Dashboard",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "classwithdetails"
     },
     {
@@ -5387,8 +5387,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "hooks_usetutordashboard_usetutordashboard",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "usetutordashboard()"
     },
     {
@@ -5640,8 +5640,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "lib_api_authuser",
-      "community": 31,
-      "community_name": "Create Class Form",
+      "community": 58,
+      "community_name": "slot-grid.tsx",
       "norm_label": "authuser"
     },
     {
@@ -5662,8 +5662,8 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "lib_api_parentprofile",
-      "community": 26,
-      "community_name": "NewTrialWizard.tsx",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "parentprofile"
     },
     {
@@ -5673,8 +5673,8 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "lib_api_studentprofile",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 4,
+      "community_name": "Tutor Student Segment",
       "norm_label": "studentprofile"
     },
     {
@@ -5695,8 +5695,8 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "lib_api_enrollment",
-      "community": 31,
-      "community_name": "Create Class Form",
+      "community": 0,
+      "community_name": "Parent Dashboard",
       "norm_label": "enrollment"
     },
     {
@@ -5794,8 +5794,8 @@
       "source_location": "L199",
       "_origin": "ast",
       "id": "lib_api_schedule",
-      "community": 0,
-      "community_name": "Parent Dashboard",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "schedule"
     },
     {
@@ -5805,8 +5805,8 @@
       "source_location": "L214",
       "_origin": "ast",
       "id": "lib_api_attendance",
-      "community": 1,
-      "community_name": "Student Dashboard",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "attendance"
     },
     {
@@ -5827,8 +5827,8 @@
       "source_location": "L238",
       "_origin": "ast",
       "id": "lib_api_certificate",
-      "community": 26,
-      "community_name": "NewTrialWizard.tsx",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "certificate"
     },
     {
@@ -5838,8 +5838,8 @@
       "source_location": "L250",
       "_origin": "ast",
       "id": "lib_api_category",
-      "community": 26,
-      "community_name": "NewTrialWizard.tsx",
+      "community": 31,
+      "community_name": "Create Class Form",
       "norm_label": "category"
     },
     {
@@ -5882,8 +5882,8 @@
       "source_location": "L285",
       "_origin": "ast",
       "id": "lib_api_topictask",
-      "community": 57,
-      "community_name": "api",
+      "community": 15,
+      "community_name": "Student Learning Path",
       "norm_label": "topictask"
     },
     {
@@ -5893,8 +5893,8 @@
       "source_location": "L298",
       "_origin": "ast",
       "id": "lib_api_topic",
-      "community": 22,
-      "community_name": "Topic Management",
+      "community": 54,
+      "community_name": "dashboard-content.tsx",
       "norm_label": "topic"
     },
     {
@@ -5915,8 +5915,8 @@
       "source_location": "L319",
       "_origin": "ast",
       "id": "lib_api_quizquestiondata",
-      "community": 57,
-      "community_name": "api",
+      "community": 15,
+      "community_name": "Student Learning Path",
       "norm_label": "quizquestiondata"
     },
     {
@@ -5937,8 +5937,8 @@
       "source_location": "L333",
       "_origin": "ast",
       "id": "lib_api_announcement",
-      "community": 0,
-      "community_name": "Parent Dashboard",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "announcement"
     },
     {
@@ -5981,8 +5981,8 @@
       "source_location": "L371",
       "_origin": "ast",
       "id": "lib_api_requestclass",
-      "community": 14,
-      "community_name": "Admin Class Management",
+      "community": 48,
+      "community_name": "login-content.tsx",
       "norm_label": "requestclass"
     },
     {
@@ -6003,8 +6003,8 @@
       "source_location": "L407",
       "_origin": "ast",
       "id": "lib_api_assessmentaspect",
-      "community": 68,
-      "community_name": "AddTutorForm.tsx",
+      "community": 12,
+      "community_name": "Admin Dashboard",
       "norm_label": "assessmentaspect"
     },
     {
@@ -6014,8 +6014,8 @@
       "source_location": "L420",
       "_origin": "ast",
       "id": "lib_api_attendanceassessmentscore",
-      "community": 4,
-      "community_name": "Tutor Student Segment",
+      "community": 9,
+      "community_name": "Login Page",
       "norm_label": "attendanceassessmentscore"
     },
     {
@@ -6047,8 +6047,8 @@
       "source_location": "L451",
       "_origin": "ast",
       "id": "lib_api_gallery",
-      "community": 0,
-      "community_name": "Parent Dashboard",
+      "community": 9,
+      "community_name": "Login Page",
       "norm_label": "gallery"
     },
     {
@@ -6069,8 +6069,8 @@
       "source_location": "L468",
       "_origin": "ast",
       "id": "lib_api_readfromstorage",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "readfromstorage()"
     },
     {
@@ -6080,8 +6080,8 @@
       "source_location": "L483",
       "_origin": "ast",
       "id": "lib_api_getstoredsession",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "getstoredsession()"
     },
     {
@@ -6102,8 +6102,8 @@
       "source_location": "L502",
       "_origin": "ast",
       "id": "lib_api_clearsession",
-      "community": 56,
-      "community_name": "ClassesTable.tsx",
+      "community": 63,
+      "community_name": "tutor-content.tsx",
       "norm_label": "clearsession()"
     },
     {
@@ -6212,8 +6212,8 @@
       "source_location": "L738",
       "_origin": "ast",
       "id": "lib_api_uploadimage",
-      "community": 4,
-      "community_name": "Tutor Student Segment",
+      "community": 22,
+      "community_name": "Topic Management",
       "norm_label": "uploadimage()"
     },
     {
@@ -8546,61 +8546,6 @@
       "id": "graphify_out_memory_query_20260808_044728_bagaimana_konfigurasi_font_di_frontend_setelah_mig_source_nodes",
       "community": 21,
       "community_name": "Admin Curriculum",
-      "norm_label": "source nodes"
-    },
-    {
-      "label": "query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga.md",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga",
-      "community": 12,
-      "community_name": "Admin Dashboard",
-      "norm_label": "query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga.md"
-    },
-    {
-      "label": "Q: Bagaimana redesign playful dashboard student dengan palete brand kustom?",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga.md",
-      "source_location": "L10",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga_q_bagaimana_redesign_playful_dashboard_student_dengan_palete_brand_kustom",
-      "community": 12,
-      "community_name": "Admin Dashboard",
-      "norm_label": "q: bagaimana redesign playful dashboard student dengan palete brand kustom?"
-    },
-    {
-      "label": "Answer",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga.md",
-      "source_location": "L12",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga_answer",
-      "community": 12,
-      "community_name": "Admin Dashboard",
-      "norm_label": "answer"
-    },
-    {
-      "label": "Outcome",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga.md",
-      "source_location": "L16",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga_outcome",
-      "community": 12,
-      "community_name": "Admin Dashboard",
-      "norm_label": "outcome"
-    },
-    {
-      "label": "Source Nodes",
-      "file_type": "document",
-      "source_file": "graphify-out/memory/query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga.md",
-      "source_location": "L20",
-      "_origin": "ast",
-      "id": "graphify_out_memory_query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga_source_nodes",
-      "community": 12,
-      "community_name": "Admin Dashboard",
       "norm_label": "source nodes"
     },
     {
@@ -15195,7 +15140,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/student/_component/Sidebar.tsx",
-      "source_location": "L6",
+      "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_student_component_sidebar",
@@ -15206,7 +15151,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/student/_component/Sidebar.tsx",
-      "source_location": "L8",
+      "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_student_component_sidebar",
@@ -15217,7 +15162,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/student/_component/Sidebar.tsx",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_student_component_sidebar",
@@ -15229,7 +15174,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/student/_component/Sidebar.tsx",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_student_component_sidebar",
@@ -15241,7 +15186,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/student/_component/Sidebar.tsx",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_student_component_sidebar",
@@ -15253,7 +15198,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/student/_component/Sidebar.tsx",
-      "source_location": "L2",
+      "source_location": "L3",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_student_component_sidebar",
@@ -15265,7 +15210,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/dashboard/student/_component/Sidebar.tsx",
-      "source_location": "L2",
+      "source_location": "L3",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_dashboard_student_component_sidebar",
@@ -24202,50 +24147,6 @@
       "_origin": "ast",
       "source": "graphify_out_memory_query_20260808_044728_bagaimana_konfigurasi_font_di_frontend_setelah_mig_q_bagaimana_konfigurasi_font_di_frontend_setelah_migrasi_ke_poppins",
       "target": "graphify_out_memory_query_20260808_044728_bagaimana_konfigurasi_font_di_frontend_setelah_mig_source_nodes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga.md",
-      "source_location": "L10",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga",
-      "target": "graphify_out_memory_query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga_q_bagaimana_redesign_playful_dashboard_student_dengan_palete_brand_kustom",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga.md",
-      "source_location": "L12",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga_q_bagaimana_redesign_playful_dashboard_student_dengan_palete_brand_kustom",
-      "target": "graphify_out_memory_query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga_answer",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga.md",
-      "source_location": "L16",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga_q_bagaimana_redesign_playful_dashboard_student_dengan_palete_brand_kustom",
-      "target": "graphify_out_memory_query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga_outcome",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "graphify-out/memory/query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga.md",
-      "source_location": "L20",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "graphify_out_memory_query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga_q_bagaimana_redesign_playful_dashboard_student_dengan_palete_brand_kustom",
-      "target": "graphify_out_memory_query_20260808_052151_bagaimana_redesign_playful_dashboard_student_denga_source_nodes",
       "confidence_score": 1.0
     },
     {

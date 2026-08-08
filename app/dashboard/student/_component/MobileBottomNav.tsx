@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import type { Theme, Segment } from "./types";
 import { NAV_ITEMS, MOBILE_NAV } from "./types";
 
@@ -19,12 +20,19 @@ export default function MobileBottomNav({ theme, segment, onNavigate }: Props) {
           <button
             key={key}
             onClick={() => onNavigate(key)}
-            className={`flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-semibold ${
-              active ? "text-blue-600" : theme.textMuted
-            }`}
+            className={`relative flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-semibold`}
           >
-            {item && <item.icon size={19} />}
-            {item?.label.split(" ")[0]}
+            {active && (
+              <motion.div
+                layoutId="mobile-nav-active"
+                className="absolute inset-x-1 inset-y-0.5 rounded-xl bg-brand-blue-50"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
+            {item && <item.icon size={19} className={`relative z-10 ${active ? "text-brand-blue-600" : theme.textMuted}`} />}
+            <span className={`relative z-10 ${active ? "text-brand-blue-600" : theme.textMuted}`}>
+              {item?.label.split(" ")[0]}
+            </span>
           </button>
         );
       })}

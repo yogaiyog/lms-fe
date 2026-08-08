@@ -10,6 +10,8 @@ type Props = {
   onCurriculumSegmentChange: (seg: Props["curriculumSegment"]) => void;
   studentSegment: "list" | "enrollment" | "parent" | "add";
   onStudentSegmentChange: (seg: Props["studentSegment"]) => void;
+  billingSegment: "invoices" | "pemasukan" | "pengeluaran";
+  onBillingSegmentChange: (seg: Props["billingSegment"]) => void;
 };
 
 export default function AdminSidebar({
@@ -17,6 +19,7 @@ export default function AdminSidebar({
   tutorSegment, onTutorSegmentChange,
   curriculumSegment, onCurriculumSegmentChange,
   studentSegment, onStudentSegmentChange,
+  billingSegment, onBillingSegmentChange,
 }: Props) {
   return (
     <aside className="w-56 shrink-0 print:hidden">
@@ -79,8 +82,16 @@ export default function AdminSidebar({
           </div>
         )}
         {mainMenu === "billing" && (
-          <div className="rounded-2xl bg-slate-50 p-3">
-            <div className="text-sm font-semibold text-slate-400">Invoice &amp; Pembayaran</div>
+          <div className="flex flex-col gap-1">
+            {(["invoices", "pemasukan", "pengeluaran"] as const).map((seg) => (
+              <button key={seg} onClick={() => onBillingSegmentChange(seg)}
+                className={`rounded-2xl px-4 py-2.5 text-left text-sm font-semibold transition-colors ${
+                  billingSegment === seg ? "bg-blue-600 text-white shadow-sm shadow-blue-600/30" : "text-slate-500 hover:bg-blue-50 hover:text-blue-700"
+                }`}
+              >
+                {seg === "invoices" ? "Invoice & Pembayaran" : seg === "pemasukan" ? "Pemasukan" : "Pengeluaran"}
+              </button>
+            ))}
           </div>
         )}
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { Calendar, Clock, Video } from "lucide-react";
+import { motion } from "framer-motion";
 import Card from "./Card";
 import { DAY_LABELS } from "./types";
 import type { Theme } from "./types";
@@ -16,6 +17,16 @@ type Props = {
   announcements: Announcement[];
 };
 
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06 } },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" as const } },
+};
+
 export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules, countdowns, allClasses, announcements }: Props) {
   const now = new Date();
   const todayDay = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"][now.getDay()];
@@ -23,34 +34,44 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
   const activeWeekSchedules = weekSchedules.filter((s) => activeClassIds.has(s.classId));
 
   return (
-    <div className="space-y-6">
+    <motion.div className="space-y-6" variants={container} initial="hidden" animate="show">
 
-      
-      <div>
-        <h1 className={`text-xl sm:text-2xl font-extrabold tracking-tight ${theme.text}`}>
-          Halo, {user?.studentProfile?.fullName ?? "Student"}! 👋
-        </h1>
-        <p className={`mt-0.5 text-xs sm:text-sm ${theme.textMuted}`}>Selamat datang kembali di dashboard kamu.</p>
-      </div>
-
-            {announcements.length > 0 && (
-        <Card theme={theme} className="p-4 sm:p-6">
-          <h2 className={`font-bold text-sm sm:text-base mb-3 ${theme.text}`}>Pengumuman</h2>
-          <div className="space-y-2">
-            {announcements.map((a) => (
-              <div key={a.id} className={`rounded-xl p-3 ${theme.dark ? "bg-slate-800" : "bg-amber-50"}`}>
-                <h3 className={`text-xs font-bold ${theme.text}`}>{a.title}</h3>
-                <p className={`mt-0.5 text-xs sm:text-sm ${theme.textMuted}`}>{a.content}</p>
-                <p className={`mt-1.5 text-[10px] ${theme.textMuted}`}>
-                  {allClasses.find((c) => c.id === a.classId)?.name ?? "Kelas"} — {a.tutor?.fullName ?? "Tutor"} — {new Date(a.createdAt).toLocaleDateString("id-ID")}
-                </p>
-              </div>
-            ))}
+      {/* Hero Greeting */}
+      <motion.div variants={item}>
+        <div className={`relative overflow-hidden rounded-[1.75rem] ${theme.dark ? "bg-brand-blue-700" : "bg-brand-blue-500"} p-6 sm:p-8 text-white shadow-lg shadow-brand-blue-500/20`}>
+          <div className="absolute -top-8 -right-8 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
+          <div className="absolute bottom-0 left-0 h-24 w-48 rounded-full bg-white/5 blur-3xl" />
+          <div className="relative z-10">
+            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
+              Halo, {user?.studentProfile?.fullName ?? "Student"}! 👋
+            </h1>
+            <p className="mt-1 text-sm text-white/80">Selamat datang.</p>
           </div>
-        </Card>
+        </div>
+      </motion.div>
+
+      {/* Announcements */}
+      {announcements.length > 0 && (
+        <motion.div variants={item}>
+          <Card theme={theme} className="p-4 sm:p-6">
+            <h2 className={`font-bold text-sm sm:text-base mb-3 ${theme.text}`}>Pengumuman</h2>
+            <div className="space-y-2">
+              {announcements.map((a) => (
+                <div key={a.id} className={`rounded-xl p-3 ${theme.dark ? "bg-slate-800" : "bg-gradient-to-r from-berry-lipstick-50 to-amber-50"}`}>
+                  <h3 className={`text-xs font-bold ${theme.text}`}>{a.title}</h3>
+                  <p className={`mt-0.5 text-xs sm:text-sm ${theme.textMuted}`}>{a.content}</p>
+                  <p className={`mt-1.5 text-[10px] ${theme.textMuted}`}>
+                    {allClasses.find((c) => c.id === a.classId)?.name ?? "Kelas"} — {a.tutor?.fullName ?? "Tutor"} — {new Date(a.createdAt).toLocaleDateString("id-ID")}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </motion.div>
       )}
 
-      <div>
+      {/* Schedule */}
+      <motion.div variants={item}>
         <h2 className={`mb-3 text-xs sm:text-sm font-semibold ${theme.textMuted}`}>Jadwal minggu ini</h2>
 
         {activeWeekSchedules.length === 0 ? (
@@ -71,8 +92,8 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
                 <Card key={schedule.id} theme={theme} className="p-4 sm:p-5">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${isOngoing ? "bg-emerald-100" : isSoon ? "bg-amber-100" : schedule.isDone ? "bg-slate-100" : cd ? "bg-blue-100" : "bg-slate-100"}`}>
-                        <Calendar size={18} className={isOngoing ? "text-emerald-600" : isSoon ? "text-amber-600" : schedule.isDone ? "text-slate-400" : cd ? "text-blue-600" : "text-slate-400"} />
+                      <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${isOngoing ? "bg-tea-green-100" : isSoon ? "bg-amber-100" : schedule.isDone ? "bg-slate-100" : cd ? "bg-brand-blue-100" : "bg-slate-100"}`}>
+                        <Calendar size={18} className={isOngoing ? "text-tea-green-700" : isSoon ? "text-amber-600" : schedule.isDone ? "text-slate-400" : cd ? "text-brand-blue-600" : "text-slate-400"} />
                       </span>
                       <div className="min-w-0 flex-1">
                         <p className={`text-[10px] font-semibold uppercase tracking-wide ${theme.textMuted}`}>{allClasses.find((c) => c.id === schedule.classId)?.name ?? "Kelas"}</p>
@@ -81,7 +102,7 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
                         </h3>
                         <p className={`text-xs ${theme.textMuted}`}>{schedule.startTime}–{schedule.endTime}</p>
                         {schedule.topic && (
-                          <p className={`text-[11px] mt-0.5 font-semibold ${isOngoing ? "text-emerald-600" : "text-blue-600"}`}>{schedule.topic}</p>
+                          <p className={`text-[11px] mt-0.5 font-semibold ${isOngoing ? "text-tea-green-600" : "text-brand-blue-600"}`}>{schedule.topic}</p>
                         )}
                       </div>
                     </div>
@@ -92,24 +113,24 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
                           <Clock size={10} /> Selesai
                         </span>
                       ) : isOngoing ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 animate-pulse">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-tea-green-100 px-2.5 py-1 text-[11px] font-semibold text-tea-green-700 animate-pulse">
                           Berlangsung
                         </span>
                       ) : cd && !isCountdownZero ? (
                         <div className="flex items-center gap-1.5">
                           {cd.days > 0 && (
-                            <div className={`flex items-center gap-0.5 rounded-lg px-1.5 py-1 ${cd.days === 0 ? "bg-red-100" : "bg-blue-100"}`}>
-                              <span className={`text-xs font-extrabold ${cd.days === 0 ? "text-red-700" : "text-blue-700"}`}>{cd.days}</span>
-                              <span className={`text-[9px] ${cd.days === 0 ? "text-red-500" : "text-blue-500"}`}>h</span>
+                            <div className={`flex items-center gap-0.5 rounded-lg px-1.5 py-1 ${cd.days === 0 ? "bg-red-100" : "bg-brand-blue-100"}`}>
+                              <span className={`text-xs font-extrabold ${cd.days === 0 ? "text-red-700" : "text-brand-blue-700"}`}>{cd.days}</span>
+                              <span className={`text-[9px] ${cd.days === 0 ? "text-red-500" : "text-brand-blue-500"}`}>h</span>
                             </div>
                           )}
-                          <div className={`flex items-center gap-0.5 rounded-lg px-1.5 py-1 ${cd.days === 0 ? "bg-red-100" : "bg-blue-100"}`}>
-                            <span className={`text-xs font-extrabold ${cd.days === 0 ? "text-red-700" : "text-blue-700"}`}>{String(cd.hours).padStart(2, "0")}</span>
-                            <span className={`text-[9px] ${cd.days === 0 ? "text-red-500" : "text-blue-500"}`}>j</span>
+                          <div className={`flex items-center gap-0.5 rounded-lg px-1.5 py-1 ${cd.days === 0 ? "bg-red-100" : "bg-brand-blue-100"}`}>
+                            <span className={`text-xs font-extrabold ${cd.days === 0 ? "text-red-700" : "text-brand-blue-700"}`}>{String(cd.hours).padStart(2, "0")}</span>
+                            <span className={`text-[9px] ${cd.days === 0 ? "text-red-500" : "text-brand-blue-500"}`}>j</span>
                           </div>
-                          <div className={`flex items-center gap-0.5 rounded-lg px-1.5 py-1 ${cd.days === 0 ? "bg-red-100" : "bg-blue-100"}`}>
-                            <span className={`text-xs font-extrabold ${cd.days === 0 ? "text-red-700" : "text-blue-700"}`}>{String(cd.minutes).padStart(2, "0")}</span>
-                            <span className={`text-[9px] ${cd.days === 0 ? "text-red-500" : "text-blue-500"}`}>m</span>
+                          <div className={`flex items-center gap-0.5 rounded-lg px-1.5 py-1 ${cd.days === 0 ? "bg-red-100" : "bg-brand-blue-100"}`}>
+                            <span className={`text-xs font-extrabold ${cd.days === 0 ? "text-red-700" : "text-brand-blue-700"}`}>{String(cd.minutes).padStart(2, "0")}</span>
+                            <span className={`text-[9px] ${cd.days === 0 ? "text-red-500" : "text-brand-blue-500"}`}>m</span>
                           </div>
                           {cd.days === 0 && (
                             <div className="flex items-center gap-0.5 rounded-lg px-1.5 py-1 bg-red-100">
@@ -122,7 +143,7 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
 
                       {showMeetLink && (
                         <a href={schedule.meetLink} target="_blank" rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-blue-700 transition-colors">
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-brand-blue-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-brand-blue-700 transition-colors">
                           <Video size={12} /> Meet
                         </a>
                       )}
@@ -133,17 +154,18 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
             })}
           </div>
         )}
-      </div>
+      </motion.div>
 
       {allClasses.length === 0 && (
-        <Card theme={theme} className="p-8 sm:p-12 flex flex-col items-center text-center border-dashed">
-          <span className="text-4xl sm:text-5xl mb-3">📭</span>
-          <h2 className={`font-bold text-sm sm:text-base ${theme.text}`}>Belum ada kelas</h2>
-          <p className={`text-xs sm:text-sm mt-1 max-w-sm ${theme.textMuted}`}>Kamu belum terdaftar di kelas manapun.</p>
-        </Card>
+        <motion.div variants={item}>
+          <Card theme={theme} className="p-8 sm:p-12 flex flex-col items-center text-center border-dashed">
+            <span className="text-4xl sm:text-5xl mb-3">📭</span>
+            <h2 className={`font-bold text-sm sm:text-base ${theme.text}`}>Belum ada kelas</h2>
+            <p className={`text-xs sm:text-sm mt-1 max-w-sm ${theme.textMuted}`}>Kamu belum terdaftar di kelas manapun.</p>
+          </Card>
+        </motion.div>
       )}
 
-
-    </div>
+    </motion.div>
   );
 }
