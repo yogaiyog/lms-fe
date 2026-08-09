@@ -15,6 +15,7 @@ type Props = {
   countdowns: Record<string, { days: number; hours: number; minutes: number; seconds: number }>;
   allClasses: Class[];
   announcements: Announcement[];
+  onTopicClick?: (schedule: Schedule) => void;
 };
 
 const container = {
@@ -27,7 +28,7 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" as const } },
 };
 
-export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules, countdowns, allClasses, announcements }: Props) {
+export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules, countdowns, allClasses, announcements, onTopicClick }: Props) {
   const now = new Date();
   const todayDay = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"][now.getDay()];
   const activeClassIds = new Set(allClasses.filter((c) => c.isActive !== false).map((c) => c.id));
@@ -38,7 +39,7 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
 
       {/* Hero Greeting */}
       <motion.div variants={item}>
-        <div className={`relative overflow-hidden rounded-[1.75rem] ${theme.dark ? "bg-brand-blue-700" : "bg-brand-blue-500"} p-6 sm:p-8 text-white shadow-lg shadow-brand-blue-500/20`}>
+        <div className={`relative overflow-hidden rounded-[1.75rem] ${theme.dark ? "bg-brand-blue-700" : "bg-brand-blue-300"} p-6 sm:p-8 text-white shadow-lg shadow-brand-blue-500/20`}>
           <div className="absolute -top-8 -right-8 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
           <div className="absolute bottom-0 left-0 h-24 w-48 rounded-full bg-white/5 blur-3xl" />
           <div className="relative z-10">
@@ -102,7 +103,19 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
                         </h3>
                         <p className={`text-xs ${theme.textMuted}`}>{schedule.startTime}–{schedule.endTime}</p>
                         {schedule.topic && (
-                          <p className={`text-[11px] mt-0.5 font-semibold ${isOngoing ? "text-tea-green-600" : "text-brand-blue-600"}`}>{schedule.topic}</p>
+                          schedule.topicId ? (
+                            <button
+                              type="button"
+                              onClick={() => onTopicClick?.(schedule)}
+                              className={`mt-0.5 text-left text-[11px] font-semibold underline-offset-2 transition hover:underline ${
+                                isOngoing ? "text-tea-green-600" : "text-brand-blue-600"
+                              }`}
+                            >
+                              {schedule.topic}
+                            </button>
+                          ) : (
+                            <p className={`text-[11px] mt-0.5 font-semibold ${isOngoing ? "text-tea-green-600" : "text-brand-blue-600"}`}>{schedule.topic}</p>
+                          )
                         )}
                       </div>
                     </div>

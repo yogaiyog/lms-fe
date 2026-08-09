@@ -56,8 +56,8 @@ export default function Sidebar({ theme, segment, onNavigate, user, title, navIt
       </div>
 
       {/* Bagian bawah ~30% */}
-      <div className={`flex-[3] flex items-end px-4 pb-10 ${theme.dark ? "bg-brand-blue-900" : "bg-brand-yellow-400"}`}>
-        <div className={`rounded-2xl p-4 w-full shadow-md shadow-black/10 ${theme.dark ? "bg-brand-blue-800" : "bg-brand-yellow-300"}`}>
+      <div className={`flex-[3] flex items-end px-4 pb-10 ${theme.dark ? "bg-brand-blue-900" : "bg-brand-blue-400"}`}>
+        <div className={`rounded-2xl p-4 w-full shadow-md shadow-black/10 ${theme.dark ? "bg-brand-blue-800" : "bg-brand-blue-300"}`}>
           <p className={`text-xs font-bold ${theme.dark ? "text-brand-blue-200" : "text-brand-blue-500"}`}>Butuh bantuan?</p>
           <p className={`text-xs mt-1 ${theme.dark ? "text-brand-blue-300" : "text-brand-blue-600"}`}>Hubungi tutor kamu jika ada pertanyaan.</p>
         </div>

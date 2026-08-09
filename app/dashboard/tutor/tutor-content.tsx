@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Home, BookOpen, Clock, Moon, Sun,
-  LogOut, X, Menu, FileText, User, Route,
+  LogOut, X, Menu, User, Route,
 } from "lucide-react";
 import {
   api,
@@ -78,6 +78,10 @@ export default function TutorDashboard() {
     const params = new URLSearchParams(window.location.search);
     if (segment !== "home") params.set("tab", segment);
     else params.delete("tab");
+    if (segment !== "roadmap") {
+      params.delete("curriculum");
+      params.delete("topic");
+    }
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }, [segment, initialized, router, pathname]);
@@ -91,6 +95,9 @@ export default function TutorDashboard() {
   const [savingSchedule, setSavingSchedule] = useState(false);
   const [scheduleError, setScheduleError] = useState("");
   const [forceOngoingIds, setForceOngoingIds] = useState<Set<string>>(new Set());
+
+  const [pendingRoadmapCurriculum, setPendingRoadmapCurriculum] = useState<string | null>(null);
+  const [pendingRoadmapTopic, setPendingRoadmapTopic] = useState<string | null>(null);
 
   // Announcement
   const [announceClass, setAnnounceClass] = useState<string | null>(null);
@@ -136,6 +143,25 @@ export default function TutorDashboard() {
   const tutorProfileId = user?.tutorProfile?.id;
 
   const { classes, students, isLoading: dataLoading } = useTutorDashboard(tutorProfileId);
+
+  const openRoadmapForSchedule = useCallback((schedule: Schedule) => {
+    const cls = classes.find((c) => c.id === schedule.classId);
+    const curriculumId = cls?.curriculum?.id;
+    if (!curriculumId || !schedule.topicId) return;
+    setPendingRoadmapCurriculum(curriculumId);
+    setPendingRoadmapTopic(schedule.topicId);
+    setSegment("roadmap");
+    setDrawerOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [classes]);
+
+  const openRoadmapForCurriculum = useCallback((curriculumId: string) => {
+    setPendingRoadmapCurriculum(curriculumId);
+    setPendingRoadmapTopic(null);
+    setSegment("roadmap");
+    setDrawerOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   async function logout() {
     await api.auth.logout();
@@ -443,10 +469,6 @@ export default function TutorDashboard() {
               className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold ${theme.text} hover:bg-blue-50 hover:text-blue-700 transition-colors`}>
               <Clock size={18} /> Slot
             </Link>
-            <Link href="/dashboard/tutor/kurikulum"
-              className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold ${theme.text} hover:bg-blue-50 hover:text-blue-700 transition-colors`}>
-              <FileText size={18} /> Kurikulum
-            </Link>
           </div>
           <div className={`mt-6 rounded-2xl p-4 ${dark ? "bg-slate-800" : "bg-blue-50"}`}>
             <p className={`text-xs font-bold ${theme.text}`}>{user?.tutorProfile?.fullName ?? user?.email}</p>
@@ -467,7 +489,7 @@ export default function TutorDashboard() {
                 <button onClick={() => setDrawerOpen(false)} className={theme.textMuted}><X size={20} /></button>
               </div>
               <nav className="space-y-1">
-                {[{ key: "home", label: "Beranda", icon: Home }, { key: "classes", label: "Kelas", icon: BookOpen }, { key: "students", label: "Siswa", icon: User }, ...[{ key: "slot", label: "Slot", icon: Clock, href: "/dashboard/tutor/jadwal-slot" as const }, { key: "kurikulum", label: "Kurikulum", icon: FileText, href: "/dashboard/tutor/kurikulum" as const }]].map((item) => {
+                {[{ key: "home", label: "Beranda", icon: Home }, { key: "classes", label: "Kelas", icon: BookOpen }, { key: "students", label: "Siswa", icon: User }, ...[{ key: "slot", label: "Slot", icon: Clock, href: "/dashboard/tutor/jadwal-slot" as const }]].map((item) => {
                   const Icon = item.icon;
                   const active = segment === item.key;
                   if (item.href) {
@@ -520,6 +542,7 @@ export default function TutorDashboard() {
                 onOpenScheduleDetail={openScheduleDetail}
                 onStartEditSchedule={startEditSchedule}
                 onOpenAnnounceForm={(classId) => { setAnnounceClass(classId); setAnnounceTitle(""); setAnnounceContent(""); setAnnounceError(""); }}
+                onOpenRoadmap={openRoadmapForCurriculum}
               />
             )}
             {segment === "students" && (
@@ -530,7 +553,11 @@ export default function TutorDashboard() {
               />
             )}
             {segment === "roadmap" && (
-              <TutorRoadmapSegment theme={theme} />
+              <TutorRoadmapSegment
+                theme={theme}
+                initialCurriculumId={pendingRoadmapCurriculum}
+                initialTopicId={pendingRoadmapTopic}
+              />
             )}
             {segment === "attendance" && user?.tutorProfile?.id && (
               <TutorAttendanceSegment
@@ -553,6 +580,7 @@ export default function TutorDashboard() {
                 onCancelAttendance={() => setAttendanceForm([])}
                 onEditSchedule={startEditSchedule}
                 onOpenScheduleDetail={openScheduleDetail}
+                onTopicClick={openRoadmapForSchedule}
                 tutorName={user?.tutorProfile?.fullName}
                 attendanceFilledIds={attendanceFilledIds}
               />
@@ -579,10 +607,6 @@ export default function TutorDashboard() {
         <Link href="/dashboard/tutor/jadwal-slot"
           className={`flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-semibold ${theme.textMuted}`}>
           <Clock size={19} /> Slot
-        </Link>
-        <Link href="/dashboard/tutor/kurikulum"
-          className={`flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-semibold ${theme.textMuted}`}>
-          <FileText size={19} /> Kurikulum
         </Link>
       </nav>
 

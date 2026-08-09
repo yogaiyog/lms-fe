@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import { BookOpen, Calendar, Clock, User, Video, ChevronRight, Trash2 } from "lucide-react";
-import Link from "next/link";
 import { api, type Schedule, type Topic, type Announcement } from "@/lib/api";
 
 const DAY_LABELS: Record<string, string> = {
@@ -55,12 +54,14 @@ export default function TutorClassesSegment({
   onOpenScheduleDetail,
   onStartEditSchedule,
   onOpenAnnounceForm,
+  onOpenRoadmap,
 }: {
   theme: Theme;
   classes: ClassWithDetails[];
   onOpenScheduleDetail: (schedule: Schedule) => void;
   onStartEditSchedule: (schedule: Schedule, classId: string) => void;
   onOpenAnnounceForm: (classId: string) => void;
+  onOpenRoadmap?: (curriculumId: string) => void;
 }) {
   const [deletingAnn, setDeletingAnn] = useState<string | null>(null);
   const [localAnnouncements, setLocalAnnouncements] = useState<Record<string, Announcement[]>>({});
@@ -220,10 +221,15 @@ export default function TutorClassesSegment({
                   {cls.curriculum.topics.length} topik
                 </span>
               </div>
-                <Link href={`/dashboard/tutor/kurikulum/${cls.curriculum.id}`}
-                  className="inline-flex items-center gap-1.5 rounded-2xl bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-700 transition-colors">
-                  Lihat Kurikulum  <ChevronRight size={14} />
-                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (cls.curriculum) onOpenRoadmap?.(cls.curriculum.id);
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-2xl bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-700 transition-colors"
+                >
+                  Lihat Roadmap  <ChevronRight size={14} />
+                </button>
               </div>
             
             </div>
