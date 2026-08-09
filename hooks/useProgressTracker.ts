@@ -126,8 +126,10 @@ export function useProgressTracker(studentId: string) {
 
         if (!levelId) return;
 
+        // UI optimistic only. Persistence is handled by the scratch window
+        // itself via direct fetch (with res.ok check) — sending another POST
+        // here caused a duplicate-fire race (409 on upsert "create").
         applyProgress(levelId, status, projectId);
-        sendProgressToServer(levelId, status, projectId);
         return;
       }
 
