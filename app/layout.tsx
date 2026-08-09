@@ -1,17 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import { Lexend, Poppins } from "next/font/google";
+import localFont from "next/font/local";
 import QueryProvider from "@/lib/query-provider";
 import "./globals.css";
 
-const poppins = Poppins({
+const poppins = localFont({
   variable: "--font-poppins",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  src: [
+    { path: "./fonts/poppins-400.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/poppins-500.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/poppins-600.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/poppins-700.woff2", weight: "700", style: "normal" },
+  ],
 });
 
-const lexend = Lexend({
+const lexend = localFont({
   variable: "--font-lexend",
-  subsets: ["latin"],
+  display: "swap",
+  src: "./fonts/lexend-latin.woff2",
 });
 
 const COMPANY_NAME = process.env.NEXT_PUBLIC_COMPANY_NAME || "LMS Coding";

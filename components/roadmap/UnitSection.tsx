@@ -99,12 +99,12 @@ export function UnitSection({ unit, onLevelClick, onCapstoneClick }: Props) {
                 type="button"
                 onClick={() => project.capstone && onCapstoneClick?.(project.capstone)}
                 className={[
-                  "rounded-full border border-slate-300 bg-white px-4 py-1.5 text-sm font-medium text-slate-700",
+                  "rounded-full border px-4 py-1.5 text-sm font-medium",
                   project.capstone.status === "completed"
-                    ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/30"
+                    ? "border-emerald-500 bg-emerald-500 text-white shadow-md shadow-emerald-500/30"
                     : allComplete
-                      ? "bg-slate-800 text-white hover:bg-slate-700"
-                      : "bg-slate-200 text-slate-400",
+                      ? "border-slate-800 bg-slate-800 text-white hover:bg-slate-700"
+                      : "border-slate-300 bg-slate-200 text-slate-400",
                 ].join(" ")}
               >
                 {project.capstone.status === "completed" ? (
