@@ -2,12 +2,15 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { api, type Curriculum, type TopicTask } from "@/lib/api";
 import { UnitSection } from "@/components/roadmap";
 import type { Theme } from "../student/_component/types";
 
 type Props = {
   theme: Theme;
+  initialCurriculumId?: string | null;
+  initialTopicId?: string | null;
 };
 
 const STATUS_STYLES: Record<string, string> = {
@@ -19,13 +22,14 @@ const STATUS_STYLES: Record<string, string> = {
     "bg-teal-600 border-teal-600 text-white shadow-md shadow-teal-600/30",
 };
 
-export default function TutorRoadmapSegment({ theme }: Props) {
+export default function TutorRoadmapSegment({ theme, initialCurriculumId, initialTopicId }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const [curricula, setCurricula] = useState<Curriculum[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCurriculumId, setSelectedCurriculumId] = useState<string>("");
+  const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -36,10 +40,18 @@ export default function TutorRoadmapSegment({ theme }: Props) {
           setCurricula(data);
           const params = new URLSearchParams(window.location.search);
           const curriculumFromUrl = params.get("curriculum");
-          if (curriculumFromUrl) {
+          const topicFromUrl = params.get("topic");
+          if (initialCurriculumId) {
+            setSelectedCurriculumId(initialCurriculumId);
+          } else if (curriculumFromUrl) {
             setSelectedCurriculumId(curriculumFromUrl);
           } else if (data.length > 0) {
             setSelectedCurriculumId(data[0].id);
+          }
+          if (initialTopicId) {
+            setSelectedTopicId(initialTopicId);
+          } else if (topicFromUrl) {
+            setSelectedTopicId(topicFromUrl);
           }
         }
       } catch (err) {
@@ -50,15 +62,17 @@ export default function TutorRoadmapSegment({ theme }: Props) {
       }
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [initialCurriculumId, initialTopicId]);
 
   useEffect(() => {
     if (!selectedCurriculumId) return;
     const params = new URLSearchParams(window.location.search);
     params.set("curriculum", selectedCurriculumId);
+    if (selectedTopicId) params.set("topic", selectedTopicId);
+    else params.delete("topic");
     const qs = params.toString();
     router.replace(`${pathname}?${qs}`, { scroll: false });
-  }, [selectedCurriculumId, router, pathname]);
+  }, [selectedCurriculumId, selectedTopicId, router, pathname]);
 
   const selectedCurriculum = useMemo(
     () => curricula.find((c) => c.id === selectedCurriculumId),
@@ -104,6 +118,11 @@ export default function TutorRoadmapSegment({ theme }: Props) {
       };
     });
   }, [selectedCurriculum]);
+
+  const filteredUnits = useMemo(
+    () => (selectedTopicId ? units.filter((u) => u.topicId === selectedTopicId) : units),
+    [units, selectedTopicId],
+  );
 
   const openPythonEditor = (url: string, payload: { instructions?: string; defaultCode?: string; title: string; taskCode: string }) => {
     const win = window.open(url, "scratch-tutorial", "width=1200,height=800");
@@ -181,6 +200,18 @@ export default function TutorRoadmapSegment({ theme }: Props) {
 
   return (
     <div>
+      {selectedTopicId && (
+        <button
+          type="button"
+          onClick={() => setSelectedTopicId(null)}
+          className={`mb-4 inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold transition-colors ${
+            theme.dark ? "text-slate-300 hover:bg-slate-800" : "text-slate-600 hover:bg-slate-100"
+          }`}
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Kembali ke semua topik
+        </button>
+      )}
       <div className="mb-6 flex items-start gap-3">
         {curricula.length > 1 && (
           <select
@@ -206,7 +237,7 @@ export default function TutorRoadmapSegment({ theme }: Props) {
         </div>
       ) : (
         <div className="flex flex-col gap-6">
-          {units.map((unit) => (
+          {filteredUnits.map((unit) => (
             <UnitSection
               key={unit.id}
               unit={unit}

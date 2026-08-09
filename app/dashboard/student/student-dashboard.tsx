@@ -264,6 +264,14 @@ export default function StudentDashboard() {
                 countdowns={countdowns}
                 allClasses={allClasses}
                 announcements={announcements}
+                onTopicClick={(s) => {
+                  if (!s.topicId) return;
+                  setSelectedClassId(s.classId);
+                  setSelectedTopicId(s.topicId);
+                  setSegment("roadmap");
+                  setDrawerOpen(false);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
               />
             )}
 

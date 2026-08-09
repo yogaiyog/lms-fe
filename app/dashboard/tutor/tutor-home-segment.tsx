@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { Calendar, Clock, CheckSquare, Video, User, X } from "lucide-react";
 import type { Schedule, StudentProfile, Curriculum } from "@/lib/api";
 
@@ -89,6 +88,7 @@ export default function TutorHomeSegment({
   onCancelAttendance,
   onEditSchedule,
   onOpenScheduleDetail,
+  onTopicClick,
   tutorName,
   attendanceFilledIds,
 }: {
@@ -105,6 +105,7 @@ export default function TutorHomeSegment({
   onCancelAttendance: () => void;
   onEditSchedule: (schedule: Schedule, classId: string) => void;
   onOpenScheduleDetail: (schedule: Schedule) => void;
+  onTopicClick?: (schedule: Schedule) => void;
   tutorName?: string;
   attendanceFilledIds?: Set<string>;
 }) {
@@ -158,13 +159,19 @@ export default function TutorHomeSegment({
                       <h3 className={`text-sm font-bold ${theme.text}`}>
                         {DAY_LABELS[schedule.dayOfWeek] ?? schedule.dayOfWeek}, {new Date(schedule.date).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}
                       </h3>
-                      {scheduleCurriculumId ? (
-                        <Link href={`/dashboard/tutor/kurikulum/${scheduleCurriculumId}`} className="hover:opacity-75 transition-opacity">
+                      {scheduleCurriculumId && schedule.topicId ? (
+                        <>
                           <p className={`text-xs ${theme.textMuted}`}>{schedule.startTime}–{schedule.endTime}</p>
-                          {schedule.topic && (
-                            <p className={`text-[11px] mt-0.5 font-semibold ${isOngoing ? "text-emerald-600" : "text-blue-600"}`}>{schedule.topic}</p>
-                          )}
-                        </Link>
+                          <button
+                            type="button"
+                            onClick={() => onTopicClick?.(schedule)}
+                            className={`mt-0.5 text-left text-[11px] font-semibold underline-offset-2 transition hover:underline ${
+                              isOngoing ? "text-emerald-600" : "text-blue-600"
+                            }`}
+                          >
+                            {schedule.topic}
+                          </button>
+                        </>
                       ) : (
                         <>
                           <p className={`text-xs ${theme.textMuted}`}>{schedule.startTime}–{schedule.endTime}</p>
