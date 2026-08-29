@@ -69,7 +69,7 @@ export function useAdminDashboard() {
   );
   const [loading, setLoading] = useState(true);
 
-  const [createType, setCreateType] = useState<"BATCH" | "PRIVATE" | "MAKEUP" | "TRIAL">("BATCH");
+  const [createType, setCreateType] = useState<"BATCH810" | "BATCH35" | "PRIVATE" | "MAKEUP" | "TRIAL">("BATCH810");
   const [createIsOnline, setCreateIsOnline] = useState(true);
   const [createLocation, setCreateLocation] = useState("");
   const [createName, setCreateName] = useState("");
@@ -82,8 +82,8 @@ export function useAdminDashboard() {
   const [studentSegment, setStudentSegment] = useState<"list" | "enrollment" | "parent" | "add">(
     initialMenu === "students" && ["list", "enrollment", "parent", "add"].includes(segParam ?? "") ? segParam as "list" | "enrollment" | "parent" | "add" : "list"
   );
-  const [billingSegment, setBillingSegment] = useState<"invoices" | "pemasukan" | "pengeluaran">(
-    initialMenu === "billing" && (segParam === "invoices" || segParam === "pemasukan" || segParam === "pengeluaran") ? segParam as "invoices" | "pemasukan" | "pengeluaran" : "invoices"
+  const [billingSegment, setBillingSegment] = useState<"invoices" | "pemasukan" | "pengeluaran" | "tutor-cost">(
+    initialMenu === "billing" && (segParam === "invoices" || segParam === "pemasukan" || segParam === "pengeluaran" || segParam === "tutor-cost") ? segParam as "invoices" | "pemasukan" | "pengeluaran" | "tutor-cost" : "invoices"
   );
   const [tutors, setTutors] = useState<TutorOption[]>([]);
   const [tutorsFull, setTutorsFull] = useState<{ id: string; fullName: string; phone: string; email?: string; bio?: string | null }[]>([]);
@@ -319,7 +319,9 @@ export function useAdminDashboard() {
         ? `${selectedCurriculum.name} - Private`
         : createType === "TRIAL"
           ? `${selectedCurriculum.name} - Trial`
-          : `${selectedCurriculum.name} - Batch ${createBatchPreview ?? "?"}`;
+          : createType === "BATCH810"
+            ? `${selectedCurriculum.name} - Batch 8-10 #${createBatchPreview ?? "?"}`
+            : `${selectedCurriculum.name} - Batch 3-5 #${createBatchPreview ?? "?"}`;
     setCreateName(name);
   }, [createType, selectedCurriculum, createBatchPreview]);
 
@@ -385,7 +387,7 @@ export function useAdminDashboard() {
     return DAY_ORDER[new Date(date).getDay()];
   }
 
-  function generateScheduleSlots(topics: { id: string; title: string; order: number }[], slots: { dayOfWeek: string; startTime: string; endTime: string }[], startDate: string, classType: string = "BATCH") {
+  function generateScheduleSlots(topics: { id: string; title: string; order: number }[], slots: { dayOfWeek: string; startTime: string; endTime: string }[], startDate: string, classType: string = "BATCH810") {
     const sorted = [...topics].sort((a, b) => a.order - b.order);
     const topicsToUse = classType === "MAKEUP" ? [sorted[0]] : sorted;
     const start = new Date(startDate);
@@ -476,7 +478,9 @@ export function useAdminDashboard() {
           ? `${selectedCurriculum!.name} - Private`
           : createType === "TRIAL"
             ? `${selectedCurriculum!.name} - Trial`
-            : `${selectedCurriculum!.name} - Batch ${createBatchPreview}`;
+            : createType === "BATCH810"
+              ? `${selectedCurriculum!.name} - Batch 8-10 #${createBatchPreview}`
+              : `${selectedCurriculum!.name} - Batch 3-5 #${createBatchPreview}`;
       const topics = selectedCurriculum!.topics;
       const scheduleData = generateScheduleSlots(topics, selectedSlots, createStartDate, createType);
       const startDateISO = new Date(createStartDate).toISOString();

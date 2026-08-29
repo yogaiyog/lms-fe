@@ -25,6 +25,7 @@ import InvoiceFormModal from "./components/billing/InvoiceFormModal";
 import InvoiceDetailView from "./components/billing/InvoiceDetailView";
 import Pemasukan from "./components/billing/Pemasukan";
 import Pengeluaran from "./components/billing/Pengeluaran";
+import SetTutorCost from "./components/billing/SetTutorCost";
 import NewTrialWizard from "./components/trial/NewTrialWizard";
 import { Plus, X } from "lucide-react";
 import { useBilling } from "../../../hooks/useBilling";
@@ -187,7 +188,10 @@ export default function AdminDashboard() {
           {h.mainMenu === "billing" && h.billingSegment === "pengeluaran" && (
             <Pengeluaran />
           )}
-          {h.mainMenu === "billing" && h.billingSegment !== "pemasukan" && h.billingSegment !== "pengeluaran" && (
+          {h.mainMenu === "billing" && h.billingSegment === "tutor-cost" && (
+            <SetTutorCost />
+          )}
+          {h.mainMenu === "billing" && h.billingSegment !== "pemasukan" && h.billingSegment !== "pengeluaran" && h.billingSegment !== "tutor-cost" && (
             billing.selectedInvoice ? (
               <InvoiceDetailView
                 invoice={billing.selectedInvoice}

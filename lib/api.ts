@@ -177,10 +177,13 @@ export type MidtransBank = "bca" | "bni" | "bri" | "mandiri" | "permata";
 
 
 
+export type ClassType = "BATCH810" | "BATCH35" | "PRIVATE" | "MAKEUP" | "TRIAL";
+
 export type Class = {
   id: string;
   name: string;
-  type: "BATCH" | "PRIVATE" | "MAKEUP" | "TRIAL";
+  type: ClassType;
+  tutorCost?: number | null;
   categoryId?: string | null;
   category?: Category | null;
   tutorIds?: string[];
@@ -262,6 +265,11 @@ export type CurriculumCategory = {
 export type Curriculum = {
   id: string;
   name: string;
+  priceBatch810?: number | null;
+  priceBatch35?: number | null;
+  pricePrivate?: number | null;
+  priceTrial?: number | null;
+  priceMakeup?: number | null;
   categories?: CurriculumCategory[];
   topics: Topic[];
   assessmentSetId?: string | null;
@@ -1082,13 +1090,13 @@ export const api = {
     async listByTutor(tutorId: string) {
       return authenticatedRequest<Class[]>(`/api/v1/academic/classes?tutorId=${tutorId}`);
     },
-    async create(payload: { name: string; type?: "BATCH" | "PRIVATE" | "MAKEUP" | "TRIAL"; categoryId?: string | null; tutorIds: string[]; curriculumId?: string | null; startDate: string; isOnline?: boolean; location?: string | null }) {
+    async create(payload: { name: string; type?: ClassType; categoryId?: string | null; tutorIds: string[]; curriculumId?: string | null; startDate: string; isOnline?: boolean; location?: string | null }) {
       return authenticatedRequest<Class>("/api/v1/academic/classes", {
         method: "POST",
         body: JSON.stringify(payload),
       });
     },
-    async update(id: string, payload: { name?: string; tutorIds?: string[]; isActive?: boolean; type?: "BATCH" | "PRIVATE" | "MAKEUP" | "TRIAL"; isOnline?: boolean; location?: string | null; categoryId?: string | null }) {
+    async update(id: string, payload: { name?: string; tutorIds?: string[]; isActive?: boolean; type?: ClassType; isOnline?: boolean; location?: string | null; categoryId?: string | null }) {
       return authenticatedRequest<Class>(`/api/v1/academic/classes/${id}`, {
         method: "PATCH",
         body: JSON.stringify(payload),
@@ -1149,13 +1157,34 @@ export const api = {
     async listByCategory(categoryIds: string[]) {
       return authenticatedRequest<Curriculum[]>(`/api/v1/academic/curriculums?categoryIds=${categoryIds.join(",")}`);
     },
-    async create(payload: { categoryIds: string[]; name: string; assessmentSetId?: string | null }) {
+    async create(payload: {
+      categoryIds: string[];
+      name: string;
+      assessmentSetId?: string | null;
+      priceBatch810?: number | null;
+      priceBatch35?: number | null;
+      pricePrivate?: number | null;
+      priceTrial?: number | null;
+      priceMakeup?: number | null;
+    }) {
       return authenticatedRequest<Curriculum>("/api/v1/academic/curriculums", {
         method: "POST",
         body: JSON.stringify(payload),
       });
     },
-    async update(id: string, payload: Partial<{ name: string; assessmentSetId: string | null; categoryIds: string[] }>) {
+    async update(
+      id: string,
+      payload: Partial<{
+        name: string;
+        assessmentSetId: string | null;
+        priceBatch810: number | null;
+        priceBatch35: number | null;
+        pricePrivate: number | null;
+        priceTrial: number | null;
+        priceMakeup: number | null;
+        categoryIds: string[];
+      }>,
+    ) {
       return authenticatedRequest<Curriculum>(`/api/v1/academic/curriculums/${id}`, {
         method: "PATCH",
         body: JSON.stringify(payload),
@@ -1687,6 +1716,30 @@ export const api = {
     },
     async delete(id: string) {
       return authenticatedRequest<void>(`/api/v1/galleries/${id}`, {
+        method: "DELETE",
+      });
+    },
+  },
+  tutorCosts: {
+    async list() {
+      return authenticatedRequest<{ id: string; classType: string; cost: number; description?: string | null }[]>(
+        "/api/v1/academic/tutor-costs",
+      );
+    },
+    async create(payload: { classType: string; cost: number; description?: string | null }) {
+      return authenticatedRequest<{ id: string; classType: string; cost: number; description?: string | null }>(
+        "/api/v1/academic/tutor-costs",
+        { method: "POST", body: JSON.stringify(payload) },
+      );
+    },
+    async update(id: string, payload: { classType?: string; cost?: number; description?: string | null }) {
+      return authenticatedRequest<{ id: string; classType: string; cost: number; description?: string | null }>(
+        `/api/v1/academic/tutor-costs/${id}`,
+        { method: "PATCH", body: JSON.stringify(payload) },
+      );
+    },
+    async delete(id: string) {
+      return authenticatedRequest<{ id: string }>(`/api/v1/academic/tutor-costs/${id}`, {
         method: "DELETE",
       });
     },

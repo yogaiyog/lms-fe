@@ -36,12 +36,13 @@ const DAY_LABELS: Record<string, string> = {
 };
 
 const TYPE_LABELS: Record<string, string> = {
-  TRIAL: "Trial", BATCH: "Batch", PRIVATE: "Private", MAKEUP: "Make Up",
+  TRIAL: "Trial", BATCH810: "Batch 8-10", BATCH35: "Batch 3-5", PRIVATE: "Private", MAKEUP: "Make Up",
 };
 
 const TYPE_CARD_STYLES: Record<string, { border: string; bg: string; text: string }> = {
   TRIAL: { border: "border-slate-200", bg: "bg-slate-50", text: "text-slate-700" },
-  BATCH: { border: "border-emerald-100", bg: "bg-emerald-50", text: "text-emerald-700" },
+  BATCH810: { border: "border-emerald-100", bg: "bg-emerald-50", text: "text-emerald-700" },
+  BATCH35: { border: "border-teal-100", bg: "bg-teal-50", text: "text-teal-700" },
   PRIVATE: { border: "border-indigo-100", bg: "bg-indigo-50", text: "text-indigo-700" },
   MAKEUP: { border: "border-amber-100", bg: "bg-amber-50", text: "text-amber-700" },
 };
@@ -324,8 +325,8 @@ export default function TutorAttendanceSegment({ theme, tutorId }: Props) {
             <p className="py-6 text-center text-xs text-slate-400">Belum ada pendapatan di periode ini</p>
           ) : (
             <>
-              <div className="mb-4 grid gap-2 sm:grid-cols-4">
-                {(["TRIAL", "BATCH", "PRIVATE", "MAKEUP"] as const).map((type) => {
+              <div className="mb-4 grid gap-2 sm:grid-cols-5">
+                {(["TRIAL", "BATCH810", "BATCH35", "PRIVATE", "MAKEUP"] as const).map((type) => {
                   const info = incomeByType[type] ?? { count: 0, sum: 0 };
                   const style = TYPE_CARD_STYLES[type];
                   return (
