@@ -37,6 +37,7 @@ export default function StudentDashboard() {
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
   const [countdowns, setCountdowns] = useState<Record<string, { days: number; hours: number; minutes: number; seconds: number }>>({});
   const [initialized, setInitialized] = useState(false);
+  const [debugUnlock, setDebugUnlock] = useState(false);
 
   const theme: Theme = {
     dark,
@@ -55,11 +56,13 @@ export default function StudentDashboard() {
     const tab = params.get("tab") as Segment | null;
     const topic = params.get("topic");
     const cls = params.get("class");
+    const dbg = params.get("debug");
     if (tab && ["overview", "schedule", "reports", "enrollment", "roadmap", "badges"].includes(tab)) {
       setSegment(tab);
     }
     if (topic) setSelectedTopicId(topic);
     if (cls) setSelectedClassId(cls);
+    if (dbg === "1") setDebugUnlock(true);
     setInitialized(true);
   }, []);
 
@@ -220,8 +223,8 @@ export default function StudentDashboard() {
       const prev = orderedTopics[index - 1];
       return filteredSchedules.filter((s) => s.topicId === prev.id).every((s) => s.isDone);
     })();
-    const locked = !prevCompleted && index > 0;
-    const current = index === firstIncompleteIndex;
+    const locked = debugUnlock ? false : (!prevCompleted && index > 0);
+    const current = debugUnlock ? false : (index === firstIncompleteIndex);
     return {
         id: topic.id,
         title: topic.title,
