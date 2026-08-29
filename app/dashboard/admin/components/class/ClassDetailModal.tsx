@@ -294,7 +294,9 @@ export default function ClassDetailModal({
               <div className="p-3 text-center text-sm text-slate-400">Belum ada jadwal</div>
             ) : (
               <div className="divide-y divide-slate-100">
-                {detailClass.schedules!.map((s) => {
+                {[...detailClass.schedules!]
+                  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                  .map((s) => {
                   const sDate = s.date ? new Date(s.date).toLocaleDateString("sv-SE") : "";
                   const formattedDate = s.date
                     ? new Date(s.date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })
