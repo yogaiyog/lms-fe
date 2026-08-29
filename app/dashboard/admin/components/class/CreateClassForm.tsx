@@ -5,8 +5,8 @@ import { type Curriculum, type TutorSlot } from "@/lib/api";
 import { X } from "lucide-react";
 
 type Props = {
-  createType: "BATCH" | "PRIVATE" | "MAKEUP" | "TRIAL";
-  onCreateTypeChange: (v: "BATCH" | "PRIVATE" | "MAKEUP" | "TRIAL") => void;
+  createType: "BATCH810" | "BATCH35" | "PRIVATE" | "MAKEUP" | "TRIAL";
+  onCreateTypeChange: (v: "BATCH810" | "BATCH35" | "PRIVATE" | "MAKEUP" | "TRIAL") => void;
   createIsOnline: boolean;
   onCreateIsOnlineChange: (v: boolean) => void;
   createLocation: string;
@@ -92,7 +92,7 @@ export default function CreateClassForm({
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-slate-700">Tipe Kelas</label>
           <div className="flex gap-2">
-            {(["BATCH", "PRIVATE", "MAKEUP", "TRIAL"] as const).map((t) => (
+            {(["BATCH810", "BATCH35", "PRIVATE", "MAKEUP", "TRIAL"] as const).map((t) => (
               <button key={t} type="button"
                 onClick={() => {
                   onCreateTypeChange(t);
@@ -105,7 +105,7 @@ export default function CreateClassForm({
                     : "border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300"
                 }`}
               >
-                {t === "BATCH" ? "Batch" : t === "PRIVATE" ? "Private" : t === "MAKEUP" ? "Make Up" : "Trial"}
+                {t === "BATCH810" ? "Batch 8-10" : t === "BATCH35" ? "Batch 3-5" : t === "PRIVATE" ? "Private" : t === "MAKEUP" ? "Make Up" : "Trial"}
               </button>
             ))}
           </div>
@@ -159,7 +159,7 @@ export default function CreateClassForm({
             placeholder="Nama kelas akan otomatis terisi"
             className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" required
           />
-          {createType === "BATCH" && (
+          {(createType === "BATCH810" || createType === "BATCH35") && (
             <p className="mt-1 text-[10px] text-slate-400">Batch: {createBatchPreview !== null ? createBatchPreview : "..."}</p>
           )}
         </div>

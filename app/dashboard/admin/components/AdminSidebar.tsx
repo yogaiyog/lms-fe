@@ -10,7 +10,7 @@ type Props = {
   onCurriculumSegmentChange: (seg: Props["curriculumSegment"]) => void;
   studentSegment: "list" | "enrollment" | "parent" | "add";
   onStudentSegmentChange: (seg: Props["studentSegment"]) => void;
-  billingSegment: "invoices" | "pemasukan" | "pengeluaran";
+  billingSegment: "invoices" | "pemasukan" | "pengeluaran" | "tutor-cost";
   onBillingSegmentChange: (seg: Props["billingSegment"]) => void;
 };
 
@@ -83,13 +83,13 @@ export default function AdminSidebar({
         )}
         {mainMenu === "billing" && (
           <div className="flex flex-col gap-1">
-            {(["invoices", "pemasukan", "pengeluaran"] as const).map((seg) => (
+            {(["invoices", "pemasukan", "pengeluaran", "tutor-cost"] as const).map((seg) => (
               <button key={seg} onClick={() => onBillingSegmentChange(seg)}
                 className={`rounded-2xl px-4 py-2.5 text-left text-sm font-semibold transition-colors ${
                   billingSegment === seg ? "bg-blue-600 text-white shadow-sm shadow-blue-600/30" : "text-slate-500 hover:bg-blue-50 hover:text-blue-700"
                 }`}
               >
-                {seg === "invoices" ? "Invoice & Pembayaran" : seg === "pemasukan" ? "Pemasukan" : "Pengeluaran"}
+                {seg === "invoices" ? "Invoice & Pembayaran" : seg === "pemasukan" ? "Pemasukan" : seg === "pengeluaran" ? "Pengeluaran" : "Set Tutor Cost"}
               </button>
             ))}
           </div>

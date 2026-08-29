@@ -3,6 +3,7 @@
 import { useState, useEffect, type FormEvent } from "react";
 import { api, type Category, type Curriculum, type AssessmentSet } from "@/lib/api";
 import { CATEGORY_LABELS } from "../../constants";
+import { formatIDR } from "../billing/InvoiceList";
 
 type Props = {
   curriculums: Curriculum[];
@@ -30,10 +31,17 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
     try {
       const fd = new FormData(e.currentTarget);
       const ids = categories.filter((c) => selectedCategoryNames.includes(c.name)).map((c) => c.id);
+      const priceBatch810Raw = fd.get("priceBatch810") as string;
+      const priceBatch35Raw = fd.get("priceBatch35") as string;
+      const pricePrivateRaw = fd.get("pricePrivate") as string;
+
       await api.curriculums.create({
         name: fd.get("name") as string,
         categoryIds: ids,
         assessmentSetId: (fd.get("assessmentSetId") as string) || null,
+        priceBatch810: priceBatch810Raw ? Number(priceBatch810Raw) : null,
+        priceBatch35: priceBatch35Raw ? Number(priceBatch35Raw) : null,
+        pricePrivate: pricePrivateRaw ? Number(pricePrivateRaw) : null,
       });
       setShowCreate(false);
       setSelectedCategoryNames([]);
@@ -51,10 +59,17 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
     try {
       const fd = new FormData(e.currentTarget);
       const ids = categories.filter((c) => selectedCategoryNames.includes(c.name)).map((c) => c.id);
+      const priceBatch810Raw = fd.get("priceBatch810") as string;
+      const priceBatch35Raw = fd.get("priceBatch35") as string;
+      const pricePrivateRaw = fd.get("pricePrivate") as string;
+
       await api.curriculums.update(editingCurriculum.id, {
         name: fd.get("name") as string,
         categoryIds: ids,
         assessmentSetId: (fd.get("assessmentSetId") as string) || null,
+        priceBatch810: priceBatch810Raw ? Number(priceBatch810Raw) : null,
+        priceBatch35: priceBatch35Raw ? Number(priceBatch35Raw) : null,
+        pricePrivate: pricePrivateRaw ? Number(pricePrivateRaw) : null,
       });
       setShowEdit(false);
       setEditingCurriculum(null);
@@ -102,13 +117,36 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
               >
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold text-slate-800">{c.name}</p>
-                  <div className="mb-1 flex flex-wrap gap-1">
+                  <div className="mb-1.5 flex flex-wrap gap-1">
                     {c.categories?.map((cat) => (
                       <span key={cat.category.id} className="rounded-lg bg-blue-100 px-2.5 py-0.5 text-[11px] font-semibold text-blue-700">
                         {CATEGORY_LABELS[cat?.category?.name] ?? cat?.category?.name ?? ""}
                       </span>
                     ))}
                   </div>
+
+                  {/* Pricing badges */}
+                  <div className="mb-1.5 flex flex-wrap gap-1.5">
+                    {c.priceBatch810 != null && Number(c.priceBatch810) > 0 ? (
+                      <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                        Batch 8-10: {formatIDR(c.priceBatch810)}
+                      </span>
+                    ) : null}
+                    {c.priceBatch35 != null && Number(c.priceBatch35) > 0 ? (
+                      <span className="rounded-md border border-teal-200 bg-teal-50 px-2 py-0.5 text-[10px] font-bold text-teal-700">
+                        Batch 3-5: {formatIDR(c.priceBatch35)}
+                      </span>
+                    ) : null}
+                    {c.pricePrivate != null && Number(c.pricePrivate) > 0 ? (
+                      <span className="rounded-md border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-700">
+                        Private: {formatIDR(c.pricePrivate)}
+                      </span>
+                    ) : null}
+                    {(!c.priceBatch810 && !c.priceBatch35 && !c.pricePrivate) && (
+                      <span className="text-[10px] italic text-slate-400">Tarif sesi belum diatur</span>
+                    )}
+                  </div>
+
                   <p className="text-xs text-slate-400">
                     {c.topics.length} topik
                     {c.assessmentSet && <> &middot; {c.assessmentSet.name}</>}
@@ -149,7 +187,7 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
           <div className="fixed inset-0 bg-black/40" onClick={() => setShowCreate(false)} />
-          <div className="relative w-full max-w-md rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
+          <div className="relative max-h-[90vh] overflow-y-auto w-full max-w-lg rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-bold text-slate-800">Tambah Kurikulum</h3>
               <button onClick={() => setShowCreate(false)} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
@@ -160,6 +198,7 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
               <div className="mb-3">
                 <label className="mb-1 block text-sm font-semibold text-slate-700">Nama</label>
                 <input name="name" required
+                  placeholder="mis. Scratch Explorer"
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
               </div>
               <div className="mb-3">
@@ -182,6 +221,52 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
                 </div>
                 {selectedCategoryNames.length === 0 && <p className="mt-1 text-[10px] text-slate-400">Pilih minimal 1 kategori</p>}
               </div>
+
+              {/* Pricing per session */}
+              <div className="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-3.5 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                    Tarif per Pertemuan (Pricing per Session)
+                  </label>
+                  <span className="text-[10px] text-slate-400">Kosongkan jika tipe kelas tidak tersedia</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2.5">
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold text-slate-600">Batch 8-10 (Rp)</label>
+                    <input
+                      name="priceBatch810"
+                      type="number"
+                      min="0"
+                      step="100"
+                      placeholder="e.g. 49750"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-blue-400"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold text-slate-600">Batch 3-5 (Rp)</label>
+                    <input
+                      name="priceBatch35"
+                      type="number"
+                      min="0"
+                      step="100"
+                      placeholder="e.g. 62250"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-blue-400"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold text-slate-600">Private (Rp)</label>
+                    <input
+                      name="pricePrivate"
+                      type="number"
+                      min="0"
+                      step="100"
+                      placeholder="e.g. 125000"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-blue-400"
+                    />
+                  </div>
+                </div>
+              </div>
+
               <div className="mb-4">
                 <label className="mb-1 block text-sm font-semibold text-slate-700">Set Penilaian</label>
                 <select name="assessmentSetId"
@@ -205,7 +290,7 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
       {showEdit && editingCurriculum && (
         <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
           <div className="fixed inset-0 bg-black/40" onClick={() => setShowEdit(false)} />
-          <div className="relative w-full max-w-md rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
+          <div className="relative max-h-[90vh] overflow-y-auto w-full max-w-lg rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-bold text-slate-800">Edit Kurikulum</h3>
               <button onClick={() => setShowEdit(false)} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
@@ -238,6 +323,55 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
                 </div>
                 {selectedCategoryNames.length === 0 && <p className="mt-1 text-[10px] text-slate-400">Pilih minimal 1 kategori</p>}
               </div>
+
+              {/* Pricing per session */}
+              <div className="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-3.5 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                    Tarif per Pertemuan (Pricing per Session)
+                  </label>
+                  <span className="text-[10px] text-slate-400">Kosongkan jika tipe kelas tidak tersedia</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2.5">
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold text-slate-600">Batch 8-10 (Rp)</label>
+                    <input
+                      name="priceBatch810"
+                      type="number"
+                      min="0"
+                      step="100"
+                      defaultValue={editingCurriculum.priceBatch810 != null ? Number(editingCurriculum.priceBatch810) : ""}
+                      placeholder="e.g. 49750"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-blue-400"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold text-slate-600">Batch 3-5 (Rp)</label>
+                    <input
+                      name="priceBatch35"
+                      type="number"
+                      min="0"
+                      step="100"
+                      defaultValue={editingCurriculum.priceBatch35 != null ? Number(editingCurriculum.priceBatch35) : ""}
+                      placeholder="e.g. 62250"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-blue-400"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold text-slate-600">Private (Rp)</label>
+                    <input
+                      name="pricePrivate"
+                      type="number"
+                      min="0"
+                      step="100"
+                      defaultValue={editingCurriculum.pricePrivate != null ? Number(editingCurriculum.pricePrivate) : ""}
+                      placeholder="e.g. 125000"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-blue-400"
+                    />
+                  </div>
+                </div>
+              </div>
+
               <div className="mb-4">
                 <label className="mb-1 block text-sm font-semibold text-slate-700">Set Penilaian</label>
                 <select name="assessmentSetId" defaultValue={editingCurriculum.assessmentSetId ?? ""}

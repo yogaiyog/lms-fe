@@ -22,7 +22,8 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const TYPE_LABELS: Record<string, string> = {
-  BATCH: "Reguler",
+  BATCH810: "Batch (8-10)",
+  BATCH35: "Batch (3-5)",
   PRIVATE: "Privat",
   MAKEUP: "Makeup",
 };

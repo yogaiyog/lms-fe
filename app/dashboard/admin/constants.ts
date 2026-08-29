@@ -24,9 +24,11 @@ export const DAY_LABELS: Record<string, string> = {
 };
 
 export const CLASS_TYPE_LABELS: Record<string, string> = {
-  BATCH: "Batch",
+  BATCH810: "Batch 8-10",
+  BATCH35: "Batch 3-5",
   PRIVATE: "Private",
   MAKEUP: "Make Up",
+  TRIAL: "Trial",
   OFFLINE: "Offline",
 };
 

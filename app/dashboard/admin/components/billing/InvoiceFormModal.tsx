@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Banknote, Check, CreditCard, Landmark, Plus, QrC
 import { api, type Curriculum, type Enrollment, type Invoice, type MidtransBank } from "@/lib/api";
 import type { InvoiceFormPayload, InvoicePaymentMethod, SubmitInvoiceResult } from "@/hooks/useBilling";
 import type { StudentItem } from "../../hooks/useAdminDashboard";
+import { formatIDR } from "./InvoiceList";
 
 type Props = {
   editing: Invoice | null;
@@ -50,6 +51,7 @@ export default function InvoiceFormModal({ editing, initialStep = 1, saving, err
   const [studentEnrollments, setStudentEnrollments] = useState<Enrollment[]>([]);
   const [studentEnrollmentsLoading, setStudentEnrollmentsLoading] = useState(false);
   const [selectedEnrollment, setSelectedEnrollment] = useState<Enrollment | null>(editing?.enrollment as Enrollment | null);
+  const [selectedClassType, setSelectedClassType] = useState<string>(editing?.enrollment?.class?.type ?? "");
   const [showCreateEnrollment, setShowCreateEnrollment] = useState(false);
 
   const [meetCount, setMeetCount] = useState(editing && editing.meetCount ? String(editing.meetCount) : "");
@@ -78,7 +80,10 @@ export default function InvoiceFormModal({ editing, initialStep = 1, saving, err
       const ed = editingRef.current;
       if (ed) {
         const match = list.find((e) => e.id === ed.enrollmentId);
-        if (match) setSelectedEnrollment(match);
+        if (match) {
+          setSelectedEnrollment(match);
+          if (match.class?.type) setSelectedClassType(match.class.type);
+        }
       }
     } catch {
       setStudentEnrollments([]);
@@ -86,6 +91,62 @@ export default function InvoiceFormModal({ editing, initialStep = 1, saving, err
       setStudentEnrollmentsLoading(false);
     }
   }
+
+  const availableClassTypes = useMemo(() => {
+    const c = selectedEnrollment?.curriculum;
+    if (!c) return [];
+    const list: { type: string; label: string; price: number }[] = [];
+    if (c.priceBatch810 != null && Number(c.priceBatch810) > 0) {
+      list.push({ type: "BATCH810", label: "Batch 8-10", price: Number(c.priceBatch810) });
+    }
+    if (c.priceBatch35 != null && Number(c.priceBatch35) > 0) {
+      list.push({ type: "BATCH35", label: "Batch 3-5", price: Number(c.priceBatch35) });
+    }
+    if (c.pricePrivate != null && Number(c.pricePrivate) > 0) {
+      list.push({ type: "PRIVATE", label: "Private", price: Number(c.pricePrivate) });
+    }
+    if (c.priceTrial != null && Number(c.priceTrial) > 0) {
+      list.push({ type: "TRIAL", label: "Trial", price: Number(c.priceTrial) });
+    }
+    if (c.priceMakeup != null && Number(c.priceMakeup) > 0) {
+      list.push({ type: "MAKEUP", label: "Make Up", price: Number(c.priceMakeup) });
+    }
+    return list;
+  }, [selectedEnrollment?.curriculum]);
+
+  const handleSelectEnrollment = (enr: Enrollment | null) => {
+    setSelectedEnrollment(enr);
+    if (!enr?.curriculum) {
+      setSelectedClassType("");
+      return;
+    }
+    const c = enr.curriculum;
+    const list: { type: string; label: string; price: number }[] = [];
+    if (c.priceBatch810 != null && Number(c.priceBatch810) > 0) list.push({ type: "BATCH810", label: "Batch 8-10", price: Number(c.priceBatch810) });
+    if (c.priceBatch35 != null && Number(c.priceBatch35) > 0) list.push({ type: "BATCH35", label: "Batch 3-5", price: Number(c.priceBatch35) });
+    if (c.pricePrivate != null && Number(c.pricePrivate) > 0) list.push({ type: "PRIVATE", label: "Private", price: Number(c.pricePrivate) });
+    if (c.priceTrial != null && Number(c.priceTrial) > 0) list.push({ type: "TRIAL", label: "Trial", price: Number(c.priceTrial) });
+    if (c.priceMakeup != null && Number(c.priceMakeup) > 0) list.push({ type: "MAKEUP", label: "Make Up", price: Number(c.priceMakeup) });
+
+    if (list.length > 0) {
+      const defaultType = enr.class?.type && list.find((t) => t.type === enr.class?.type) ? enr.class.type : list[0].type;
+      const matched = list.find((t) => t.type === defaultType) ?? list[0];
+      setSelectedClassType(matched.type);
+      if (!editingRef.current) {
+        setPricePerMeeting(String(matched.price));
+      }
+    } else {
+      setSelectedClassType("");
+    }
+  };
+
+  const handleSelectClassType = (type: string) => {
+    setSelectedClassType(type);
+    const found = availableClassTypes.find((t) => t.type === type);
+    if (found) {
+      setPricePerMeeting(String(found.price));
+    }
+  };
 
   const filteredStudents = useMemo(
     () => students.filter((s) => s.fullName.toLowerCase().includes(studentSearch.toLowerCase())),
@@ -172,7 +233,7 @@ export default function InvoiceFormModal({ editing, initialStep = 1, saving, err
       setShowCreateEnrollment(false);
       setNewEnrollmentCurriculumId("");
       await loadEnrollments(selectedStudent.id);
-      setSelectedEnrollment(created);
+      handleSelectEnrollment(created);
     } catch {
       alert("Gagal membuat enrollment");
     } finally {
@@ -226,7 +287,10 @@ export default function InvoiceFormModal({ editing, initialStep = 1, saving, err
               studentEnrollmentsLoading={studentEnrollmentsLoading}
               validEnrollments={validEnrollments}
               selectedEnrollment={selectedEnrollment}
-              setSelectedEnrollment={setSelectedEnrollment}
+              onSelectEnrollment={handleSelectEnrollment}
+              availableClassTypes={availableClassTypes}
+              selectedClassType={selectedClassType}
+              onSelectClassType={handleSelectClassType}
               showCreateEnrollment={showCreateEnrollment}
               setShowCreateEnrollment={setShowCreateEnrollment}
               meetCount={meetCount}
@@ -380,7 +444,8 @@ function StepOne({
   students, filteredStudents, studentSearch, setStudentSearch,
   selectedStudent, setSelectedStudent, loadEnrollments,
   studentEnrollments, studentEnrollmentsLoading, validEnrollments,
-  selectedEnrollment, setSelectedEnrollment,
+  selectedEnrollment, onSelectEnrollment,
+  availableClassTypes, selectedClassType, onSelectClassType,
   showCreateEnrollment, setShowCreateEnrollment,
   meetCount, setMeetCount, pricePerMeeting, setPricePerMeeting,
   registrationFee, setRegistrationFee, taxPercent, setTaxPercent,
@@ -402,7 +467,10 @@ function StepOne({
   studentEnrollmentsLoading: boolean;
   validEnrollments: Enrollment[];
   selectedEnrollment: Enrollment | null;
-  setSelectedEnrollment: (e: Enrollment | null) => void;
+  onSelectEnrollment: (e: Enrollment | null) => void;
+  availableClassTypes: { type: string; label: string; price: number }[];
+  selectedClassType: string;
+  onSelectClassType: (type: string) => void;
   showCreateEnrollment: boolean;
   setShowCreateEnrollment: (v: boolean) => void;
   meetCount: string;
@@ -444,7 +512,7 @@ function StepOne({
           search={studentSearch}
           setSearch={setStudentSearch}
           selected={selectedStudent}
-          onSelect={(s) => { setSelectedStudent(s); setSelectedEnrollment(null); loadEnrollments(s.id); }}
+          onSelect={(s) => { setSelectedStudent(s); onSelectEnrollment(null); loadEnrollments(s.id); }}
         />
       ) : (
         <div className="rounded-2xl border border-blue-200 bg-blue-50 p-3 flex items-center justify-between">
@@ -466,7 +534,7 @@ function StepOne({
           enrollments={validEnrollments}
           allCount={studentEnrollments.length}
           loading={studentEnrollmentsLoading}
-          onSelect={setSelectedEnrollment}
+          onSelect={onSelectEnrollment}
           onCreateNew={() => { setShowCreateEnrollment(true); }}
           showCreateEnrollment={showCreateEnrollment}
         />
@@ -488,6 +556,9 @@ function StepOne({
       {selectedEnrollment && (
         <DetailTagihanSection
           enrollment={selectedEnrollment}
+          availableClassTypes={availableClassTypes}
+          selectedClassType={selectedClassType}
+          onSelectClassType={onSelectClassType}
           meetCount={meetCount}
           setMeetCount={setMeetCount}
           pricePerMeeting={pricePerMeeting}
@@ -703,13 +774,17 @@ function InlineEnrollmentCreator({
 }
 
 function DetailTagihanSection({
-  enrollment, meetCount, setMeetCount, pricePerMeeting, setPricePerMeeting,
+  enrollment, availableClassTypes, selectedClassType, onSelectClassType,
+  meetCount, setMeetCount, pricePerMeeting, setPricePerMeeting,
   registrationFee, setRegistrationFee, taxPercent, setTaxPercent,
   description, setDescription, notes, setNotes,
   sessionSubtotal, regFee, taxPctNum, taxAmount, total,
   remainingQuota, exceedsQuota,
 }: {
   enrollment: Enrollment;
+  availableClassTypes: { type: string; label: string; price: number }[];
+  selectedClassType: string;
+  onSelectClassType: (type: string) => void;
   meetCount: string;
   setMeetCount: (v: string) => void;
   pricePerMeeting: string;
@@ -745,11 +820,41 @@ function DetailTagihanSection({
           <span className="text-slate-500">Total Topics</span>
           <span className="font-bold text-slate-700">{enrollment.curriculum?.topics?.length ?? 0}</span>
         </div>
-        {/* <div className="flex justify-between border-t border-blue-200 pt-1">
-          <span className="text-slate-500">Sisa Kuota</span>
-          <span className="font-bold text-slate-900">{remainingQuota}</span>
-        </div> */}
       </div>
+
+      {/* Tipe Kelas & Tarif Pricing Selector */}
+      {availableClassTypes.length > 0 ? (
+        <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3.5 space-y-2">
+          <div className="flex items-center justify-between">
+            <label className="block text-xs font-bold text-slate-700">
+              Pilih Tipe Kelas & Tarif ({enrollment.curriculum?.name})
+            </label>
+            <span className="text-[10px] text-slate-400 font-medium">Klik untuk mengisi otomatis harga/pertemuan</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {availableClassTypes.map((t) => {
+              const active = selectedClassType === t.type;
+              return (
+                <button
+                  key={t.type}
+                  type="button"
+                  onClick={() => onSelectClassType(t.type)}
+                  className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition shadow-sm ${
+                    active
+                      ? "bg-blue-600 text-white shadow-blue-500/20 ring-2 ring-blue-300"
+                      : "border border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50/50"
+                  }`}
+                >
+                  <span>{t.label}</span>
+                  <span className={`rounded-lg px-1.5 py-0.5 text-[10px] font-extrabold ${active ? "bg-blue-700 text-white" : "bg-slate-100 text-slate-700"}`}>
+                    {formatIDR(t.price)}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
 
       <div>
         <label className="mb-1 block text-xs font-bold text-slate-600">Deskripsi</label>
@@ -768,7 +873,9 @@ function DetailTagihanSection({
           )}
         </div>
         <div>
-          <label className="mb-1 block text-xs font-bold text-slate-600">Harga/pertemuan</label>
+          <div className="flex items-center justify-between mb-1">
+            <label className="block text-xs font-bold text-slate-600">Harga/pertemuan</label>
+          </div>
           <input type="number" min="0" value={pricePerMeeting} onChange={(e) => setPricePerMeeting(e.target.value)}
             className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-400" />
         </div>
