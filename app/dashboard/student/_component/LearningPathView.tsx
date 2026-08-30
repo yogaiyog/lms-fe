@@ -40,6 +40,8 @@ function mapCurriculumToUnits(
       topicId: topic.id,
       materialLink: topic.materialLink,
       exampleProjectLink: topic.exampleProjectLink,
+      videoYoutubeUrl: topic.videoYoutubeUrl,
+      videoUploadUrl: topic.videoUploadUrl,
       project: {
         name: topic.title,
         projectId: topic.id,

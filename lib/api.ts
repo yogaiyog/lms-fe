@@ -310,6 +310,8 @@ export type Topic = {
   imageUrl?: string | null;
   materialLink?: string | null;
   exampleProjectLink?: string | null;
+  videoYoutubeUrl?: string | null;
+  videoUploadUrl?: string | null;
   goals?: string | null;
   tools?: string | null;
   order: number;
@@ -768,6 +770,27 @@ export async function uploadImage(
   return payload.data;
 }
 
+export async function uploadVideo(
+  file: File,
+): Promise<{ url: string; filename: string; mimeType: string; size: number }> {
+  const session = getStoredSession();
+  if (!session) throw new Error("Silakan login dulu");
+
+  const fd = new FormData();
+  fd.append("file", file);
+
+  const url = `${API_BASE_URL}/api/v1/upload/video?_t=${Date.now()}`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${session.accessToken}` },
+    body: fd,
+  });
+
+  const payload = await res.json();
+  if (!res.ok) throw new Error(payload.message ?? "Upload video gagal");
+  return payload.data;
+}
+
 export async function checkEmail(email: string): Promise<boolean> {
   const res = await fetch(`${API_BASE_URL}/api/v1/auth/check-email?email=${encodeURIComponent(email)}`);
   const payload = await res.json();
@@ -1206,6 +1229,8 @@ export const api = {
       imageUrl?: string | null;
       materialLink?: string | null;
       exampleProjectLink?: string | null;
+      videoYoutubeUrl?: string | null;
+      videoUploadUrl?: string | null;
       goals?: string | null;
       tools?: string | null;
       order?: number;
@@ -1220,6 +1245,8 @@ export const api = {
       imageUrl: string | null;
       materialLink: string | null;
       exampleProjectLink: string | null;
+      videoYoutubeUrl: string | null;
+      videoUploadUrl: string | null;
       goals: string | null;
       tools: string | null;
       order: number;
