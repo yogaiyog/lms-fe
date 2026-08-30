@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent, useRef, useEffect } from "react";
-import { api, uploadImage, images, type ImageRecord, type Curriculum, type Topic } from "@/lib/api";
+import { api, uploadImage, uploadVideo, images, type ImageRecord, type Curriculum, type Topic } from "@/lib/api";
 import { RoadmapAvatar } from "@/components/roadmap";
 import TopicTaskEditor from "./TopicTaskEditor";
 import { CATEGORY_LABELS } from "../../constants";
@@ -9,6 +9,65 @@ import { CATEGORY_LABELS } from "../../constants";
 type Props = {
   curriculums: Curriculum[];
 };
+
+function VideoPicker({
+  value,
+  onChange,
+}: {
+  value?: string | null;
+  onChange: (url: string | null) => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  async function handleFile(file?: File) {
+    if (!file) return;
+    setUploading(true);
+    setError("");
+    try {
+      const res = await uploadVideo(file);
+      onChange(res.url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal upload video");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <div>
+      <div className="flex gap-2">
+        <input
+          ref={fileRef}
+          type="file"
+          accept="video/mp4,video/webm,video/ogg,video/quicktime"
+          onChange={(e) => handleFile(e.target.files?.[0])}
+          className="min-w-0 flex-1 text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
+        />
+        {uploading && (
+          <span className="inline-block h-5 w-5 shrink-0 self-center animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+        )}
+      </div>
+      {error && <p className="mt-1 text-xs font-semibold text-red-600">{error}</p>}
+      {value && (
+        <div className="mt-2 flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2.5">
+          <span className="truncate text-xs font-medium text-slate-600">{value}</span>
+          <button
+            type="button"
+            onClick={() => {
+              onChange(null);
+              if (fileRef.current) fileRef.current.value = "";
+            }}
+            className="ml-2 shrink-0 rounded-lg px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50"
+          >
+            Hapus
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function ImagePicker({
   onSelect,
@@ -114,6 +173,7 @@ export default function TopicManagement({ curriculums }: Props) {
   const [materialViewTopic, setMaterialViewTopic] = useState<Topic | null>(null);
 
   const [createCurriculumId, setCreateCurriculumId] = useState("");
+  const [createVideoUploadUrl, setCreateVideoUploadUrl] = useState<string | null>(null);
 
   async function loadTopics(curriculumId: string) {
     if (!curriculumId) { setTopics([]); return; }
@@ -141,10 +201,13 @@ export default function TopicManagement({ curriculums }: Props) {
         imageUrl,
         materialLink: (fd.get("materialLink") as string) || null,
         exampleProjectLink: (fd.get("exampleProjectLink") as string) || null,
+        videoYoutubeUrl: (fd.get("videoYoutubeUrl") as string) || null,
+        videoUploadUrl: createVideoUploadUrl || null,
         goals: (fd.get("goals") as string) || null,
         tools: (fd.get("tools") as string) || null,
       });
       setShowCreate(false);
+      setCreateVideoUploadUrl(null);
       if (selectedId && curriculumId === selectedId) {
         await loadTopics(selectedId);
       }
@@ -164,6 +227,8 @@ export default function TopicManagement({ curriculums }: Props) {
         goals: detailTopic.goals ?? null,
         materialLink: detailTopic.materialLink ?? null,
         exampleProjectLink: detailTopic.exampleProjectLink ?? null,
+        videoYoutubeUrl: detailTopic.videoYoutubeUrl ?? null,
+        videoUploadUrl: detailTopic.videoUploadUrl ?? null,
         tools: detailTopic.tools ?? null,
       });
       setTopics((prev) => prev.map((t) => t.id === updated.id ? updated : t));
@@ -277,6 +342,18 @@ export default function TopicManagement({ curriculums }: Props) {
                 <label className="mb-1 block text-sm font-semibold text-slate-700">Link Project</label>
                 <input name="exampleProjectLink" type="url"
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+              </div>
+              <div className="mb-3">
+                <label className="mb-1 block text-sm font-semibold text-slate-700">Link Video YouTube (Embed)</label>
+                <input name="videoYoutubeUrl" type="url" placeholder="https://www.youtube.com/watch?v=..."
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+              </div>
+              <div className="mb-3">
+                <label className="mb-1 block text-sm font-semibold text-slate-700">Upload Video (S3 / MinIO)</label>
+                <VideoPicker
+                  value={createVideoUploadUrl}
+                  onChange={setCreateVideoUploadUrl}
+                />
               </div>
               <div className="mb-4">
                 <label className="mb-1 block text-sm font-semibold text-slate-700">Tools</label>
@@ -403,6 +480,41 @@ export default function TopicManagement({ curriculums }: Props) {
               <input type="url" value={detailTopic.exampleProjectLink ?? ""} onChange={(e) => { setDetailTopic({ ...detailTopic, exampleProjectLink: e.target.value || null }); setDetailDirty(true); }}
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
             </div>
+            <div className="mb-3">
+              <label className="mb-1 block text-sm font-semibold text-slate-700">Link Video YouTube (Embed)</label>
+              <input type="url" value={detailTopic.videoYoutubeUrl ?? ""} placeholder="https://www.youtube.com/watch?v=..." onChange={(e) => { setDetailTopic({ ...detailTopic, videoYoutubeUrl: e.target.value || null }); setDetailDirty(true); }}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+            </div>
+            <div className="mb-3">
+              <label className="mb-1 block text-sm font-semibold text-slate-700">Upload Video (S3 / MinIO)</label>
+              <VideoPicker
+                value={detailTopic.videoUploadUrl}
+                onChange={(url) => {
+                  setDetailTopic({ ...detailTopic, videoUploadUrl: url });
+                  setDetailDirty(true);
+                }}
+              />
+            </div>
+            {(detailTopic.videoYoutubeUrl || detailTopic.videoUploadUrl) && (
+              <div className="mb-3 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                <p className="mb-2 text-xs font-semibold text-slate-600">Preview Video</p>
+                <div className="overflow-hidden rounded-xl bg-black">
+                  {detailTopic.videoYoutubeUrl && (
+                    <div className="relative aspect-video w-full">
+                      <iframe
+                        src={detailTopic.videoYoutubeUrl.includes("embed") ? detailTopic.videoYoutubeUrl : detailTopic.videoYoutubeUrl.replace("watch?v=", "embed/")}
+                        title="Preview"
+                        allowFullScreen
+                        className="h-full w-full border-0"
+                      />
+                    </div>
+                  )}
+                  {!detailTopic.videoYoutubeUrl && detailTopic.videoUploadUrl && (
+                    <video src={detailTopic.videoUploadUrl} controls className="aspect-video w-full" />
+                  )}
+                </div>
+              </div>
+            )}
             <div className="mb-4">
               <label className="mb-1 block text-sm font-semibold text-slate-700">Tools</label>
               <input value={detailTopic.tools ?? ""} onChange={(e) => { setDetailTopic({ ...detailTopic, tools: e.target.value || null }); setDetailDirty(true); }}
