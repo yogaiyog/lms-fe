@@ -38,6 +38,7 @@ export default function SlotGrid() {
   const [slots, setSlots] = useState<TutorSlot[]>([]);
   const [dayoffs, setDayoffs] = useState<number[]>([]);
   const [restrictWeekdayMorning, setRestrictWeekdayMorning] = useState(false);
+  const [minSlots, setMinSlots] = useState(10);
   const [loading, setLoading] = useState(true);
   const [toggling, setToggling] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -62,6 +63,7 @@ export default function SlotGrid() {
         setSlots(res.slots);
         setDayoffs(res.dayoffs);
         setRestrictWeekdayMorning(res.restrictWeekdayMorning ?? false);
+        if (res.minSlots != null) setMinSlots(res.minSlots);
       } catch {
         clearSession();
         router.replace("/login");
@@ -90,6 +92,7 @@ export default function SlotGrid() {
       setSlots(res.slots);
       setDayoffs(res.dayoffs);
       setRestrictWeekdayMorning(res.restrictWeekdayMorning ?? false);
+      if (res.minSlots != null) setMinSlots(res.minSlots);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal toggle slot");
     } finally {
@@ -255,8 +258,8 @@ export default function SlotGrid() {
             <span className="inline-block h-3 w-3 rounded bg-slate-100" />
             <span className="font-semibold">Luar jam kerja</span>
           </div>
-          <div className={`ml-auto font-bold ${activeCount < 21 ? "text-red-500" : "text-emerald-600"}`}>
-            {activeCount} slot aktif {activeCount < 21 ? "(minimal 21!)" : `(${filledCount} terisi)`}
+          <div className={`ml-auto font-bold ${activeCount < minSlots ? "text-red-500" : "text-emerald-600"}`}>
+            {activeCount} slot aktif {activeCount < minSlots ? `(minimal ${minSlots}!)` : `(${filledCount} terisi)`}
           </div>
         </div>
       </div>
