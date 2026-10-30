@@ -1,0 +1,85 @@
+name: Deploy frontend
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-frontend
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  REMOTE_DIR: /srv/lms-fe
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (standalone)
+        env:
+          BUILD_STANDALONE: "true"
+          # NEXT_PUBLIC_* ikut tertanam di bundle saat build, jadi harus nilai produksi.
+          # Isi di GitHub: Settings > Secrets and variables > Actions > Variables.
+          NEXT_PUBLIC_API_BASE_URL: ${{ vars.NEXT_PUBLIC_API_BASE_URL }}
+          NEXT_PUBLIC_SCRATCH_GUI_URL: ${{ vars.NEXT_PUBLIC_SCRATCH_GUI_URL }}
+          NEXT_PUBLIC_PYTHON_EDITOR_URL: ${{ vars.NEXT_PUBLIC_PYTHON_EDITOR_URL }}
+          NEXT_PUBLIC_COMPANY_NAME: ${{ vars.NEXT_PUBLIC_COMPANY_NAME }}
+          NEXT_PUBLIC_COMPANY_SLOGAN: ${{ vars.NEXT_PUBLIC_COMPANY_SLOGAN }}
+          NEXT_PUBLIC_ALLOW_MULTI_CLASS: ${{ vars.NEXT_PUBLIC_ALLOW_MULTI_CLASS }}
+          NEXT_PUBLIC_SANDBOX: ${{ vars.NEXT_PUBLIC_SANDBOX }}
+          NEXT_PUBLIC_MIDTRANS_CLIENT_KEY: ${{ vars.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY }}
+        run: |
+          test -n "$NEXT_PUBLIC_API_BASE_URL" || { echo "Variable NEXT_PUBLIC_API_BASE_URL belum diisi"; exit 1; }
+          npm run build
+
+      - name: Package release
+        run: |
+          mkdir pkg
+          cp -r .next/standalone/. pkg/
+          mkdir -p pkg/.next
+          cp -r .next/static pkg/.next/static
+          cp -r public pkg/public
+          cp ecosystem.config.cjs pkg/
+          tar -C pkg -czf release.tgz .
+
+      - name: Prepare SSH
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Upload and reload
+        env:
+          TARGET: ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}
+        run: |
+          SSH="ssh -i $HOME/.ssh/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes"
+          # Kosongkan isi folder tujuan kecuali .env*, lalu ekstrak rilis baru.
+          $SSH "$TARGET" "mkdir -p $REMOTE_DIR && cd $REMOTE_DIR && find . -mindepth 1 -maxdepth 1 ! -name '.env*' -exec rm -rf {} +"
+          $SSH "$TARGET" "tar -C $REMOTE_DIR -xzf -" < release.tgz
+          $SSH "$TARGET" "cd $REMOTE_DIR && pm2 startOrReload ecosystem.config.cjs --update-env && pm2 save"
+
+      - name: Health check
+        env:
+          TARGET: ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}
+        run: |
+          ssh -i "$HOME/.ssh/deploy_key" -o IdentitiesOnly=yes -o BatchMode=yes "$TARGET" \
+            'for i in $(seq 1 20); do curl -fsS -o /dev/null http://127.0.0.1:3000/ && echo OK && exit 0; sleep 2; done; pm2 logs lms-frontend --lines 40 --nostream; exit 1'
