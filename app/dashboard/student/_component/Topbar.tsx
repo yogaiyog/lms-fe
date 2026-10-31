@@ -19,9 +19,12 @@ export default function Topbar({ theme, segment, onToggleDark, onLogout, onMenuC
         <button onClick={onMenuClick} className={`md:hidden ${theme.text}`}>
           <Menu size={22} />
         </button>
-        <p className={`font-extrabold hidden sm:block ${theme.text}`}>
-          {NAV_ITEMS.find((n) => n.key === segment)?.label || "Ringkasan"}
-        </p>
+        {/* Tab lain sudah punya judul sendiri di halamannya; hindari judul ganda. */}
+        {segment === "overview" && (
+          <p className={`font-extrabold hidden sm:block ${theme.text}`}>
+            {NAV_ITEMS.find((n) => n.key === segment)?.label || "Ringkasan"}
+          </p>
+        )}
       </div>
       <div className="flex items-center gap-1.5 sm:gap-2">
         <button
