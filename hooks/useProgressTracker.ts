@@ -4,7 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { api, API_BASE_URL } from "@/lib/api";
 
 const SCRATCH_GUI_ORIGIN =
-  process.env.NEXT_PUBLIC_SCRATCH_GUI_URL ?? "http://localhost:8601";
+  process.env.NEXT_PUBLIC_SCRATCH_GUI_URL ?? "https://scratch.juaraku.web.id";
 
 type ProgressRecord = {
   status: string;
