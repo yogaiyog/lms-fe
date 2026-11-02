@@ -1,7 +1,8 @@
 "use client";
 
+import { EmptyState } from "@/components/ui";
 import { useState, useEffect, useMemo } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Inbox } from "lucide-react";
 import { api, type TopicTask } from "@/lib/api";
 import { UnitSection } from "@/components/roadmap";
 import { useProgressTracker } from "@/hooks/useProgressTracker";
@@ -175,7 +176,7 @@ export default function LearningPathView({
 
       {loading && (
         <div className="flex items-center justify-center py-16">
-          <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-brand-blue-600 border-t-transparent" />
+          <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent" />
         </div>
       )}
 
@@ -193,12 +194,10 @@ export default function LearningPathView({
             </div>
           )}
           {filteredUnits.length === 0 ? (
-            <div className={`rounded-lg border border-dashed ${theme.border} p-12 text-center`}>
-              <span className="text-5xl">📭</span>
-              <h2 className={`mt-4 font-bold ${theme.text}`}>
-                Belum ada unit tersedia
-              </h2>
-            </div>
+            <EmptyState
+              icon={Inbox}
+              title="Belum ada unit tersedia"
+            />
           ) : (
             filteredUnits.map((unit) => (
               <UnitSection

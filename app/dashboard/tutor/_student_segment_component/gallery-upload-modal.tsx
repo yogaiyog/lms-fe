@@ -1,7 +1,8 @@
 "use client";
 
+import { Button, Input, Modal } from "@/components/ui";
 import { useState, useRef } from "react";
-import { Camera, Loader2, X } from "lucide-react";
+import { Camera, Loader2 } from "lucide-react";
 import { api, uploadImage } from "@/lib/api";
 import type { Theme } from "./types";
 
@@ -25,15 +26,7 @@ export default function GalleryUploadModal({ open, studentId, theme, onClose }: 
   function reset() { setFile(null); setCaption(""); setError(""); setSuccess(""); }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-      <div className="fixed inset-0 bg-black/40" onClick={onClose} />
-      <div className={`relative w-full max-w-md rounded-t-3xl ${theme.card} p-6 shadow-2xl sm:rounded-3xl`}>
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className={`text-lg font-extrabold ${theme.text}`}>Upload Gallery</h2>
-          <button onClick={() => { reset(); onClose(); }} className={`rounded-xl p-1.5 ${theme.textMuted} hover:bg-blue-50 hover:text-blue-600`}>
-            <X size={20} />
-          </button>
-        </div>
+    <Modal open onClose={() => { reset(); onClose(); }} title="Upload Gallery" size="md">
 
         {success ? (
           <div className="text-center py-6">
@@ -45,13 +38,12 @@ export default function GalleryUploadModal({ open, studentId, theme, onClose }: 
             <p className="text-sm font-semibold text-green-700">Gambar berhasil diupload!</p>
             <div className="mt-4 flex items-center justify-center gap-3">
               <button onClick={() => { reset(); }}
-                className="rounded-xl bg-blue-100 px-4 py-2 text-sm font-bold text-blue-700 hover:bg-blue-200 transition">
+                className="rounded-xl bg-primary-100 px-4 py-2 text-sm font-bold text-primary-700 hover:bg-primary-200 transition">
                 Upload Lagi
               </button>
-              <button onClick={() => { reset(); onClose(); }}
-                className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700 transition">
+              <Button type="submit" onClick={() => { reset(); onClose(); }}>
                 Tutup
-              </button>
+              </Button>
             </div>
           </div>
         ) : (
@@ -75,9 +67,9 @@ export default function GalleryUploadModal({ open, studentId, theme, onClose }: 
             }
           }} className="space-y-4">
             <div>
-              <label className="mb-1.5 block text-sm font-semibold text-slate-700">Pilih Gambar</label>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Pilih Gambar</label>
               <div onClick={() => fileInputRef.current?.click()}
-                className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-8 transition hover:border-blue-400 hover:bg-blue-50">
+                className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-8 transition hover:border-primary-400 hover:bg-primary-50">
                 {file ? (
                   <div className="text-center">
                     <p className="text-sm font-semibold text-slate-700">{file.name}</p>
@@ -95,21 +87,18 @@ export default function GalleryUploadModal({ open, studentId, theme, onClose }: 
                 onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-semibold text-slate-700">Keterangan <span className="text-slate-400">(opsional)</span></label>
-              <input value={caption} onChange={(e) => setCaption(e.target.value)}
-                placeholder="Misal: Project hari ini..."
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+              <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Keterangan <span className="text-slate-400">(opsional)</span></label>
+              <Input value={caption} onChange={(e) => setCaption(e.target.value)}
+                placeholder="Misal: Project hari ini..." />
             </div>
             {error && <div className="rounded-2xl bg-red-50 p-3 text-sm font-semibold text-red-700">{error}</div>}
-            <button type="submit" disabled={!file || uploading}
-              className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50 transition">
+            <Button type="submit" disabled={!file || uploading} className="w-full">
               {uploading ? (
                 <span className="inline-flex items-center gap-2"><Loader2 size={18} className="animate-spin" /> Mengupload...</span>
               ) : "Upload"}
-            </button>
+            </Button>
           </form>
         )}
-      </div>
-    </div>
+    </Modal>
   );
 }

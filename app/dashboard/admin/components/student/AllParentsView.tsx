@@ -40,13 +40,13 @@ export default function AllParentsView({ parents, loading, onRefresh, onEdit, on
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+        <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-primary-600 border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-4">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-4">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-lg font-extrabold text-slate-900">Semua Orang Tua</h2>
         <div className="flex items-center gap-2">
@@ -60,7 +60,7 @@ export default function AllParentsView({ parents, loading, onRefresh, onEdit, on
               Diarsipkan
             </button>
           </div>
-          <button onClick={onRefresh} className="rounded-lg px-3 py-1 text-xs font-semibold text-blue-600 hover:bg-blue-50">
+          <button onClick={onRefresh} className="rounded-lg px-3 py-1 text-xs font-semibold text-primary-600 hover:bg-primary-50">
             Refresh
           </button>
         </div>
@@ -76,7 +76,7 @@ export default function AllParentsView({ parents, loading, onRefresh, onEdit, on
                 <th className="border-b border-slate-200 px-3 py-2.5 text-left text-xs font-semibold uppercase text-slate-500">Email</th>
                 <th className="border-b border-slate-200 px-3 py-2.5 text-left text-xs font-semibold uppercase text-slate-500">Telepon</th>
                 <th onClick={() => setParentSort((d) => d === "desc" ? "asc" : "desc")}
-                  className="cursor-pointer border-b border-slate-200 px-3 py-2.5 text-left text-xs font-semibold uppercase text-slate-500 hover:text-blue-600 select-none">
+                  className="cursor-pointer border-b border-slate-200 px-3 py-2.5 text-left text-xs font-semibold uppercase text-slate-500 hover:text-primary-600 select-none">
                   Tgl Dibuat {parentSort === "desc" ? "▼" : "▲"}
                 </th>
                 <th className="border-b border-slate-200 px-3 py-2.5 text-center text-xs font-semibold uppercase text-slate-500">Aksi</th>
@@ -85,7 +85,7 @@ export default function AllParentsView({ parents, loading, onRefresh, onEdit, on
             <tbody>
               {sorted.map((p) => (
                 <tr key={p.id} onClick={() => onEdit(p)}
-                  className="border-b border-slate-100 last:border-0 cursor-pointer hover:bg-blue-50">
+                  className="border-b border-slate-100 last:border-0 cursor-pointer hover:bg-primary-50">
                   <td className="px-3 py-2.5 font-semibold text-slate-900">{p.fullName}</td>
                   <td className="px-3 py-2.5 text-slate-600">{p.user?.email ?? "—"}</td>
                   <td className="px-3 py-2.5 text-slate-600">{p.phone}</td>

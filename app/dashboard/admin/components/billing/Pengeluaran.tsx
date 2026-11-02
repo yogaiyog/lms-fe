@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui";
 import { useCallback, useEffect, useState } from "react";
 import { Search, RefreshCw, Wallet, Receipt, TrendingDown, CalendarRange } from "lucide-react";
 import { api, type ExpenseRow } from "@/lib/api";
@@ -109,7 +110,7 @@ export default function Pengeluaran() {
   };
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-4">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h2 className="text-lg font-extrabold text-slate-900">Pengeluaran</h2>
@@ -131,21 +132,20 @@ export default function Pengeluaran() {
           type="month"
           value={fromMonth}
           onChange={(e) => { setFromMonth(e.target.value || now); setPage(1); }}
-          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-blue-400"
+          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-primary-400"
         />
         <span className="text-sm text-slate-400">s/d</span>
         <input
           type="month"
           value={toMonth}
           onChange={(e) => { setToMonth(e.target.value || now); setPage(1); }}
-          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-blue-400"
+          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-primary-400"
         />
-        <button
+        <Button type="submit"
           onClick={setCurrentMonth}
-          className="rounded-xl bg-blue-600 px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-blue-700"
         >
           Bulan ini
-        </button>
+        </Button>
       </div>
 
       {error && (
@@ -154,7 +154,7 @@ export default function Pengeluaran() {
 
       {loading ? (
         <div className="flex items-center justify-center py-16">
-          <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+          <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-primary-600 border-t-transparent" />
         </div>
       ) : (
         <>
@@ -173,12 +173,12 @@ export default function Pengeluaran() {
               </div>
               <div className="text-xl font-extrabold text-slate-800">{total}</div>
             </div>
-            <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4">
-              <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-blue-700">
+            <div className="rounded-2xl border border-primary-100 bg-primary-50 p-4">
+              <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-primary-700">
                 <Wallet size={14} />
                 Rata-rata / Absensi
               </div>
-              <div className="text-xl font-extrabold text-blue-800">{formatIDR(total > 0 ? sum / total : 0)}</div>
+              <div className="text-xl font-extrabold text-primary-800">{formatIDR(total > 0 ? sum / total : 0)}</div>
             </div>
           </div>
 
@@ -242,7 +242,7 @@ export default function Pengeluaran() {
                   <select
                     value={pageSize}
                     onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
-                    className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs outline-none transition focus:border-blue-400"
+                    className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs outline-none transition focus:border-primary-400"
                   >
                     {PAGE_SIZE_OPTIONS.map((size) => (
                       <option key={size} value={size}>{size} / hal</option>

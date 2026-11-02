@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Copy, Download, ExternalLink, Mail, Pencil, Phone, Printer, RefreshCw, Trash2 } from "lucide-react";
 import type { Invoice, Payment } from "@/lib/api";
@@ -85,7 +86,7 @@ export default function InvoiceDetailView({
 
   return (
     <div className="w-full max-w-4xl print:max-w-none">
-      <div className="rounded-3xl border border-slate-200 bg-white shadow-sm print:rounded-none print:border-0 print:shadow-none">
+      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm print:rounded-none print:border-0 print:shadow-none">
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 print:hidden">
           <button
             onClick={onClose}
@@ -119,7 +120,7 @@ export default function InvoiceDetailView({
                 <p className="text-3xl font-extrabold tracking-tight text-slate-900">INVOICE</p>
               </div>
               <div className="text-right">
-                <p className="font-mono text-sm font-semibold text-blue-700">{invoice.number}</p>
+                <p className="font-mono text-sm font-semibold text-primary-700">{invoice.number}</p>
                 <p className="mt-1 text-xs text-slate-500">Terbit: {issuedDate}</p>
                 <span className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold ${INVOICE_STATUS_COLORS[invoice.status] ?? "bg-slate-100 text-slate-600"}`}>
                   {invoice.status}
@@ -136,12 +137,12 @@ export default function InvoiceDetailView({
                 {invoice.status}
               </span>
             </h2>
-            <p className="font-mono text-xs text-blue-600">{invoice.number}</p>
+            <p className="font-mono text-xs text-primary-600">{invoice.number}</p>
           </div>
 
           {loading && (
             <div className="flex justify-center py-6">
-              <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+              <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-primary-600 border-t-transparent" />
             </div>
           )}
 
@@ -202,11 +203,10 @@ export default function InvoiceDetailView({
               <Download size={14} />
               {pdfBusy ? "Membuat PDF..." : "Download PDF"}
             </button>
-            <button onClick={() => window.print()}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-blue-700">
+            <Button type="submit" onClick={() => window.print()}>
               <Printer size={14} />
               Cetak
-            </button>
+            </Button>
             <button onClick={onSendEmail} disabled={emailSending || !canEmail}
               className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 px-4 py-2 text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-100 disabled:opacity-40">
               <Mail size={14} />
@@ -219,7 +219,7 @@ export default function InvoiceDetailView({
               <h3 className="text-sm font-bold text-slate-700">Riwayat Pembayaran ({invoice.payments?.length ?? 0})</h3>
               <button onClick={() => onChangePayment(invoice)}
                 title="Ganti metode pembayaran"
-                className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 print:hidden">
+                className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-primary-50 hover:text-primary-700 hover:border-primary-300 print:hidden">
                 <Pencil size={13} /> Ganti Metode
               </button>
             </div>
@@ -293,7 +293,7 @@ export default function InvoiceDetailView({
                               <button
                                 onClick={() => onCheckStatus(p.id)}
                                 disabled={checkingPaymentIds.has(p.id)}
-                                className="inline-flex items-center gap-1 rounded-lg bg-blue-100 px-2 py-1 text-[10px] font-bold text-blue-700 hover:bg-blue-200 disabled:opacity-50"
+                                className="inline-flex items-center gap-1 rounded-lg bg-primary-100 px-2 py-1 text-[10px] font-bold text-primary-700 hover:bg-primary-200 disabled:opacity-50"
                               >
                                 {checkingPaymentIds.has(p.id) ? (
                                   <RefreshCw size={10} className="animate-spin" />
@@ -350,10 +350,10 @@ function PaymentMethodDetail({ payment }: { payment: Payment }) {
     return (
       <div className="mt-1">
         <div className="flex items-center gap-1">
-          <span className="font-mono text-[11px] font-semibold text-blue-700">VA: {payment.vaNumber}</span>
+          <span className="font-mono text-[11px] font-semibold text-primary-700">VA: {payment.vaNumber}</span>
           <button
             onClick={() => copyToClipboard(payment.vaNumber!, "va")}
-            className="inline-flex items-center rounded p-0.5 text-slate-400 hover:bg-blue-100 hover:text-blue-600"
+            className="inline-flex items-center rounded p-0.5 text-slate-400 hover:bg-primary-100 hover:text-primary-600"
             title="Salin VA"
           >
             {copied === "va" ? <span className="text-[10px] font-bold text-emerald-600">Tersalin</span> : <Copy size={11} />}
@@ -376,13 +376,13 @@ function PaymentMethodDetail({ payment }: { payment: Payment }) {
               href={payment.deeplinkUrl}
               target="_blank"
               rel="noreferrer"
-              className="text-[11px] font-semibold text-blue-600 hover:underline"
+              className="text-[11px] font-semibold text-primary-600 hover:underline"
             >
               QR Code ↗
             </a>
             <button
               onClick={() => copyToClipboard(payment.deeplinkUrl!, "qris")}
-              className="inline-flex items-center rounded p-0.5 text-slate-400 hover:bg-blue-100 hover:text-blue-600"
+              className="inline-flex items-center rounded p-0.5 text-slate-400 hover:bg-primary-100 hover:text-primary-600"
               title="Salin URL QR"
             >
               {copied === "qris" ? <span className="text-[10px] font-bold text-emerald-600">Tersalin</span> : <Copy size={11} />}
@@ -396,12 +396,12 @@ function PaymentMethodDetail({ payment }: { payment: Payment }) {
     return (
       <div className="mt-1 flex items-center gap-1">
         <a href={payment.deeplinkUrl} target="_blank" rel="noreferrer"
-          className="text-[11px] font-semibold text-blue-600 hover:underline">
+          className="text-[11px] font-semibold text-primary-600 hover:underline">
           Buka pembayaran ↗
         </a>
         <button
           onClick={() => copyToClipboard(payment.deeplinkUrl!, "deeplink")}
-          className="inline-flex items-center rounded p-0.5 text-slate-400 hover:bg-blue-100 hover:text-blue-600"
+          className="inline-flex items-center rounded p-0.5 text-slate-400 hover:bg-primary-100 hover:text-primary-600"
           title="Salin link"
         >
           {copied === "deeplink" ? <span className="text-[10px] font-bold text-emerald-600">Tersalin</span> : <Copy size={11} />}

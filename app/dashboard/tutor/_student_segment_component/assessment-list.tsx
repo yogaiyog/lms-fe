@@ -39,7 +39,7 @@ export default function AssessmentList({
                   <span className={`text-xs font-bold ${theme.text}`}>
                     {new Date(a.date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
                   </span>
-                  <button onClick={() => handleSave(i)} className="text-xs font-semibold text-blue-600 flex items-center gap-1">
+                  <button onClick={() => handleSave(i)} className="text-xs font-semibold text-primary-600 flex items-center gap-1">
                     <Save size={12} /> Simpan
                   </button>
                 </div>
@@ -107,7 +107,7 @@ export default function AssessmentList({
                         scores: a.scores.map(s => ({ id: s.id, score: s.score, notes: s.notes ?? null })),
                       });
                     }}
-                    className="text-xs text-blue-600 flex items-center gap-1"
+                    className="text-xs text-primary-600 flex items-center gap-1"
                   >
                     <Edit2 size={12} /> Edit
                   </button>

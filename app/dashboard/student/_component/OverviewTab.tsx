@@ -1,6 +1,7 @@
 "use client";
 
-import { Calendar, Clock, Video } from "lucide-react";
+import { BookOpen, Calendar, CalendarX2, Clock, Flame, Star, Ticket, Video } from "lucide-react";
+import { EmptyState } from "@/components/ui";
 import { motion } from "framer-motion";
 import Card from "./Card";
 import { DAY_LABELS } from "./types";
@@ -39,14 +40,28 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
 
       {/* Hero Greeting */}
       <motion.div variants={item}>
-        <div className={`relative overflow-hidden rounded-[1.75rem] ${theme.dark ? "bg-brand-blue-700" : "bg-brand-blue-300"} p-6 sm:p-8 text-white shadow-lg shadow-brand-blue-500/20`}>
-          <div className="absolute -top-8 -right-8 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
-          <div className="absolute bottom-0 left-0 h-24 w-48 rounded-full bg-white/5 blur-3xl" />
-          <div className="relative z-10">
-            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
-              Halo, {user?.studentProfile?.fullName ?? "Student"}! 👋
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-600 via-primary-800 to-primary-950 p-6 text-white shadow-lg shadow-primary-900/20 sm:p-8">
+          {/* Motif medali dari logo */}
+          <div className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-accent-300/25 blur-2xl" aria-hidden />
+          <div className="pointer-events-none absolute -bottom-16 right-24 h-40 w-40 rounded-full bg-primary-400/30 blur-3xl" aria-hidden />
+          <img src="/logo.png" alt="" aria-hidden className="pointer-events-none absolute right-8 top-1/2 hidden h-28 w-auto -translate-y-1/2 rotate-12 drop-shadow-xl sm:block" />
+          <div className="relative z-10 max-w-xl">
+            <p className="text-sm font-medium text-primary-100">Selamat datang kembali 👋</p>
+            <h1 className="mt-1 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+              Halo, {user?.studentProfile?.fullName ?? "Juara"}!
             </h1>
-            <p className="mt-1 text-sm text-white/80">Selamat datang.</p>
+            <p className="mt-1 text-sm text-primary-100/90">Yuk lanjutkan petualangan coding-mu hari ini.</p>
+            <div className="mt-5 flex flex-wrap gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold ring-1 ring-white/15 backdrop-blur">
+                <Star size={14} className="text-accent-300" /> {user?.studentProfile?.totalXp ?? 0} XP
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold ring-1 ring-white/15 backdrop-blur">
+                <Flame size={14} className="text-orange-300" /> {user?.studentProfile?.currentStreak ?? 0} hari beruntun
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold ring-1 ring-white/15 backdrop-blur">
+                <Ticket size={14} className="text-primary-200" /> Sisa {totalMeetLeft} pertemuan
+              </span>
+            </div>
           </div>
         </div>
       </motion.div>
@@ -73,14 +88,14 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
 
       {/* Schedule */}
       <motion.div variants={item}>
-        <h2 className={`mb-3 text-xs sm:text-sm font-semibold ${theme.textMuted}`}>Jadwal minggu ini</h2>
+        <h2 className={`mb-3 text-base font-semibold ${theme.text}`}>Jadwal minggu ini</h2>
 
         {activeWeekSchedules.length === 0 ? (
-          <Card theme={theme} className="p-8 sm:p-12 flex flex-col items-center text-center border-dashed">
-            <span className="text-4xl sm:text-5xl mb-3">📅</span>
-            <h3 className={`font-bold text-sm sm:text-base ${theme.text}`}>Tidak ada jadwal minggu ini</h3>
-            <p className={`text-xs sm:text-sm mt-1 max-w-sm ${theme.textMuted}`}>Kamu tidak memiliki jadwal minggu ini</p>
-          </Card>
+          <EmptyState
+            icon={CalendarX2}
+            title="Tidak ada jadwal minggu ini"
+            description="Jadwal kelasmu akan muncul di sini. Sambil menunggu, coba lanjutkan Roadmap belajarmu."
+          />
         ) : (
           <div className="space-y-3">
             {activeWeekSchedules.map((schedule) => {
@@ -93,8 +108,8 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
                 <Card key={schedule.id} theme={theme} className="p-4 sm:p-5">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${isOngoing ? "bg-tea-green-100" : isSoon ? "bg-amber-100" : schedule.isDone ? "bg-slate-100" : cd ? "bg-brand-blue-100" : "bg-slate-100"}`}>
-                        <Calendar size={18} className={isOngoing ? "text-tea-green-700" : isSoon ? "text-amber-600" : schedule.isDone ? "text-slate-400" : cd ? "text-brand-blue-600" : "text-slate-400"} />
+                      <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${isOngoing ? "bg-tea-green-100" : isSoon ? "bg-amber-100" : schedule.isDone ? "bg-slate-100" : cd ? "bg-primary-100" : "bg-slate-100"}`}>
+                        <Calendar size={18} className={isOngoing ? "text-tea-green-700" : isSoon ? "text-amber-600" : schedule.isDone ? "text-slate-400" : cd ? "text-primary-600" : "text-slate-400"} />
                       </span>
                       <div className="min-w-0 flex-1">
                         <p className={`text-[10px] font-semibold uppercase tracking-wide ${theme.textMuted}`}>{allClasses.find((c) => c.id === schedule.classId)?.name ?? "Kelas"}</p>
@@ -108,13 +123,13 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
                               type="button"
                               onClick={() => onTopicClick?.(schedule)}
                               className={`mt-0.5 text-left text-[11px] font-semibold underline-offset-2 transition hover:underline ${
-                                isOngoing ? "text-tea-green-600" : "text-brand-blue-600"
+                                isOngoing ? "text-tea-green-600" : "text-primary-600"
                               }`}
                             >
                               {schedule.topic}
                             </button>
                           ) : (
-                            <p className={`text-[11px] mt-0.5 font-semibold ${isOngoing ? "text-tea-green-600" : "text-brand-blue-600"}`}>{schedule.topic}</p>
+                            <p className={`text-[11px] mt-0.5 font-semibold ${isOngoing ? "text-tea-green-600" : "text-primary-600"}`}>{schedule.topic}</p>
                           )
                         )}
                       </div>
@@ -132,18 +147,18 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
                       ) : cd && !isCountdownZero ? (
                         <div className="flex items-center gap-1.5">
                           {cd.days > 0 && (
-                            <div className={`flex items-center gap-0.5 rounded-lg px-1.5 py-1 ${cd.days === 0 ? "bg-red-100" : "bg-brand-blue-100"}`}>
-                              <span className={`text-xs font-extrabold ${cd.days === 0 ? "text-red-700" : "text-brand-blue-700"}`}>{cd.days}</span>
-                              <span className={`text-[9px] ${cd.days === 0 ? "text-red-500" : "text-brand-blue-500"}`}>h</span>
+                            <div className={`flex items-center gap-0.5 rounded-lg px-1.5 py-1 ${cd.days === 0 ? "bg-red-100" : "bg-primary-100"}`}>
+                              <span className={`text-xs font-extrabold ${cd.days === 0 ? "text-red-700" : "text-primary-700"}`}>{cd.days}</span>
+                              <span className={`text-[9px] ${cd.days === 0 ? "text-red-500" : "text-primary-500"}`}>h</span>
                             </div>
                           )}
-                          <div className={`flex items-center gap-0.5 rounded-lg px-1.5 py-1 ${cd.days === 0 ? "bg-red-100" : "bg-brand-blue-100"}`}>
-                            <span className={`text-xs font-extrabold ${cd.days === 0 ? "text-red-700" : "text-brand-blue-700"}`}>{String(cd.hours).padStart(2, "0")}</span>
-                            <span className={`text-[9px] ${cd.days === 0 ? "text-red-500" : "text-brand-blue-500"}`}>j</span>
+                          <div className={`flex items-center gap-0.5 rounded-lg px-1.5 py-1 ${cd.days === 0 ? "bg-red-100" : "bg-primary-100"}`}>
+                            <span className={`text-xs font-extrabold ${cd.days === 0 ? "text-red-700" : "text-primary-700"}`}>{String(cd.hours).padStart(2, "0")}</span>
+                            <span className={`text-[9px] ${cd.days === 0 ? "text-red-500" : "text-primary-500"}`}>j</span>
                           </div>
-                          <div className={`flex items-center gap-0.5 rounded-lg px-1.5 py-1 ${cd.days === 0 ? "bg-red-100" : "bg-brand-blue-100"}`}>
-                            <span className={`text-xs font-extrabold ${cd.days === 0 ? "text-red-700" : "text-brand-blue-700"}`}>{String(cd.minutes).padStart(2, "0")}</span>
-                            <span className={`text-[9px] ${cd.days === 0 ? "text-red-500" : "text-brand-blue-500"}`}>m</span>
+                          <div className={`flex items-center gap-0.5 rounded-lg px-1.5 py-1 ${cd.days === 0 ? "bg-red-100" : "bg-primary-100"}`}>
+                            <span className={`text-xs font-extrabold ${cd.days === 0 ? "text-red-700" : "text-primary-700"}`}>{String(cd.minutes).padStart(2, "0")}</span>
+                            <span className={`text-[9px] ${cd.days === 0 ? "text-red-500" : "text-primary-500"}`}>m</span>
                           </div>
                           {cd.days === 0 && (
                             <div className="flex items-center gap-0.5 rounded-lg px-1.5 py-1 bg-red-100">
@@ -156,7 +171,7 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
 
                       {showMeetLink && (
                         <a href={schedule.meetLink} target="_blank" rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 rounded-xl bg-brand-blue-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-brand-blue-700 transition-colors">
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-primary-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-primary-700 transition-colors">
                           <Video size={12} /> Meet
                         </a>
                       )}
@@ -171,11 +186,11 @@ export default function OverviewTab({ theme, user, totalMeetLeft, weekSchedules,
 
       {allClasses.length === 0 && (
         <motion.div variants={item}>
-          <Card theme={theme} className="p-8 sm:p-12 flex flex-col items-center text-center border-dashed">
-            <span className="text-4xl sm:text-5xl mb-3">📭</span>
-            <h2 className={`font-bold text-sm sm:text-base ${theme.text}`}>Belum ada kelas</h2>
-            <p className={`text-xs sm:text-sm mt-1 max-w-sm ${theme.textMuted}`}>Kamu belum terdaftar di kelas manapun.</p>
-          </Card>
+          <EmptyState
+            icon={BookOpen}
+            title="Belum ada kelas"
+            description="Kamu belum terdaftar di kelas mana pun. Minta orang tua atau admin untuk mendaftarkanmu."
+          />
         </motion.div>
       )}
 

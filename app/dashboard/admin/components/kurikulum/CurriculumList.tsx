@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, Input, Modal, Select } from "@/components/ui";
 import { useState, useEffect, type FormEvent } from "react";
 import { api, type Category, type Curriculum, type AssessmentSet } from "@/lib/api";
 import { CATEGORY_LABELS } from "../../constants";
@@ -94,7 +95,7 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
   }
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white shadow-sm">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="p-4">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-bold text-slate-800">Kurikulum</h2>
@@ -113,13 +114,13 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
                 tabIndex={0}
                 onClick={() => handleEditClick(c)}
                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleEditClick(c); } }}
-                className="flex w-full cursor-pointer items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/50 px-4 py-3 text-left transition hover:border-blue-200 hover:bg-blue-50/50"
+                className="flex w-full cursor-pointer items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/50 px-4 py-3 text-left transition hover:border-primary-200 hover:bg-primary-50/50"
               >
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold text-slate-800">{c.name}</p>
                   <div className="mb-1.5 flex flex-wrap gap-1">
                     {c.categories?.map((cat) => (
-                      <span key={cat.category.id} className="rounded-lg bg-blue-100 px-2.5 py-0.5 text-[11px] font-semibold text-blue-700">
+                      <span key={cat.category.id} className="rounded-lg bg-primary-100 px-2.5 py-0.5 text-[11px] font-semibold text-primary-700">
                         {CATEGORY_LABELS[cat?.category?.name] ?? cat?.category?.name ?? ""}
                       </span>
                     ))}
@@ -177,32 +178,22 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
           </div>
         )}
 
-        <button onClick={() => { setShowCreate(true); setError(""); }}
-          className="w-full rounded-2xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700"
-        >
+        <Button type="submit" onClick={() => { setShowCreate(true); setError(""); }}
+         className="w-full">
           + Tambah Kurikulum
-        </button>
+        </Button>
       </div>
 
       {showCreate && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-          <div className="fixed inset-0 bg-black/40" onClick={() => setShowCreate(false)} />
-          <div className="relative max-h-[90vh] overflow-y-auto w-full max-w-lg rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-slate-800">Tambah Kurikulum</h3>
-              <button onClick={() => setShowCreate(false)} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
-            </div>
+        <Modal open onClose={() => setShowCreate(false)} title="Tambah Kurikulum" size="md">
             <form onSubmit={onCreate}>
               <div className="mb-3">
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Nama</label>
-                <input name="name" required
-                  placeholder="mis. Scratch Explorer"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Nama</label>
+                <Input name="name" required
+                  placeholder="mis. Scratch Explorer" />
               </div>
               <div className="mb-3">
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Kategori <span className="text-red-500">*</span></label>
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Kategori <span className="text-red-500">*</span></label>
                 <div className="flex max-h-48 flex-wrap gap-1.5 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 p-2.5">
                   {categories.map((cat) => {
                     const isSelected = selectedCategoryNames.includes(cat.name);
@@ -210,8 +201,8 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
                       <button key={cat.id} type="button" onClick={() => toggleCategory(cat.name)}
                         className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
                           isSelected
-                            ? "bg-blue-600 text-white shadow-sm"
-                            : "border border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:text-blue-700"
+                            ? "bg-primary-600 text-white shadow-sm"
+                            : "border border-slate-200 bg-white text-slate-600 hover:border-primary-300 hover:text-primary-700"
                         }`}
                       >
                         {cat.label}
@@ -239,7 +230,7 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
                       min="0"
                       step="100"
                       placeholder="e.g. 49750"
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-blue-400"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-primary-400"
                     />
                   </div>
                   <div>
@@ -250,7 +241,7 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
                       min="0"
                       step="100"
                       placeholder="e.g. 62250"
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-blue-400"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-primary-400"
                     />
                   </div>
                   <div>
@@ -261,50 +252,38 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
                       min="0"
                       step="100"
                       placeholder="e.g. 125000"
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-blue-400"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-primary-400"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="mb-4">
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Set Penilaian</label>
-                <select name="assessmentSetId"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Set Penilaian</label>
+                <Select name="assessmentSetId"
                 >
                   <option value="">-- Tanpa penilaian --</option>
                   {assessmentSets.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-                </select>
+                </Select>
               </div>
               {error && <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-700">{error}</div>}
-              <button type="submit" disabled={saving || selectedCategoryNames.length === 0}
-                className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700 disabled:opacity-50"
-              >
+              <Button type="submit" disabled={saving || selectedCategoryNames.length === 0}
+               className="w-full">
                 {saving ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Simpan"}
-              </button>
+              </Button>
             </form>
-          </div>
-        </div>
+        </Modal>
       )}
 
       {showEdit && editingCurriculum && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-          <div className="fixed inset-0 bg-black/40" onClick={() => setShowEdit(false)} />
-          <div className="relative max-h-[90vh] overflow-y-auto w-full max-w-lg rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-slate-800">Edit Kurikulum</h3>
-              <button onClick={() => setShowEdit(false)} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
-            </div>
+        <Modal open onClose={() => setShowEdit(false)} title="Edit Kurikulum" size="md">
             <form onSubmit={onEdit}>
               <div className="mb-3">
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Nama</label>
-                <input name="name" required defaultValue={editingCurriculum.name}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Nama</label>
+                <Input name="name" required defaultValue={editingCurriculum.name} />
               </div>
               <div className="mb-3">
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Kategori <span className="text-red-500">*</span></label>
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Kategori <span className="text-red-500">*</span></label>
                 <div className="flex max-h-48 flex-wrap gap-1.5 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 p-2.5">
                   {categories.map((cat) => {
                     const isSelected = selectedCategoryNames.includes(cat.name);
@@ -312,8 +291,8 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
                       <button key={cat.id} type="button" onClick={() => toggleCategory(cat.name)}
                         className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
                           isSelected
-                            ? "bg-blue-600 text-white shadow-sm"
-                            : "border border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:text-blue-700"
+                            ? "bg-primary-600 text-white shadow-sm"
+                            : "border border-slate-200 bg-white text-slate-600 hover:border-primary-300 hover:text-primary-700"
                         }`}
                       >
                         {cat.label}
@@ -342,7 +321,7 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
                       step="100"
                       defaultValue={editingCurriculum.priceBatch810 != null ? Number(editingCurriculum.priceBatch810) : ""}
                       placeholder="e.g. 49750"
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-blue-400"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-primary-400"
                     />
                   </div>
                   <div>
@@ -354,7 +333,7 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
                       step="100"
                       defaultValue={editingCurriculum.priceBatch35 != null ? Number(editingCurriculum.priceBatch35) : ""}
                       placeholder="e.g. 62250"
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-blue-400"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-primary-400"
                     />
                   </div>
                   <div>
@@ -366,30 +345,27 @@ export default function CurriculumList({ curriculums, assessmentSets, onRefresh 
                       step="100"
                       defaultValue={editingCurriculum.pricePrivate != null ? Number(editingCurriculum.pricePrivate) : ""}
                       placeholder="e.g. 125000"
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-blue-400"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-primary-400"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="mb-4">
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Set Penilaian</label>
-                <select name="assessmentSetId" defaultValue={editingCurriculum.assessmentSetId ?? ""}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Set Penilaian</label>
+                <Select name="assessmentSetId" defaultValue={editingCurriculum.assessmentSetId ?? ""}
                 >
                   <option value="">-- Tanpa penilaian --</option>
                   {assessmentSets.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-                </select>
+                </Select>
               </div>
               {error && <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-700">{error}</div>}
-              <button type="submit" disabled={saving || selectedCategoryNames.length === 0}
-                className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700 disabled:opacity-50"
-              >
+              <Button type="submit" disabled={saving || selectedCategoryNames.length === 0}
+               className="w-full">
                 {saving ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Simpan Perubahan"}
-              </button>
+              </Button>
             </form>
-          </div>
-        </div>
+        </Modal>
       )}
     </div>
   );

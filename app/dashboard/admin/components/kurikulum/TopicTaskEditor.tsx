@@ -250,7 +250,7 @@ export default function TopicTaskEditor({ topicId }: Props) {
                     <span className={`inline-block rounded-md px-1.5 py-0.5 text-[9px] font-bold ${
                       task.type === "SCRATCH" ? "bg-orange-100 text-orange-700" :
                       task.type === "QUIZ" ? "bg-purple-100 text-purple-700" :
-                      "bg-blue-100 text-blue-700"
+                      "bg-primary-100 text-primary-700"
                     }`}>
                       {TASK_TYPE_LABELS[task.type]}
                     </span>
@@ -431,13 +431,13 @@ export default function TopicTaskEditor({ topicId }: Props) {
             <div>
               <label className="mb-0.5 block text-xs font-semibold text-slate-600">Code</label>
               <input value={editCode} onChange={(e) => setEditCode(e.target.value)} autoFocus
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-blue-400"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-primary-400"
                 placeholder="m1, capstone-motion, ..." />
             </div>
             <div>
               <label className="mb-0.5 block text-xs font-semibold text-slate-600">Label</label>
               <input value={editLabel} onChange={(e) => setEditLabel(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-blue-400"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-primary-400"
                 placeholder="1, 2, Capstone" />
             </div>
           </div>
@@ -445,7 +445,7 @@ export default function TopicTaskEditor({ topicId }: Props) {
             <div>
               <label className="mb-0.5 block text-xs font-semibold text-slate-600">Tipe</label>
               <select value={editType} onChange={(e) => setEditType(e.target.value as "SCRATCH" | "QUIZ" | "PYTHON")}
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-blue-400"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-primary-400"
               >
                 <option value="SCRATCH">Scratch</option>
                 <option value="QUIZ">Quiz</option>
@@ -455,12 +455,12 @@ export default function TopicTaskEditor({ topicId }: Props) {
             <div>
               <label className="mb-0.5 block text-xs font-semibold text-slate-600">Order</label>
               <input type="number" min={0} value={editOrder} onChange={(e) => setEditOrder(Number(e.target.value))}
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-blue-400" />
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-primary-400" />
             </div>
             <div className="flex items-end pb-2">
               <label className="flex items-center gap-1 text-xs">
                 <input type="checkbox" checked={editIsCapstone} onChange={(e) => setEditIsCapstone(e.target.checked)}
-                  className="rounded accent-blue-600" />
+                  className="rounded accent-primary-600" />
                 <span className="font-semibold text-slate-600">Capstone</span>
               </label>
             </div>
@@ -468,7 +468,7 @@ export default function TopicTaskEditor({ topicId }: Props) {
           <div className="mb-2 flex items-center gap-2">
             <label className="flex items-center gap-1 text-xs">
               <input type="checkbox" checked={editAutoComplete} onChange={(e) => setEditAutoComplete(e.target.checked)}
-                className="rounded accent-blue-600" />
+                className="rounded accent-primary-600" />
               <span className="font-semibold text-slate-600">Auto Complete</span>
             </label>
             <p className="text-[10px] text-slate-400">Klik task langsung menandai selesai (buka link, tanpa editor)</p>
@@ -476,7 +476,7 @@ export default function TopicTaskEditor({ topicId }: Props) {
           <div className="mb-2">
             <label className="mb-0.5 block text-xs font-semibold text-slate-600">URL (opsional)</label>
             <input value={editUrl} onChange={(e) => setEditUrl(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-blue-400"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-primary-400"
               placeholder="https://..." />
           </div>
           {(editType === "PYTHON" || editType === "SCRATCH") && (
@@ -484,13 +484,13 @@ export default function TopicTaskEditor({ topicId }: Props) {
               <div className="mb-2">
                 <label className="mb-0.5 block text-xs font-semibold text-slate-600">Instruksi (markdown)</label>
                 <textarea value={editInstructions} onChange={(e) => setEditInstructions(e.target.value)} rows={2}
-                  className="w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-blue-400" />
+                  className="w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-primary-400" />
               </div>
               {editType === "PYTHON" && (
                 <div className="mb-2">
                   <label className="mb-0.5 block text-xs font-semibold text-slate-600">Default Code</label>
                   <textarea value={editDefaultCode} onChange={(e) => setEditDefaultCode(e.target.value)} rows={3}
-                    className="w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-xs outline-none transition focus:border-blue-400"
+                    className="w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-xs outline-none transition focus:border-primary-400"
                     spellCheck={false} />
                 </div>
               )}

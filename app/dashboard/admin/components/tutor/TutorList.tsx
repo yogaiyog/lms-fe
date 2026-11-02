@@ -15,7 +15,7 @@ type Props = {
 
 export default function TutorList({ tutors, onSelect }: Props) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white shadow-sm">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       {tutors.length === 0 ? (
         <div className="p-6 text-center"><p className="text-slate-500">Belum ada tutor</p></div>
       ) : (
@@ -32,7 +32,7 @@ export default function TutorList({ tutors, onSelect }: Props) {
             <tbody>
               {tutors.map((t) => (
                 <tr key={t.id} onClick={() => onSelect(t)}
-                  className="border-b border-slate-100 last:border-0 cursor-pointer hover:bg-blue-50">
+                  className="border-b border-slate-100 last:border-0 cursor-pointer hover:bg-primary-50">
                   <td className="px-3 py-3 font-semibold text-slate-900">{t.fullName}</td>
                   <td className="px-3 py-3 text-slate-600">{t.email ?? "—"}</td>
                   <td className="px-3 py-3 text-slate-600">{t.phone}</td>

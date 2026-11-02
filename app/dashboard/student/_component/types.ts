@@ -16,11 +16,11 @@ export const DAY_LABELS: Record<string, string> = {
   THURSDAY: "Kamis", FRIDAY: "Jumat", SATURDAY: "Sabtu", SUNDAY: "Minggu",
 };
 
-export const NAV_ITEMS: { key: Segment; label: string; icon: LucideIcon }[] = [
+export const NAV_ITEMS: { key: Segment; label: string; shortLabel?: string; icon: LucideIcon }[] = [
   { key: "overview", label: "Ringkasan", icon: Home },
   { key: "schedule", label: "Jadwal", icon: Calendar },
   { key: "roadmap", label: "Roadmap", icon: Route },
-  { key: "reports", label: "Laporan & Gallery", icon: FileText },
+  { key: "reports", label: "Laporan & Gallery", shortLabel: "Laporan", icon: FileText },
   { key: "enrollment", label: "Enrollment", icon: Users },
   { key: "badges", label: "Sertifikat", icon: Award },
 ];

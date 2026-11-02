@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui";
 import { Plus, RefreshCw, Receipt, Search, ArrowUp, ArrowDown } from "lucide-react";
 import type { Invoice } from "@/lib/api";
 
@@ -16,7 +17,7 @@ export const INVOICE_STATUS_COLORS: Record<string, string> = {
   DRAFT: "bg-slate-100 text-slate-600",
   UNPAID: "bg-amber-100 text-amber-700",
   PAID: "bg-green-100 text-green-700",
-  PARTIAL: "bg-blue-100 text-blue-700",
+  PARTIAL: "bg-primary-100 text-primary-700",
   REFUNDED: "bg-rose-100 text-rose-700",
   CANCELLED: "bg-gray-100 text-gray-500",
 };
@@ -78,7 +79,7 @@ function SortableTh({ label, sortKey, activeKey, dir, onSort, className = "" }: 
       <button
         type="button"
         onClick={() => onSort(sortKey)}
-        className="inline-flex items-center gap-1 transition hover:text-blue-600"
+        className="inline-flex items-center gap-1 transition hover:text-primary-600"
       >
         {label}
         {active ? (
@@ -115,7 +116,7 @@ export default function InvoiceList({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+        <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-primary-600 border-t-transparent" />
       </div>
     );
   }
@@ -139,7 +140,7 @@ export default function InvoiceList({
   };
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-4">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h2 className="text-lg font-extrabold text-slate-900">Semua Invoice</h2>
@@ -151,11 +152,10 @@ export default function InvoiceList({
             <RefreshCw size={14} />
             Refresh
           </button>
-          <button onClick={onCreate}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-blue-700">
+          <Button type="submit" onClick={onCreate}>
             <Plus size={14} />
             Buat Invoice
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -171,13 +171,13 @@ export default function InvoiceList({
               value={search}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Cari nomor, siswa, kurikulum..."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 py-2 text-sm outline-none transition focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => onStatusChange(e.target.value)}
-            className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition focus:border-blue-400"
+            className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition focus:border-primary-400"
           >
             <option value="ALL">Semua Status</option>
             {STATUS_OPTIONS.map((s) => (
@@ -219,8 +219,8 @@ export default function InvoiceList({
             <tbody>
               {invoices.map((inv) => (
                 <tr key={inv.id} onClick={() => onOpen(inv)}
-                  className="border-b border-slate-100 last:border-0 cursor-pointer hover:bg-blue-50">
-                  <td className="px-3 py-2.5 font-mono text-xs font-bold text-blue-600">{inv.number}</td>
+                  className="border-b border-slate-100 last:border-0 cursor-pointer hover:bg-primary-50">
+                  <td className="px-3 py-2.5 font-mono text-xs font-bold text-primary-600">{inv.number}</td>
                   <td className="px-3 py-2.5 font-semibold text-slate-900">
                     {inv.enrollment?.student?.fullName ?? "—"}
                   </td>
@@ -246,7 +246,7 @@ export default function InvoiceList({
               <select
                 value={pageSize}
                 onChange={(e) => onPageSizeChange(Number(e.target.value))}
-                className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs outline-none transition focus:border-blue-400"
+                className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs outline-none transition focus:border-primary-400"
               >
                 {PAGE_SIZE_OPTIONS.map((size) => (
                   <option key={size} value={size}>{size} / hal</option>

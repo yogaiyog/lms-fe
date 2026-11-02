@@ -1,8 +1,9 @@
 "use client";
 
+import { EmptyState } from "@/components/ui";
+import { Inbox, Map as MapIcon } from "lucide-react";
 import { Roadmap } from "@/components/roadmap";
 import type { RoadmapItem } from "@/components/roadmap";
-import Card from "./Card";
 import type { Theme } from "./types";
 import type { Class, Schedule } from "@/lib/api";
 
@@ -27,22 +28,22 @@ export default function RoadmapTab({ theme, selectedClass, roadmapItems, roadmap
         </div>
         {allClasses.length > 1 && (
           <select value={selectedClassId} onChange={(e) => onSelectClass(e.target.value)}
-            className={`ml-auto rounded-xl border ${theme.border} ${theme.card} px-4 py-2 text-xs font-semibold outline-none focus:border-brand-blue-400 ${theme.text}`}>
+            className={`ml-auto rounded-xl border ${theme.border} ${theme.card} px-4 py-2 text-xs font-semibold outline-none focus:border-primary-400 ${theme.text}`}>
             {allClasses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         )}
       </div>
       {!selectedClass?.curriculum ? (
-        <Card theme={theme} className="p-12 flex flex-col items-center text-center border-dashed">
-          <span className="text-5xl mb-4">🗺️</span>
-          <h2 className={`font-bold ${theme.text}`}>Belum ada roadmap</h2>
-          <p className={`text-sm mt-1 max-w-sm ${theme.textMuted}`}>Kelas kamu belum memiliki kurikulum.</p>
-        </Card>
+        <EmptyState
+          icon={MapIcon}
+          title="Belum ada roadmap"
+          description="Kelas kamu belum memiliki kurikulum."
+        />
       ) : roadmapItems.length === 0 ? (
-        <Card theme={theme} className="p-12 flex flex-col items-center text-center border-dashed">
-          <span className="text-5xl mb-4">📭</span>
-          <h2 className={`font-bold ${theme.text}`}>Kurikulum kosong</h2>
-        </Card>
+        <EmptyState
+          icon={Inbox}
+          title="Kurikulum kosong"
+        />
       ) : (
         <Roadmap
           items={roadmapItems}

@@ -87,6 +87,77 @@
   --color-brand-yellow-800: #7f6b00;
   --color-brand-yellow-900: #554900;
   --color-brand-yellow-950: #3a3100;
+
+  /*
+   * Design system (dipakai komponen di components/ui & components/dashboard).
+   * primary = pita biru logo (#0579CC → navy #01379A), accent = medali emas (#FDD835 / #F8BF2E).
+   * Pakai `primary-*` & `accent-*` untuk UI baru; palet lama di atas dipertahankan
+   * supaya halaman yang belum dimigrasi tidak berubah.
+   */
+  --color-primary-50: #eef5fd;
+  --color-primary-100: #d9e9fb;
+  --color-primary-200: #b3d3f6;
+  --color-primary-300: #7fb5ee;
+  --color-primary-400: #3e91e0;
+  --color-primary-500: #0579cc;
+  --color-primary-600: #0362b4;
+  --color-primary-700: #014b9f;
+  --color-primary-800: #01379a;
+  --color-primary-900: #022a73;
+  --color-primary-950: #021b4a;
+
+  --color-accent-50: #fffbea;
+  --color-accent-100: #fff3c4;
+  --color-accent-200: #ffe68a;
+  --color-accent-300: #fdd835;
+  --color-accent-400: #f8bf2e;
+  --color-accent-500: #e9a70f;
+  --color-accent-600: #c98a06;
+  --color-accent-700: #a06a09;
+  --color-accent-800: #84540f;
+  --color-accent-900: #704512;
+}
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
+}
+
+@keyframes ui-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ui-pop-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes ui-slide-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@utility animate-fade-in {
+  animation: ui-fade-in 150ms ease-out both;
+}
+
+@utility animate-pop-in {
+  animation: ui-pop-in 180ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@utility animate-slide-in-left {
+  animation: ui-slide-in-left 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-pop-in,
+  .animate-slide-in-left {
+    animation: none;
+  }
 }
 
 @layer base {

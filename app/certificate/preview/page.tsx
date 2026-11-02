@@ -144,7 +144,7 @@ function CertificatePreviewContent() {
         <p className="text-sm font-semibold text-red-500">{error}</p>
         <button
           onClick={handleClose}
-          className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
+          className="rounded-xl bg-primary-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-primary-700"
         >
           Kembali
         </button>
@@ -168,7 +168,7 @@ function CertificatePreviewContent() {
         {loading && !pdfUrl ? (
           <div className="flex h-full items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white/70">
             <div className="flex flex-col items-center gap-3 text-center">
-              <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+              <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent" />
               <p className="text-sm font-semibold text-slate-600">Sedang membuat PDF sertifikat...</p>
             </div>
           </div>
@@ -191,7 +191,7 @@ function CertificatePreviewContent() {
         </button>
         <button
           onClick={handlePrint}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-sm font-bold text-blue-600 shadow-sm ring-1 ring-blue-600/30 transition hover:bg-blue-50"
+          className="inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-sm font-bold text-primary-600 shadow-sm ring-1 ring-primary-600/30 transition hover:bg-primary-50"
         >
           <Printer size={15} />
           Cetak
@@ -199,7 +199,7 @@ function CertificatePreviewContent() {
         <button
           onClick={handleDownload}
           disabled={!pdfBlob}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700 disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-xl bg-primary-600 px-4 py-2 text-sm font-bold text-white shadow-sm shadow-primary-600/30 transition hover:bg-primary-700 disabled:opacity-50"
         >
           <Download size={15} />
           Download PDF
@@ -225,7 +225,7 @@ function CertificatePreviewContent() {
 
 export default function CertificatePreviewPage() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-slate-50"><span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" /></div>}>
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-slate-50"><span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent" /></div>}>
       <CertificatePreviewContent />
     </Suspense>
   );

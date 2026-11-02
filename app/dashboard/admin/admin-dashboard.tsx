@@ -2,8 +2,8 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useAdminDashboard } from "./hooks/useAdminDashboard";
-import AdminNavbar from "./components/AdminNavbar";
-import AdminSidebar from "./components/AdminSidebar";
+import { DashboardShell, type ShellNavSection } from "@/components/dashboard/DashboardShell";
+import { Button, Input, Modal, PageLoader } from "@/components/ui";
 import ClassesTable from "./components/class/ClassesTable";
 import RequestsTable from "./components/class/RequestsTable";
 import CreateClassForm from "./components/class/CreateClassForm";
@@ -27,8 +27,78 @@ import Pemasukan from "./components/billing/Pemasukan";
 import Pengeluaran from "./components/billing/Pengeluaran";
 import SetTutorCost from "./components/billing/SetTutorCost";
 import NewTrialWizard from "./components/trial/NewTrialWizard";
-import { Plus, X } from "lucide-react";
+import { BookOpen, ClipboardCheck, GraduationCap, Library, Plus, Users, Wallet, X } from "lucide-react";
 import { useBilling } from "../../../hooks/useBilling";
+
+const ADMIN_NAV: ShellNavSection[] = [
+  {
+    title: "Akademik",
+    items: [
+      {
+        key: "classes",
+        label: "Kelas",
+        icon: BookOpen,
+        children: [
+          { key: "classes", label: "Daftar Kelas" },
+          { key: "requests", label: "Request Kelas" },
+          { key: "create", label: "Buat Kelas" },
+        ],
+      },
+      {
+        key: "curriculums",
+        label: "Kurikulum",
+        icon: Library,
+        children: [
+          { key: "list", label: "Daftar Kurikulum" },
+          { key: "topics", label: "Topik" },
+          { key: "assessments", label: "Set Penilaian" },
+        ],
+      },
+      { key: "attendance", label: "Absensi", icon: ClipboardCheck },
+    ],
+  },
+  {
+    title: "Pengguna",
+    items: [
+      {
+        key: "students",
+        label: "Siswa",
+        icon: GraduationCap,
+        children: [
+          { key: "list", label: "Daftar Siswa" },
+          { key: "enrollment", label: "Enrollment" },
+          { key: "parent", label: "Orang Tua" },
+          { key: "add", label: "Tambah Siswa" },
+        ],
+      },
+      {
+        key: "tutors",
+        label: "Tutor",
+        icon: Users,
+        children: [
+          { key: "list", label: "Daftar Tutor" },
+          { key: "add", label: "Tambah Tutor" },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Keuangan",
+    items: [
+      {
+        key: "billing",
+        label: "Keuangan",
+        icon: Wallet,
+        children: [
+          { key: "invoices", label: "Invoice & Pembayaran" },
+          { key: "pemasukan", label: "Pemasukan" },
+          { key: "pengeluaran", label: "Pengeluaran" },
+          { key: "tutor-cost", label: "Set Tutor Cost" },
+        ],
+      },
+    ],
+  },
+];
 
 export default function AdminDashboard() {
   const h = useAdminDashboard();
@@ -53,26 +123,49 @@ export default function AdminDashboard() {
   }, [h.mainMenu, h.studentSegment]);
 
   if (h.loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
-        <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-      </div>
-    );
+    return <PageLoader />;
+  }
+
+  const activeSub =
+    h.mainMenu === "classes" ? h.segment
+    : h.mainMenu === "tutors" ? h.tutorSegment
+    : h.mainMenu === "curriculums" ? h.curriculumSegment
+    : h.mainMenu === "students" ? h.studentSegment
+    : h.mainMenu === "billing" ? h.billingSegment
+    : null;
+  const activeKey = activeSub ? `${h.mainMenu}/${activeSub}` : h.mainMenu;
+  const activeItem = ADMIN_NAV.flatMap((s) => s.items).find((i) => i.key === h.mainMenu);
+  const activeChild = activeItem?.children?.find((c) => c.key === activeSub);
+
+  function navigate(key: string) {
+    const [main, sub] = key.split("/") as [typeof h.mainMenu, string | undefined];
+    if (main !== h.mainMenu) {
+      // Sama seperti navbar lama: ganti menu utama → reset segmen ke awal.
+      h.setMainMenu(main);
+      h.setSegment("classes");
+      h.setTutorSegment("list");
+      h.setCurriculumSegment("list");
+    }
+    if (!sub) return;
+    if (main === "classes") h.setSegment(sub as typeof h.segment);
+    if (main === "tutors") h.setTutorSegment(sub as typeof h.tutorSegment);
+    if (main === "curriculums") h.setCurriculumSegment(sub as typeof h.curriculumSegment);
+    if (main === "students") h.setStudentSegment(sub as typeof h.studentSegment);
+    if (main === "billing") h.setBillingSegment(sub as typeof h.billingSegment);
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 print:bg-white">
-      <AdminNavbar mainMenu={h.mainMenu} onChange={(m) => { h.setMainMenu(m); h.setSegment("classes"); h.setTutorSegment("list"); h.setCurriculumSegment("list"); }}
-        email={h.user?.email} onLogout={h.logout} />
-
-      <div className="mx-auto flex max-w-full gap-6 px-10 py-6 print:gap-0 print:px-0 print:py-0">
-        <AdminSidebar mainMenu={h.mainMenu} segment={h.segment} onSegmentChange={h.setSegment}
-          tutorSegment={h.tutorSegment} onTutorSegmentChange={h.setTutorSegment}
-          curriculumSegment={h.curriculumSegment} onCurriculumSegmentChange={h.setCurriculumSegment}
-          studentSegment={h.studentSegment} onStudentSegmentChange={h.setStudentSegment}
-          billingSegment={h.billingSegment} onBillingSegmentChange={h.setBillingSegment} />
-
-        <main className="min-w-0 flex-1">
+    <DashboardShell
+      roleLabel="Admin"
+      sections={ADMIN_NAV}
+      activeKey={activeKey}
+      onNavigate={navigate}
+      title={activeChild?.label ?? activeItem?.label ?? "Dashboard"}
+      subtitle={activeChild ? activeItem?.label : undefined}
+      user={{ name: "Administrator", email: h.user?.email }}
+      onLogout={h.logout}
+    >
+        <div className="min-w-0">
           {h.mainMenu === "classes" && h.segment === "classes" && (
             <ClassesTable table={h.classTable} globalFilter={h.classGlobalFilter}
               onGlobalFilterChange={h.setClassGlobalFilter} onRowClick={h.openClassDetail}
@@ -252,8 +345,7 @@ export default function AdminDashboard() {
               />
             )
           )}
-        </main>
-      </div>
+        </div>
 
       {h.selectedRequest && (
         <ApproveRejectModal request={h.selectedRequest}
@@ -347,7 +439,7 @@ export default function AdminDashboard() {
 
       <button
         onClick={() => setTrialOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30 transition hover:bg-blue-700 hover:scale-105 active:scale-95 print:hidden"
+        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 transition hover:bg-primary-700 hover:scale-105 active:scale-95 print:hidden"
         title="Buat Akun Trial"
       >
         <Plus size={26} />
@@ -381,14 +473,7 @@ export default function AdminDashboard() {
       )}
 
       {editingParent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white shadow-xl p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-extrabold text-slate-900">Edit Orang Tua</h2>
-              <button onClick={() => setEditingParent(null)} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
-            </div>
+        <Modal open onClose={() => setEditingParent(null)} title="Edit Orang Tua" size="md" closeOnBackdrop={false}>
             <form onSubmit={async (e) => {
               e.preventDefault();
               setParentSaving(true);
@@ -411,34 +496,31 @@ export default function AdminDashboard() {
               }
             }} className="space-y-4">
               <div>
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Nama Lengkap</label>
-                <input value={parentForm.fullName} onChange={(e) => setParentForm((f) => ({ ...f, fullName: e.target.value }))} required
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Nama Lengkap</label>
+                <Input value={parentForm.fullName} onChange={(e) => setParentForm((f) => ({ ...f, fullName: e.target.value }))} required />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Email</label>
-                <input type="email" value={parentForm.email} onChange={(e) => setParentForm((f) => ({ ...f, email: e.target.value }))} required
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
+                <Input type="email" value={parentForm.email} onChange={(e) => setParentForm((f) => ({ ...f, email: e.target.value }))} required />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Telepon</label>
-                <input value={parentForm.phone} onChange={(e) => setParentForm((f) => ({ ...f, phone: e.target.value }))} required
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Telepon</label>
+                <Input value={parentForm.phone} onChange={(e) => setParentForm((f) => ({ ...f, phone: e.target.value }))} required />
               </div>
               {editingParent.students && editingParent.students.length > 0 && (
                 <div>
-                  <label className="mb-1 block text-sm font-semibold text-slate-700">Anak ({editingParent.students.length})</label>
+                  <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Anak ({editingParent.students.length})</label>
                   <div className="max-h-40 space-y-1 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 p-2">
                     {editingParent.students.map((s) => (
                       <div key={s.id} className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-white">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-100 text-[10px] font-bold text-blue-700">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary-100 text-[10px] font-bold text-primary-700">
                           {s.nickname?.charAt(0) ?? "?"}
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="font-semibold text-slate-900 truncate">{s.fullName}</p>
                           <p className="text-[10px] text-slate-400">@{s.nickname}</p>
                         </div>
-                        <span className="shrink-0 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-600">
+                        <span className="shrink-0 rounded-full bg-primary-50 px-2 py-0.5 text-[10px] font-semibold text-primary-600">
                           {s.category?.label ?? "—"}
                         </span>
                       </div>
@@ -450,16 +532,14 @@ export default function AdminDashboard() {
               <div className="flex items-center justify-end gap-2">
                 <button type="button" onClick={() => setEditingParent(null)}
                   className="rounded-xl px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-100">Batal</button>
-                <button type="submit" disabled={parentSaving}
-                  className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50">
+                <Button type="submit" disabled={parentSaving}>
                   {parentSaving ? "Menyimpan..." : "Simpan"}
-                </button>
+                </Button>
               </div>
             </form>
-          </div>
-        </div>
+        </Modal>
       )}
-    </div>
+    </DashboardShell>
   );
 }
 
@@ -475,16 +555,16 @@ function AllEnrollmentsView({ enrollments, loading, onRefresh, onSelectStudent }
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+        <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-primary-600 border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-4">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-4">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-lg font-extrabold text-slate-900">Semua Enrollment</h2>
-        <button onClick={onRefresh} className="rounded-lg px-3 py-1 text-xs font-semibold text-blue-600 hover:bg-blue-50">
+        <button onClick={onRefresh} className="rounded-lg px-3 py-1 text-xs font-semibold text-primary-600 hover:bg-primary-50">
           Refresh
         </button>
       </div>
@@ -507,7 +587,7 @@ function AllEnrollmentsView({ enrollments, loading, onRefresh, onSelectStudent }
               {enrollments.map((enr) => (
                 <tr key={enr.id}
                   onClick={() => enr.student?.id && onSelectStudent(enr.student.id)}
-                  className="border-b border-slate-100 last:border-0 cursor-pointer hover:bg-blue-50">
+                  className="border-b border-slate-100 last:border-0 cursor-pointer hover:bg-primary-50">
                   <td className="px-3 py-2.5 font-semibold text-slate-900">{enr.student?.fullName ?? enr.studentId}</td>
                   <td className="px-3 py-2.5 text-slate-600">{enr.curriculum?.name ?? "—"}</td>
                   <td className="px-3 py-2.5 text-slate-600">{enr.class?.name ?? "Belum ditempatkan"}</td>
@@ -531,7 +611,7 @@ function AllEnrollmentsView({ enrollments, loading, onRefresh, onSelectStudent }
                       </div>
                     ) : (
                       <button onClick={() => { setEditingId(enr.id); setEditMeet(String(enr.totalMeetPurchased)); }}
-                        className="text-sm font-semibold text-slate-700 hover:text-blue-600">
+                        className="text-sm font-semibold text-slate-700 hover:text-primary-600">
                         {enr.totalMeetPurchased}
                       </button>
                     )}
@@ -545,7 +625,7 @@ function AllEnrollmentsView({ enrollments, loading, onRefresh, onSelectStudent }
                           DRAFT: "bg-slate-100 text-slate-600",
                           UNPAID: "bg-amber-100 text-amber-700",
                           PAID: "bg-green-100 text-green-700",
-                          PARTIAL: "bg-blue-100 text-blue-700",
+                          PARTIAL: "bg-primary-100 text-primary-700",
                           REFUNDED: "bg-rose-100 text-rose-700",
                           CANCELLED: "bg-gray-100 text-gray-500",
                         };

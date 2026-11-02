@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui";
 import { useCallback, useEffect, useState } from "react";
 import { DollarSign, RefreshCw, Edit2, Check, X, Layers, AlertCircle, Plus } from "lucide-react";
 import { api } from "@/lib/api";
@@ -126,14 +127,13 @@ export default function SetTutorCost() {
         </div>
         <div className="flex items-center gap-2">
           {items.length === 0 && (
-            <button
+            <Button type="submit"
               onClick={handleInitializeDefaults}
               disabled={initializing}
-              className="inline-flex items-center gap-1.5 rounded-2xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 disabled:opacity-50 transition"
             >
               <Plus size={14} />
               {initializing ? "Menginisialisasi..." : "Inisialisasi Tarif Default"}
-            </button>
+            </Button>
           )}
           <button
             onClick={fetchCosts}
@@ -157,7 +157,7 @@ export default function SetTutorCost() {
           return (
             <div
               key={item.classType}
-              className={`rounded-3xl border ${style.border} ${style.bg} p-5 transition hover:shadow-md`}
+              className={`rounded-2xl border ${style.border} ${style.bg} p-5 transition hover:shadow-md`}
             >
               <div className="flex items-center justify-between">
                 <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${style.text} bg-white/70 border ${style.border}`}>
@@ -177,10 +177,10 @@ export default function SetTutorCost() {
       </div>
 
       {/* Main Table */}
-      <div className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Layers size={18} className="text-blue-600" />
+            <Layers size={18} className="text-primary-600" />
             <h3 className="text-sm font-extrabold text-slate-800">Daftar Pengaturan Tarif Tutor</h3>
           </div>
           <span className="text-xs text-slate-400 font-medium">{items.length} tipe terdaftar</span>
@@ -207,7 +207,7 @@ export default function SetTutorCost() {
               {loading && items.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="py-12 text-center text-slate-400">
-                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent mb-2" />
+                    <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-primary-600 border-t-transparent mb-2" />
                     <p>Memuat tarif tutor...</p>
                   </td>
                 </tr>
@@ -217,7 +217,7 @@ export default function SetTutorCost() {
                     Belum ada data tarif. Klik tombol{" "}
                     <button
                       onClick={handleInitializeDefaults}
-                      className="font-bold text-blue-600 underline"
+                      className="font-bold text-primary-600 underline"
                     >
                       Inisialisasi Tarif Default
                     </button>
@@ -252,7 +252,7 @@ export default function SetTutorCost() {
                               step={1000}
                               value={editCost}
                               onChange={(e) => setEditCost(Math.max(0, Number(e.target.value)))}
-                              className="w-36 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                              className="w-36 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
                               autoFocus
                             />
                           </div>
@@ -269,7 +269,7 @@ export default function SetTutorCost() {
                             value={editDescription}
                             onChange={(e) => setEditDescription(e.target.value)}
                             placeholder="Deskripsi tarif..."
-                            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
                           />
                         ) : (
                           <span className="text-slate-500 text-xs">
@@ -303,7 +303,7 @@ export default function SetTutorCost() {
                           <button
                             type="button"
                             onClick={() => handleStartEdit(item)}
-                            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 transition shadow-sm"
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 transition shadow-sm"
                           >
                             <Edit2 size={13} />
                             Ubah Tarif

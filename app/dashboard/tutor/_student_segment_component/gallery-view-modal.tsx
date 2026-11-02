@@ -1,7 +1,8 @@
 "use client";
 
+import { Button, Modal } from "@/components/ui";
 import { useEffect, useState } from "react";
-import { X, Trash2, Save, Camera, Pencil, Loader2 } from "lucide-react";
+import { Trash2, Save, Camera, Pencil, Loader2 } from "lucide-react";
 import { api, type Gallery } from "@/lib/api";
 import type { Theme } from "./types";
 import GalleryUploadModal from "./gallery-upload-modal";
@@ -58,15 +59,7 @@ export default function GalleryViewModal({ open, studentId, theme, onClose }: Pr
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-        <div className="fixed inset-0 bg-black/40" onClick={onClose} />
-        <div className={`relative w-full max-w-2xl rounded-t-3xl ${theme.card} p-6 shadow-2xl sm:rounded-3xl max-h-[85vh] overflow-y-auto`}>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className={`text-lg font-extrabold ${theme.text}`}>Gallery Siswa</h2>
-            <button onClick={onClose} className={`rounded-xl p-1.5 ${theme.textMuted} hover:bg-blue-50 hover:text-blue-600`}>
-              <X size={20} />
-            </button>
-          </div>
+      <Modal open onClose={onClose} title="Gallery Siswa" size="lg">
 
           <button onClick={() => setShowUpload(true)}
             className="mb-4 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-700 transition">
@@ -91,12 +84,11 @@ export default function GalleryViewModal({ open, studentId, theme, onClose }: Pr
                     {editingId === item.id ? (
                       <div className="space-y-1">
                         <input value={editCaption} onChange={(e) => setEditCaption(e.target.value)}
-                          className="w-full rounded-lg border border-slate-200 px-2 py-1 text-xs outline-none focus:border-blue-400" />
+                          className="w-full rounded-lg border border-slate-200 px-2 py-1 text-xs outline-none focus:border-primary-400" />
                         <div className="flex gap-1">
-                          <button onClick={() => handleSaveCaption(item.id)} disabled={saving}
-                            className="rounded-lg bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                          <Button type="submit" onClick={() => handleSaveCaption(item.id)} disabled={saving} className="text-[10px]">
                             <Save size={10} /> Simpan
-                          </button>
+                          </Button>
                           <button onClick={() => setEditingId(null)}
                             className="rounded-lg bg-slate-200 px-2 py-0.5 text-[10px] font-bold text-slate-600">
                             Batal
@@ -107,7 +99,7 @@ export default function GalleryViewModal({ open, studentId, theme, onClose }: Pr
                       <div className="flex items-center justify-between gap-1">
                         <p className="text-[11px] text-slate-600 truncate flex-1">{item.caption ?? "—"}</p>
                         <button onClick={() => { setEditingId(item.id); setEditCaption(item.caption ?? ""); }}
-                          className="shrink-0 rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-blue-600">
+                          className="shrink-0 rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-primary-600">
                           <Pencil size={11} />
                         </button>
                         <button onClick={() => handleDelete(item.id)}
@@ -121,8 +113,7 @@ export default function GalleryViewModal({ open, studentId, theme, onClose }: Pr
               ))}
             </div>
           )}
-        </div>
-      </div>
+      </Modal>
 
       <GalleryUploadModal
         open={showUpload}

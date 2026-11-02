@@ -1,7 +1,8 @@
 "use client";
 
+import { Button, Modal } from "@/components/ui";
 import { useState } from "react";
-import { X, User, ChevronRight, Star, Camera, Check, Loader2 } from "lucide-react";
+import { User, ChevronRight, Star, Camera, Check, Loader2 } from "lucide-react";
 import type { Attendance, Schedule, AssessmentAspect } from "@/lib/api";
 import { api } from "@/lib/api";
 import GalleryUploadModal from "./_student_segment_component/gallery-upload-modal";
@@ -69,25 +70,22 @@ export default function TutorScheduleDetailModal({
   const [editingStatus, setEditingStatus] = useState<string | null>(null);
   const [statusSaving, setStatusSaving] = useState<string | null>(null);
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-      <div className="fixed inset-0 bg-black/40" onClick={onClose} />
-      <div className={`relative w-full max-w-2xl rounded-t-3xl ${theme.card} p-4 sm:p-6 shadow-2xl sm:rounded-3xl max-h-dvh sm:max-h-[95vh] overflow-y-auto`}>
-        <div className="mb-5 flex items-start justify-between">
-          <div>
-            <h2 className={`text-lg font-extrabold ${theme.text}`}>
-              {DAY_LABELS[detailSchedule.dayOfWeek] ?? detailSchedule.dayOfWeek}, {detailSchedule.date && new Date(detailSchedule.date).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
-            </h2>
-            <p className={`text-sm ${theme.textMuted}`}>{detailSchedule.startTime}–{detailSchedule.endTime}</p>
-            {detailSchedule.topic && <p className="text-xs mt-1 font-semibold text-blue-600">{detailSchedule.topic}</p>}
-          </div>
-          <button onClick={onClose} className={`rounded-xl p-1.5 ${theme.textMuted} hover:bg-blue-50 hover:text-blue-600 transition-colors`}>
-            <X size={20} />
-          </button>
-        </div>
+    <Modal
+      open
+      onClose={onClose}
+      size="lg"
+      title={<>{DAY_LABELS[detailSchedule.dayOfWeek] ?? detailSchedule.dayOfWeek}, {detailSchedule.date && new Date(detailSchedule.date).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</>}
+      description={
+        <>
+          {detailSchedule.startTime}–{detailSchedule.endTime}
+          {detailSchedule.topic && <span className="mt-1 block text-xs font-semibold text-primary-600">{detailSchedule.topic}</span>}
+        </>
+      }
+    >
 
         {loadingDetail ? (
           <div className="flex items-center justify-center py-12">
-            <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+            <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-primary-600 border-t-transparent" />
           </div>
         ) : detailAttendances.length === 0 ? (
           <div className="py-12 text-center">
@@ -107,13 +105,13 @@ export default function TutorScheduleDetailModal({
                         att.status === "PRESENT" ? "bg-emerald-100" :
                         att.status === "ABSENT" ? "bg-red-100" :
                         att.status === "LATE" ? "bg-amber-100" :
-                        att.status === "SICK" ? "bg-blue-100" : "bg-slate-100"
+                        att.status === "SICK" ? "bg-primary-100" : "bg-slate-100"
                       }`}>
                         <User size={15} className={
                           att.status === "PRESENT" ? "text-emerald-600" :
                           att.status === "ABSENT" ? "text-red-600" :
                           att.status === "LATE" ? "text-amber-600" :
-                          att.status === "SICK" ? "text-blue-600" : "text-slate-600"
+                          att.status === "SICK" ? "text-primary-600" : "text-slate-600"
                         } />
                       </div>
                       <div className="min-w-0">
@@ -143,7 +141,7 @@ export default function TutorScheduleDetailModal({
                               setEditingStatus(null);
                             }
                           }}
-                            className="rounded-xl border border-slate-200 bg-white px-2 py-1 text-xs font-bold outline-none focus:border-blue-400">
+                            className="rounded-xl border border-slate-200 bg-white px-2 py-1 text-xs font-bold outline-none focus:border-primary-400">
                             <option value="PRESENT">Hadir</option>
                             <option value="LATE">Terlambat</option>
                             <option value="ABSENT">Tidak Hadir</option>
@@ -159,7 +157,7 @@ export default function TutorScheduleDetailModal({
                             att.status === "PRESENT" ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200" :
                             att.status === "LATE" ? "bg-amber-100 text-amber-700 hover:bg-amber-200" :
                             att.status === "ABSENT" ? "bg-red-100 text-red-700 hover:bg-red-200" :
-                            att.status === "SICK" ? "bg-blue-100 text-blue-700 hover:bg-blue-200" :
+                            att.status === "SICK" ? "bg-primary-100 text-primary-700 hover:bg-primary-200" :
                             att.status === "RESCHEDULE" ? "bg-orange-100 text-orange-700 hover:bg-orange-200" :
                             "bg-slate-100 text-slate-700 hover:bg-slate-200"
                           }`}>
@@ -173,7 +171,7 @@ export default function TutorScheduleDetailModal({
                       )}
                       {att.assessment ? (
                         <button onClick={() => onStartAssessment(att.id)}
-                          className="inline-flex items-center gap-1.5 rounded-xl bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700 hover:bg-blue-200 transition-colors">
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-primary-100 px-3 py-1 text-xs font-bold text-primary-700 hover:bg-primary-200 transition-colors">
                           {att.assessment.percentage != null ? `${att.assessment.percentage}%` : `${att.assessment.totalScore ?? 0}/${maxScore}`} · Edit
                         </button>
                       ) : (att.status === "PRESENT" || att.status === "LATE") && (
@@ -185,7 +183,7 @@ export default function TutorScheduleDetailModal({
                       </div>
                       {(att.assessment && att.assessment.scores && att.assessment.scores.length > 0) && (
                         <button onClick={() => onToggleExpand(att.studentId)}
-                          className={`rounded-lg p-1.5 transition-colors ${theme.textMuted} hover:bg-blue-100 hover:text-blue-600`}>
+                          className={`rounded-lg p-1.5 transition-colors ${theme.textMuted} hover:bg-primary-100 hover:text-primary-600`}>
                           <ChevronRight size={18} className={`transition-transform ${isExpanded ? "rotate-90" : ""}`} />
                         </button>
                       )}
@@ -222,7 +220,7 @@ export default function TutorScheduleDetailModal({
                                       onScoreChange(asp.id, val);
                                     }
                                   }}
-                                  className="w-12 rounded-lg border border-slate-200 bg-white px-1 py-1 text-center text-xs font-bold text-blue-700 outline-none focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                                  className="w-12 rounded-lg border border-slate-200 bg-white px-1 py-1 text-center text-xs font-bold text-primary-700 outline-none focus:border-primary-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
                                 <button type="button" onClick={() => {
                                   const cur = assessmentScores[asp.id] ?? asp.minScore;
                                   if (cur < asp.maxScore) onScoreChange(asp.id, cur + 1);
@@ -241,22 +239,21 @@ export default function TutorScheduleDetailModal({
                         <label className={`mb-1 block text-xs font-semibold ${theme.textMuted}`}>Link Project</label>
                         <input type="url" value={projectLink} onChange={(e) => onProjectLinkChange(e.target.value)}
                           placeholder="https://scratch.mit.edu/projects/..."
-                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-primary-400 focus:ring-2 focus:ring-primary-100" />
                       </div>
                       <div>
                         <label className={`mb-1 block text-xs font-semibold ${theme.textMuted}`}>Catatan Mentor</label>
                         <textarea value={mentorComment} onChange={(e) => onMentorCommentChange(e.target.value)}
-                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100 resize-none" rows={2} />
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-primary-400 focus:ring-2 focus:ring-primary-100 resize-none" rows={2} />
                       </div>
                       <div className="flex gap-2 pt-1">
                         <button onClick={onCancelAssessment}
                           className="rounded-2xl border border-slate-200 px-4 py-2 text-xs font-bold text-slate-500 hover:bg-slate-50 transition-colors">
                           Batal
                         </button>
-                        <button onClick={() => onSaveAssessment(att.id)} disabled={savingAssessment}
-                          className="rounded-2xl bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors">
+                        <Button type="submit" onClick={() => onSaveAssessment(att.id)} disabled={savingAssessment}>
                           {savingAssessment ? "Menyimpan..." : "Simpan Penilaian"}
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   )}
@@ -267,7 +264,7 @@ export default function TutorScheduleDetailModal({
                         <div key={sc.id} className="flex items-center justify-between">
                           <p className={`text-xs font-medium ${theme.text}`}>{sc.aspect?.title ?? "Aspek"}</p>
                           <div className="flex items-center gap-2">
-                            <div className="flex h-6 w-8 items-center justify-center rounded-md bg-blue-100 text-xs font-bold text-blue-700">
+                            <div className="flex h-6 w-8 items-center justify-center rounded-md bg-primary-100 text-xs font-bold text-primary-700">
                               {sc.score}
                             </div>
                             <span className={`text-xs ${theme.textMuted}`}>/ {sc.aspect?.maxScore ?? 5}</span>
@@ -276,7 +273,7 @@ export default function TutorScheduleDetailModal({
                       ))}
                       {att.assessment.projectLink && (
                         <div className="pt-2">
-                          <p className={`text-xs font-semibold ${theme.textMuted}`}>Link Project: <a href={att.assessment.projectLink} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:underline">{att.assessment.projectLink}</a></p>
+                          <p className={`text-xs font-semibold ${theme.textMuted}`}>Link Project: <a href={att.assessment.projectLink} target="_blank" rel="noopener noreferrer" className="font-medium text-primary-600 hover:underline">{att.assessment.projectLink}</a></p>
                         </div>
                       )}
                       {att.assessment.mentorComment && (
@@ -299,16 +296,6 @@ export default function TutorScheduleDetailModal({
             </button>
           </div>
         )}
-      </div>
-
-      {galleryStudentId && (
-        <GalleryUploadModal
-          open={!!galleryStudentId}
-          studentId={galleryStudentId}
-          theme={theme}
-          onClose={() => setGalleryStudentId(null)}
-        />
-      )}
-    </div>
+    </Modal>
   );
 }

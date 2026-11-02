@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, Input, Modal, Textarea } from "@/components/ui";
 import { useState, useEffect, type FormEvent } from "react";
 import * as LucideIcons from "lucide-react";
 import { api, type AssessmentSet, type AssessmentAspect } from "@/lib/api";
@@ -169,7 +170,7 @@ export default function AssessmentSetManagement({ assessmentSets, onRefresh }: P
   }
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white shadow-sm">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="p-4">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-bold text-slate-800">Set Penilaian</h2>
@@ -184,13 +185,13 @@ export default function AssessmentSetManagement({ assessmentSets, onRefresh }: P
           <div className="mb-4 space-y-2">
             {assessmentSets.map((s) => (
               <button key={s.id} onClick={() => openDetail(s)}
-                className="flex w-full items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/50 px-4 py-3 text-left transition hover:border-blue-200 hover:bg-blue-50/50"
+                className="flex w-full items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/50 px-4 py-3 text-left transition hover:border-primary-200 hover:bg-primary-50/50"
               >
                 <div>
                   <p className="text-sm font-bold text-slate-800">{s.name}</p>
                   {s.description && <p className="mt-0.5 text-xs text-slate-400">{s.description}</p>}
                 </div>
-                <span className="shrink-0 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+                <span className="shrink-0 rounded-full bg-primary-50 px-2 py-0.5 text-[10px] font-semibold text-primary-700">
                   {s.aspects?.length ?? 0} aspek
                 </span>
               </button>
@@ -198,65 +199,42 @@ export default function AssessmentSetManagement({ assessmentSets, onRefresh }: P
           </div>
         )}
 
-        <button onClick={() => { setShowCreate(true); setError(""); }}
-          className="w-full rounded-2xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700"
-        >
+        <Button type="submit" onClick={() => { setShowCreate(true); setError(""); }}
+         className="w-full">
           + Tambah Set Penilaian
-        </button>
+        </Button>
       </div>
 
       {showCreate && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-          <div className="fixed inset-0 bg-black/40" onClick={() => setShowCreate(false)} />
-          <div className="relative w-full max-w-md rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-slate-800">Tambah Set Penilaian</h3>
-              <button onClick={() => setShowCreate(false)} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
-            </div>
+        <Modal open onClose={() => setShowCreate(false)} title="Tambah Set Penilaian" size="md">
             <form onSubmit={onCreate}>
               <div className="mb-3">
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Nama</label>
-                <input name="name" required
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Nama</label>
+                <Input name="name" required />
               </div>
               <div className="mb-4">
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Deskripsi</label>
-                <textarea name="description" rows={3}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Deskripsi</label>
+                <Textarea name="description" rows={3} />
               </div>
               {error && <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-700">{error}</div>}
-              <button type="submit" disabled={saving}
-                className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700 disabled:opacity-50"
-              >
+              <Button type="submit" disabled={saving}
+               className="w-full">
                 {saving ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Simpan"}
-              </button>
+              </Button>
             </form>
-          </div>
-        </div>
+        </Modal>
       )}
 
       {detailSet && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-          <div className="fixed inset-0 bg-black/40" onClick={() => setDetailSet(null)} />
-          <div className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-slate-800">Detail Set Penilaian</h3>
-              <button onClick={() => setDetailSet(null)} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
-            </div>
+        <Modal open onClose={() => setDetailSet(null)} title="Detail Set Penilaian" size="md">
 
             <div className="mb-3">
-              <label className="mb-1 block text-sm font-semibold text-slate-700">Nama</label>
-              <input value={detailName} onChange={(e) => { setDetailName(e.target.value); setDetailDirty(true); }}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Nama</label>
+              <Input value={detailName} onChange={(e) => { setDetailName(e.target.value); setDetailDirty(true); }} />
             </div>
             <div className="mb-4">
-              <label className="mb-1 block text-sm font-semibold text-slate-700">Deskripsi</label>
-              <textarea value={detailDesc} onChange={(e) => { setDetailDesc(e.target.value); setDetailDirty(true); }} rows={3}
-                className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Deskripsi</label>
+              <Textarea value={detailDesc} onChange={(e) => { setDetailDesc(e.target.value); setDetailDirty(true); }} rows={3} className="resize-none" />
             </div>
             <div className="mb-4">
               <div className="mb-2 flex items-center justify-between">
@@ -282,18 +260,18 @@ export default function AssessmentSetManagement({ assessmentSets, onRefresh }: P
                   <div className="mb-2">
                     <label className="mb-0.5 block text-xs font-semibold text-slate-600">Judul</label>
                     <input value={aspectTitle} onChange={(e) => setAspectTitle(e.target.value)} autoFocus
-                      className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-blue-400" />
+                      className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-primary-400" />
                   </div>
                   <div className="mb-2">
                     <label className="mb-0.5 block text-xs font-semibold text-slate-600">Deskripsi</label>
                     <input value={aspectDesc} onChange={(e) => setAspectDesc(e.target.value)}
-                      className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-blue-400" />
+                      className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-primary-400" />
                   </div>
                   <div className="mb-2">
                     <label className="mb-0.5 block text-xs font-semibold text-slate-600">Icon</label>
                     <div className="relative">
                       <button type="button" onClick={() => setShowIconPicker(true)}
-                        className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition hover:border-blue-400"
+                        className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition hover:border-primary-400"
                       >
                         {aspectIcon ? (
                           <><IconPreview icon={aspectIcon} size={16} /><span className="text-slate-700">{aspectIcon}</span></>
@@ -328,9 +306,9 @@ export default function AssessmentSetManagement({ assessmentSets, onRefresh }: P
                                   setShowIconPicker(false);
                                   setEditIconAspectId(null);
                                 }}
-                                  className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs transition hover:bg-blue-100 ${
+                                  className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs transition hover:bg-primary-100 ${
                                     (editIconAspectId ? detailAspects.find((a) => a.id === editIconAspectId)?.icon : aspectIcon) === name
-                                      ? "bg-blue-100 text-blue-700 ring-2 ring-blue-300" : "text-slate-500 hover:text-slate-700"
+                                      ? "bg-primary-100 text-primary-700 ring-2 ring-primary-300" : "text-slate-500 hover:text-slate-700"
                                   }`}
                                   title={name}
                                 >
@@ -347,17 +325,17 @@ export default function AssessmentSetManagement({ assessmentSets, onRefresh }: P
                     <div>
                       <label className="mb-0.5 block text-xs font-semibold text-slate-600">Min</label>
                       <input type="number" min={0} value={aspectMin} onChange={(e) => setAspectMin(Number(e.target.value))}
-                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-blue-400" />
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-primary-400" />
                     </div>
                     <div>
                       <label className="mb-0.5 block text-xs font-semibold text-slate-600">Max</label>
                       <input type="number" min={1} value={aspectMax} onChange={(e) => setAspectMax(Number(e.target.value))}
-                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-blue-400" />
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-primary-400" />
                     </div>
                     <div>
                       <label className="mb-0.5 block text-xs font-semibold text-slate-600">Urutan</label>
                       <input type="number" min={0} value={aspectOrder} onChange={(e) => setAspectOrder(Number(e.target.value))}
-                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-blue-400" />
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-primary-400" />
                     </div>
                   </div>
                   <div className="flex gap-2">
@@ -382,7 +360,7 @@ export default function AssessmentSetManagement({ assessmentSets, onRefresh }: P
                   {detailAspects.map((a) => (
                     <div key={a.id} className="flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-2">
                       <button onClick={() => { setEditIconAspectId(a.id); setShowIconPicker(true); }}
-                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-blue-50 text-[10px] font-bold text-blue-700 transition hover:bg-blue-100"
+                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-primary-50 text-[10px] font-bold text-primary-700 transition hover:bg-primary-100"
                         title="Ganti icon"
                       >
                         <IconPreview icon={a.icon} size={14} />
@@ -425,13 +403,11 @@ export default function AssessmentSetManagement({ assessmentSets, onRefresh }: P
             </div>
 
             {detailError && <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-700">{detailError}</div>}
-            <button onClick={saveDetail} disabled={!detailDirty || detailSaving}
-              className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700 disabled:opacity-50"
-            >
+            <Button type="submit" onClick={saveDetail} disabled={!detailDirty || detailSaving}
+             className="w-full">
               {detailSaving ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Simpan Perubahan"}
-            </button>
-          </div>
-        </div>
+            </Button>
+        </Modal>
       )}
     </div>
   );

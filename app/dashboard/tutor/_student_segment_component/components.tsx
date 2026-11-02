@@ -5,7 +5,7 @@ import type { Theme } from "./types";
 
 export function Card({ children, className = "", theme }: { children: React.ReactNode; className?: string; theme: Theme }) {
   return (
-    <div className={`rounded-3xl border ${theme.border} ${theme.card} shadow-sm ${className}`}>
+    <div className={`rounded-2xl border ${theme.border} ${theme.card} shadow-sm ${className}`}>
       {children}
     </div>
   );
@@ -21,6 +21,6 @@ export const ATTENDANCE_LABELS: Record<string, { label: string; color: string; i
   PRESENT: { label: "Hadir", color: "text-emerald-600 bg-emerald-100", icon: CheckCircle },
   LATE: { label: "Terlambat", color: "text-amber-600 bg-amber-100", icon: AlertCircle },
   ABSENT: { label: "Tidak Hadir", color: "text-red-600 bg-red-100", icon: XCircle },
-  SICK: { label: "Sakit", color: "text-blue-600 bg-blue-100", icon: AlertCircle },
+  SICK: { label: "Sakit", color: "text-primary-600 bg-primary-100", icon: AlertCircle },
   PERMISSION: { label: "Izin", color: "text-purple-600 bg-purple-100", icon: AlertCircle },
 };

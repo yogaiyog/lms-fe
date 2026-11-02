@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, Input, Select } from "@/components/ui";
 import { useState, useRef, type FormEvent } from "react";
 import { checkEmail } from "@/lib/api";
 import type { Category, ParentProfile } from "@/lib/api";
@@ -119,7 +120,7 @@ export default function AddStudentForm({
   }
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-6 sm:p-7">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 sm:p-7">
       <h2 className="mb-6 text-lg font-extrabold tracking-tight text-slate-900">
         Tambah Siswa Baru
       </h2>
@@ -154,11 +155,10 @@ export default function AddStudentForm({
               </div>
             ) : (
               <>
-                <input
+                <Input
                   value={parentSearch}
                   onChange={(e) => setParentSearch(e.target.value)}
-                  placeholder="Cari nama orang tua..."
-                  className="mb-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                  placeholder="Cari nama orang tua..." className="mb-2"
                 />
                 {parentSearch && (
                   <div className="mb-2 max-h-40 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -171,9 +171,9 @@ export default function AddStudentForm({
                         <button
                           key={p.id}
                           onClick={() => setSelectedParentId(p.id)}
-                          className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm hover:bg-blue-50"
+                          className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm hover:bg-primary-50"
                         >
-                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-100 text-[10px] font-bold text-blue-700">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary-100 text-[10px] font-bold text-primary-700">
                             {p.fullName.charAt(0)}
                           </div>
                           <div>
@@ -196,7 +196,7 @@ export default function AddStudentForm({
                 setParentMode("create");
                 setParentCreateError("");
               }}
-              className="text-xs font-semibold text-blue-600 hover:text-blue-700"
+              className="text-xs font-semibold text-primary-600 hover:text-primary-700"
             >
               + Buat Orang Tua Baru
             </button>
@@ -207,47 +207,43 @@ export default function AddStudentForm({
               <label className="mb-1 block text-xs font-semibold text-slate-600">
                 Nama Lengkap
               </label>
-              <input
+              <Input
                 value={parentName}
                 onChange={(e) => setParentName(e.target.value)}
                 required
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
               />
             </div>
             <div>
               <label className="mb-1 block text-xs font-semibold text-slate-600">
                 Email
               </label>
-              <input
+              <Input
                 type="email"
                 value={parentEmail}
                 onChange={(e) => setParentEmail(e.target.value)}
                 required
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
               />
             </div>
             <div>
               <label className="mb-1 block text-xs font-semibold text-slate-600">
                 No. HP
               </label>
-              <input
+              <Input
                 value={parentPhone}
                 onChange={(e) => setParentPhone(e.target.value)}
                 required
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
               />
             </div>
             <div>
               <label className="mb-1 block text-xs font-semibold text-slate-600">
                 Password
               </label>
-              <input
+              <Input
                 type="password"
                 value={parentPassword}
                 onChange={(e) => setParentPassword(e.target.value)}
                 required
                 minLength={8}
-                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
               />
             </div>
             {parentCreateError && (
@@ -263,13 +259,12 @@ export default function AddStudentForm({
               >
                 Batal
               </button>
-              <button
+              <Button
                 type="submit"
                 disabled={parentCreating}
-                className="rounded-xl bg-blue-600 px-3 py-2 text-xs font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50"
               >
                 {parentCreating ? "Menyimpan..." : "Simpan Orang Tua"}
-              </button>
+              </Button>
             </div>
           </form>
         )}
@@ -284,29 +279,27 @@ export default function AddStudentForm({
           </div>
 
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+            <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Nama Lengkap <span className="text-red-500">*</span>
             </label>
-            <input
+            <Input
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               required
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+            <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Nama Panggilan <span className="text-red-500">*</span>
             </label>
-            <input
+            <Input
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               required
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+            <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Email <span className="text-red-500">*</span>
             </label>
             <input
@@ -320,7 +313,7 @@ export default function AddStudentForm({
                   ? "border-red-400 focus:border-red-400 focus:ring-red-100"
                   : emailStatus === "available"
                     ? "border-green-400 focus:border-green-400 focus:ring-green-100"
-                    : "border-slate-200 focus:border-blue-400 focus:ring-blue-100"
+                    : "border-slate-200 focus:border-primary-400 focus:ring-primary-100"
               }`}
             />
             {emailStatus === "checking" && (
@@ -344,39 +337,36 @@ export default function AddStudentForm({
             )}
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+            <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Password <span className="text-red-500">*</span>
             </label>
-            <input
+            <Input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={8}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+            <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Tanggal Lahir <span className="text-red-500">*</span>
             </label>
-            <input
+            <Input
               type="date"
               value={birthDate}
               onChange={(e) => setBirthDate(e.target.value)}
               required
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+            <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Kategori <span className="text-red-500">*</span>
             </label>
-            <select
+            <Select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               required
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             >
               <option value="">-- Pilih Kategori --</option>
               {categories.map((cat) => (
@@ -384,18 +374,17 @@ export default function AddStudentForm({
                   {cat.label}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
 
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+            <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Sekolah (opsional)
             </label>
-            <input
+            <Input
               value={school}
               onChange={(e) => setSchool(e.target.value)}
               placeholder="Nama sekolah"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             />
           </div>
 
@@ -405,15 +394,14 @@ export default function AddStudentForm({
             </div>
           )}
 
-          <button
+          <Button
             type="submit"
             disabled={
               registering ||
               emailStatus === "taken" ||
               emailStatus === "checking"
             }
-            className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 disabled:opacity-50 transition-colors"
-          >
+           className="w-full">
             {registering ? (
               <span className="inline-flex items-center gap-2">
                 <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -422,7 +410,7 @@ export default function AddStudentForm({
             ) : (
               "Tambah Siswa"
             )}
-          </button>
+          </Button>
         </form>
       )}
     </div>

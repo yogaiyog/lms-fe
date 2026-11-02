@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, Input, Modal, Select, Textarea } from "@/components/ui";
 import { useState, type FormEvent, useRef, useEffect } from "react";
 import { api, uploadImage, uploadVideo, images, type ImageRecord, type Curriculum, type Topic } from "@/lib/api";
 import { RoadmapAvatar } from "@/components/roadmap";
@@ -43,10 +44,10 @@ function VideoPicker({
           type="file"
           accept="video/mp4,video/webm,video/ogg,video/quicktime"
           onChange={(e) => handleFile(e.target.files?.[0])}
-          className="min-w-0 flex-1 text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
+          className="min-w-0 flex-1 text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-primary-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-primary-700 hover:file:bg-primary-100"
         />
         {uploading && (
-          <span className="inline-block h-5 w-5 shrink-0 self-center animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+          <span className="inline-block h-5 w-5 shrink-0 self-center animate-spin rounded-full border-2 border-primary-600 border-t-transparent" />
         )}
       </div>
       {error && <p className="mt-1 text-xs font-semibold text-red-600">{error}</p>}
@@ -124,8 +125,8 @@ function ImagePicker({
         <div className="flex gap-2">
           <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif"
             onChange={(e) => { if (e.target.files?.[0]) handleUpload(); }}
-            className="min-w-0 flex-1 text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100" />
-          {uploading && <span className="inline-block h-5 w-5 shrink-0 self-center animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />}
+            className="min-w-0 flex-1 text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-primary-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-primary-700 hover:file:bg-primary-100" />
+          {uploading && <span className="inline-block h-5 w-5 shrink-0 self-center animate-spin rounded-full border-2 border-primary-600 border-t-transparent" />}
         </div>
       ) : (
         <div className="max-h-48 overflow-y-auto">
@@ -140,11 +141,11 @@ function ImagePicker({
                   key={img.id}
                   type="button"
                   onClick={() => onSelect(img.url)}
-                  className="group relative aspect-square overflow-hidden rounded-xl border border-slate-200 bg-slate-50 transition hover:border-blue-400 hover:shadow-md"
+                  className="group relative aspect-square overflow-hidden rounded-xl border border-slate-200 bg-slate-50 transition hover:border-primary-400 hover:shadow-md"
                 >
                   <img src={img.url} alt="" className="h-full w-full object-cover" />
                   <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover:bg-black/20">
-                    <span className="rounded-lg bg-white/90 px-2 py-0.5 text-xs font-bold text-blue-700 opacity-0 transition group-hover:opacity-100">
+                    <span className="rounded-lg bg-white/90 px-2 py-0.5 text-xs font-bold text-primary-700 opacity-0 transition group-hover:opacity-100">
                       Pilih
                     </span>
                   </div>
@@ -240,18 +241,17 @@ export default function TopicManagement({ curriculums }: Props) {
   }
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white shadow-sm">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="p-4">
         <h2 className="mb-4 text-lg font-bold text-slate-800">Topik</h2>
 
-        <select value={selectedId} onChange={(e) => { setSelectedId(e.target.value); loadTopics(e.target.value); }}
-          className="mb-4 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+        <Select value={selectedId} onChange={(e) => { setSelectedId(e.target.value); loadTopics(e.target.value); }} className="mb-4"
         >
           <option value="">-- Pilih Kurikulum (opsional) --</option>
           {curriculums.map((c) => (
             <option key={c.id} value={c.id}>{c.name} ({c.categories?.map((cat) => CATEGORY_LABELS[cat.category.name] ?? cat.category.name).join(", ") ?? ""})</option>
           ))}
-        </select>
+        </Select>
 
         {loading && <p className="py-4 text-center text-sm text-slate-400">Memuat...</p>}
 
@@ -265,13 +265,13 @@ export default function TopicManagement({ curriculums }: Props) {
           <div className="mb-4 space-y-1.5">
             {[...topics].sort((a, b) => a.order - b.order).map((t) => (
               <button key={t.id} onClick={() => { setDetailTopic(t); setDetailDirty(false); setDetailError(""); }}
-                className="flex w-full items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 px-4 py-3 text-left transition hover:border-blue-200 hover:bg-blue-50/50"
+                className="flex w-full items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 px-4 py-3 text-left transition hover:border-primary-200 hover:bg-primary-50/50"
               >
                 <RoadmapAvatar
                   label={t.title}
                   imageUrl={t.imageUrl}
                   fallbackSeed={t.id}
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-sm shadow-sm"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-sm shadow-sm"
                 />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-slate-800">{t.title}</p>
@@ -283,42 +283,31 @@ export default function TopicManagement({ curriculums }: Props) {
           </div>
         )}
 
-        <button onClick={() => { setShowCreate(true); setError(""); setCreateCurriculumId(selectedId); }}
-          className="w-full rounded-2xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700"
-        >
+        <Button type="submit" onClick={() => { setShowCreate(true); setError(""); setCreateCurriculumId(selectedId); }}
+         className="w-full">
           + Tambah Topik
-        </button>
+        </Button>
       </div>
 
       {showCreate && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-          <div className="fixed inset-0 bg-black/40" onClick={() => setShowCreate(false)} />
-          <div className="relative w-full max-w-lg rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-slate-800">Tambah Topik</h3>
-              <button onClick={() => setShowCreate(false)} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
-            </div>
+        <Modal open onClose={() => setShowCreate(false)} title="Tambah Topik" size="md">
             <form onSubmit={onCreate}>
               <div className="mb-3">
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Kurikulum <span className="text-xs font-normal text-slate-400">(opsional)</span></label>
-                <select name="curriculumId" defaultValue={createCurriculumId}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Kurikulum <span className="text-xs font-normal text-slate-400">(opsional)</span></label>
+                <Select name="curriculumId" defaultValue={createCurriculumId}
                 >
                   <option value="">-- Tanpa kurikulum --</option>
                   {curriculums.map((c) => (
                     <option key={c.id} value={c.id}>{c.name} ({c.categories?.map((cat) => CATEGORY_LABELS[cat.category.name] ?? cat.category.name).join(", ") ?? ""})</option>
                   ))}
-                </select>
+                </Select>
               </div>
               <div className="mb-3">
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Judul</label>
-                <input name="title" required
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Judul</label>
+                <Input name="title" required />
               </div>
               <div className="mb-3">
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Gambar</label>
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Gambar</label>
                 <input type="hidden" name="imageUrl" />
                 <ImagePicker
                   curriculumId={createCurriculumId}
@@ -329,57 +318,43 @@ export default function TopicManagement({ curriculums }: Props) {
                 />
               </div>
               <div className="mb-3">
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Tujuan</label>
-                <input name="goals"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Tujuan</label>
+                <Input name="goals" />
               </div>
               <div className="mb-3">
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Link Materi</label>
-                <input name="materialLink" type="url"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Link Materi</label>
+                <Input name="materialLink" type="url" />
               </div>
               <div className="mb-3">
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Link Project</label>
-                <input name="exampleProjectLink" type="url"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Link Project</label>
+                <Input name="exampleProjectLink" type="url" />
               </div>
               <div className="mb-3">
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Link Video YouTube (Embed)</label>
-                <input name="videoYoutubeUrl" type="url" placeholder="https://www.youtube.com/watch?v=..."
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Link Video YouTube (Embed)</label>
+                <Input name="videoYoutubeUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." />
               </div>
               <div className="mb-3">
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Upload Video (S3 / MinIO)</label>
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Upload Video (S3 / MinIO)</label>
                 <VideoPicker
                   value={createVideoUploadUrl}
                   onChange={setCreateVideoUploadUrl}
                 />
               </div>
               <div className="mb-4">
-                <label className="mb-1 block text-sm font-semibold text-slate-700">Tools</label>
-                <input name="tools"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Tools</label>
+                <Input name="tools" />
               </div>
               {error && <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-700">{error}</div>}
-              <button type="submit" disabled={saving}
-                className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700 disabled:opacity-50"
-              >
+              <Button type="submit" disabled={saving}
+               className="w-full">
                 {saving ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Simpan"}
-              </button>
+              </Button>
             </form>
-          </div>
-        </div>
+        </Modal>
       )}
 
       {materialViewTopic && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4">
-          <div className="relative w-full max-w-4xl rounded-3xl bg-white shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-              <h3 className="text-lg font-bold text-slate-800">Materi: {materialViewTopic.title}</h3>
-              <button onClick={() => setMaterialViewTopic(null)} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
-            </div>
+        <Modal open onClose={() => setMaterialViewTopic(null)} title={<>Materi: {materialViewTopic.title}</>} size="xl" closeOnBackdrop={false} bodyClassName="p-0">
             <div className="p-2">
               <iframe
                 src={materialViewTopic.materialLink ?? ""}
@@ -389,29 +364,18 @@ export default function TopicManagement({ curriculums }: Props) {
                 className="rounded-2xl"
               />
           </div>
-          </div>
-        </div>
+        </Modal>
       )}
 
       {detailTopic && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-          <div className="fixed inset-0 bg-black/40" onClick={() => setDetailTopic(null)} />
-          <div className="relative w-full max-w-5xl rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl overflow-y-auto max-h-[90vh]">
-            <div className="p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-slate-800">Detail Topik</h3>
-              <button onClick={() => setDetailTopic(null)} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
-            </div>
+        <Modal open onClose={() => setDetailTopic(null)} title="Detail Topik" size="xl" closeOnBackdrop={false}>
 
             <div className="mb-3">
-              <label className="mb-1 block text-sm font-semibold text-slate-700">Judul</label>
-              <input value={detailTopic.title} onChange={(e) => { setDetailTopic({ ...detailTopic, title: e.target.value }); setDetailDirty(true); }}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Judul</label>
+              <Input value={detailTopic.title} onChange={(e) => { setDetailTopic({ ...detailTopic, title: e.target.value }); setDetailDirty(true); }} />
             </div>
             <div className="mb-3">
-              <label className="mb-1 block text-sm font-semibold text-slate-700">Gambar</label>
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Gambar</label>
               <ImagePicker
                 curriculumId={detailTopic.curriculumId}
                 onSelect={(url) => {
@@ -458,35 +422,31 @@ export default function TopicManagement({ curriculums }: Props) {
         )}
             </div>
             <div className="mb-3">
-              <label className="mb-1 block text-sm font-semibold text-slate-700">Tujuan</label>
-              <textarea value={detailTopic.goals ?? ""} onChange={(e) => { setDetailTopic({ ...detailTopic, goals: e.target.value || null }); setDetailDirty(true); }} rows={3}
-                className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Tujuan</label>
+              <Textarea value={detailTopic.goals ?? ""} onChange={(e) => { setDetailTopic({ ...detailTopic, goals: e.target.value || null }); setDetailDirty(true); }} rows={3} className="resize-none" />
             </div>
             <div className="mb-3">
-              <label className="mb-1 block text-sm font-semibold text-slate-700">Link Materi</label>
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Link Materi</label>
               <div className="flex gap-2">
                 <input type="url" value={detailTopic.materialLink ?? ""} onChange={(e) => { setDetailTopic({ ...detailTopic, materialLink: e.target.value || null }); setDetailDirty(true); }}
-                  className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                  className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-primary-400 focus:ring-2 focus:ring-primary-100" />
                 {detailTopic.materialLink && (
-                  <button onClick={() => setMaterialViewTopic(detailTopic)}
-                    className="shrink-0 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700">
+                  <Button type="submit" onClick={() => setMaterialViewTopic(detailTopic)} className="shrink-0">
                     Lihat
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>
             <div className="mb-3">
-              <label className="mb-1 block text-sm font-semibold text-slate-700">Link Project</label>
-              <input type="url" value={detailTopic.exampleProjectLink ?? ""} onChange={(e) => { setDetailTopic({ ...detailTopic, exampleProjectLink: e.target.value || null }); setDetailDirty(true); }}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Link Project</label>
+              <Input type="url" value={detailTopic.exampleProjectLink ?? ""} onChange={(e) => { setDetailTopic({ ...detailTopic, exampleProjectLink: e.target.value || null }); setDetailDirty(true); }} />
             </div>
             <div className="mb-3">
-              <label className="mb-1 block text-sm font-semibold text-slate-700">Link Video YouTube (Embed)</label>
-              <input type="url" value={detailTopic.videoYoutubeUrl ?? ""} placeholder="https://www.youtube.com/watch?v=..." onChange={(e) => { setDetailTopic({ ...detailTopic, videoYoutubeUrl: e.target.value || null }); setDetailDirty(true); }}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Link Video YouTube (Embed)</label>
+              <Input type="url" value={detailTopic.videoYoutubeUrl ?? ""} placeholder="https://www.youtube.com/watch?v=..." onChange={(e) => { setDetailTopic({ ...detailTopic, videoYoutubeUrl: e.target.value || null }); setDetailDirty(true); }} />
             </div>
             <div className="mb-3">
-              <label className="mb-1 block text-sm font-semibold text-slate-700">Upload Video (S3 / MinIO)</label>
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Upload Video (S3 / MinIO)</label>
               <VideoPicker
                 value={detailTopic.videoUploadUrl}
                 onChange={(url) => {
@@ -516,9 +476,8 @@ export default function TopicManagement({ curriculums }: Props) {
               </div>
             )}
             <div className="mb-4">
-              <label className="mb-1 block text-sm font-semibold text-slate-700">Tools</label>
-              <input value={detailTopic.tools ?? ""} onChange={(e) => { setDetailTopic({ ...detailTopic, tools: e.target.value || null }); setDetailDirty(true); }}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Tools</label>
+              <Input value={detailTopic.tools ?? ""} onChange={(e) => { setDetailTopic({ ...detailTopic, tools: e.target.value || null }); setDetailDirty(true); }} />
             </div>
 
             <div className="mb-4 rounded-xl border border-slate-200 bg-slate-50 p-3">
@@ -541,15 +500,12 @@ export default function TopicManagement({ curriculums }: Props) {
               >
                 Hapus
               </button>
-              <button onClick={saveDetail} disabled={!detailDirty || detailSaving}
-                className="flex-1 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700 disabled:opacity-50"
-              >
+              <Button type="submit" onClick={saveDetail} disabled={!detailDirty || detailSaving}
+               className="flex-1">
                 {detailSaving ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Simpan Perubahan"}
-              </button>
+              </Button>
             </div>
-          </div>
-          </div>
-        </div>
+        </Modal>
       )}
     </div>
   );

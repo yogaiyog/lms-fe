@@ -11,10 +11,10 @@ import {
 } from "@/lib/api";
 import { useStudentDashboard } from "@/hooks/useStudentDashboard";
 import type { Theme, Segment } from "./_component/types";
-import Sidebar from "./_component/Sidebar";
-import MobileDrawer from "./_component/MobileDrawer";
-import Topbar from "./_component/Topbar";
-import MobileBottomNav from "./_component/MobileBottomNav";
+import { NAV_ITEMS, MOBILE_NAV } from "./_component/types";
+import { DashboardShell, type ShellNavSection } from "@/components/dashboard/DashboardShell";
+import { useDarkMode } from "@/components/dashboard/use-dark-mode";
+import { PageLoader } from "@/components/ui";
 import OverviewTab from "./_component/OverviewTab";
 import ScheduleTab from "./_component/ScheduleTab";
 import ReportTab from "./_component/ReportTab";
@@ -23,14 +23,15 @@ import RoadmapTab from "./_component/RoadmapTab";
 import LearningPathView from "./_component/LearningPathView";
 import BadgesTab from "./_component/BadgesTab";
 
+const STUDENT_NAV: ShellNavSection[] = [{ title: "Belajar", items: NAV_ITEMS }];
+
 export default function StudentDashboard() {
   const router = useRouter();
   const pathname = usePathname();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [segment, setSegment] = useState<Segment>("overview");
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [dark, setDark] = useState(false);
+  const { dark, toggle: toggleDark } = useDarkMode();
 
   const [myClass, setMyClass] = useState<Class | null>(null);
   const [selectedClassId, setSelectedClassId] = useState<string>("");
@@ -48,7 +49,7 @@ export default function StudentDashboard() {
     textMuted: dark ? "text-slate-400" : "text-slate-500",
   };
 
-  const go = useCallback((p: Segment) => { setSegment(p); setDrawerOpen(false); setSelectedTopicId(null); window.scrollTo({ top: 0, behavior: "smooth" }); }, []);
+  const go = useCallback((p: Segment) => { setSegment(p); setSelectedTopicId(null); window.scrollTo({ top: 0, behavior: "smooth" }); }, []);
 
   // Restore state from URL params on mount
   useEffect(() => {
@@ -240,24 +241,27 @@ export default function StudentDashboard() {
     });
 
   if (loading || dataLoading) {
-    return (
-      <div className={`flex min-h-screen items-center justify-center ${theme.bg}`}>
-        <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-brand-blue-600 border-t-transparent" />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   return (
-    <div className={`min-h-screen w-full ${theme.bg} font-sans`}>
-      <div className="flex">
-        <Sidebar theme={theme} segment={segment} onNavigate={go} user={user} />
-
-        <MobileDrawer theme={theme} open={drawerOpen} segment={segment} onNavigate={go} onClose={() => setDrawerOpen(false)} user={user} />
-
-        <div className="flex-1 md:ml-64 min-w-0">
-          <Topbar theme={theme} segment={segment} onToggleDark={() => setDark((v) => !v)} onLogout={logout} onMenuClick={() => setDrawerOpen(true)} />
-
-          <main className="px-4 sm:px-8 py-1 pb-24 md:pb-10 ">
+    <DashboardShell
+      roleLabel="Siswa"
+      sections={STUDENT_NAV}
+      activeKey={segment}
+      onNavigate={(key) => go(key as Segment)}
+      title={NAV_ITEMS.find((n) => n.key === segment)?.label ?? "Dashboard"}
+      user={{
+        name: user?.studentProfile?.fullName ?? user?.studentProfile?.nickname,
+        email: user?.email,
+        avatarUrl: user?.studentProfile?.avatarUrl,
+      }}
+      onLogout={logout}
+      dark={dark}
+      onToggleDark={toggleDark}
+      mobileNav={MOBILE_NAV}
+    >
+          <div>
             {segment === "overview" && (
               <OverviewTab
                 theme={theme}
@@ -272,7 +276,6 @@ export default function StudentDashboard() {
                   setSelectedClassId(s.classId);
                   setSelectedTopicId(s.topicId);
                   setSegment("roadmap");
-                  setDrawerOpen(false);
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
               />
@@ -289,12 +292,12 @@ export default function StudentDashboard() {
             )}
 
             {segment === "roadmap" && (
-              <div className="relative overflow-hidden rounded-2xl -mx-4 sm:-mx-8">
+              <div className="relative overflow-hidden rounded-2xl -mx-4 sm:-mx-6 lg:-mx-8">
                 <div
                   className="pointer-events-none absolute inset-0 bg-repeat opacity-15"
                   style={{ backgroundImage: "url(/seamless.jpg)" }}
                 />
-                <div className="relative z-10 px-4 sm:px-8">
+                <div className="relative z-10 px-4 sm:px-6 lg:px-8">
                   {!selectedTopicId ? (
                     <RoadmapTab
                       theme={theme}
@@ -325,11 +328,7 @@ export default function StudentDashboard() {
             {segment === "badges" && (
               <BadgesTab theme={theme} studentBadges={studentBadges} certificates={certificates} enrollments={enrollments} />
             )}
-          </main>
-        </div>
-      </div>
-
-      <MobileBottomNav theme={theme} segment={segment} onNavigate={go} />
-    </div>
+          </div>
+    </DashboardShell>
   );
 }

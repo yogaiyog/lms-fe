@@ -113,7 +113,7 @@ export default function SlotGrid() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50">
-        <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+        <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent" />
       </div>
     );
   }
@@ -124,7 +124,7 @@ export default function SlotGrid() {
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/dashboard/tutor"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:bg-primary-50 hover:text-primary-600 transition-colors">
               <ArrowLeft size={18} />
             </Link>
             <div>
@@ -138,7 +138,7 @@ export default function SlotGrid() {
           </button>
         </div>
 
-        <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-4 mb-4">
+        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-4 mb-4">
           <p className="text-sm text-slate-600">
             Day Off:{" "}
             <span className="font-bold text-slate-900">
@@ -155,7 +155,7 @@ export default function SlotGrid() {
           </div>
         )}
 
-        <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr>
@@ -198,8 +198,8 @@ export default function SlotGrid() {
                       label = "Day Off";
                     } else if (slot) {
                       if (slot.isFilled) {
-                        bg = "bg-blue-100";
-                        text = "text-blue-700 font-semibold";
+                        bg = "bg-primary-100";
+                        text = "text-primary-700 font-semibold";
                         label = "Terisi";
                         cursor = "cursor-not-allowed";
                       } else {
@@ -243,7 +243,7 @@ export default function SlotGrid() {
             <span className="font-semibold">Aktif</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="inline-block h-3 w-3 rounded bg-blue-100" />
+            <span className="inline-block h-3 w-3 rounded bg-primary-100" />
             <span className="font-semibold">Terisi Kelas</span>
           </div>
           <div className="flex items-center gap-1.5">

@@ -1,7 +1,8 @@
 "use client";
 
+import { EmptyState, Modal } from "@/components/ui";
 import { useState } from "react";
-import { BookOpen, Users, Calendar, ShoppingCart, X, Check } from "lucide-react";
+import { BookOpen, Users, Calendar, ShoppingCart, Check } from "lucide-react";
 import Card from "./Card";
 import type { Theme } from "./types";
 import type { Schedule, Class, Enrollment } from "@/lib/api";
@@ -41,24 +42,24 @@ export default function EnrollmentTab({ theme, classes, enrollments, schedules, 
       </div>
 
       {classes.length === 0 && enrollments.filter((e) => !e.classId).length === 0 ? (
-        <Card theme={theme} className="p-12 flex flex-col items-center text-center border-dashed">
-          <span className="text-5xl mb-4">📚</span>
-          <h2 className={`font-bold ${theme.text}`}>Belum ada enrollment</h2>
-          <p className={`text-sm mt-1 max-w-sm ${theme.textMuted}`}>Kamu belum terdaftar di enrollment manapun.</p>
-        </Card>
+        <EmptyState
+          icon={BookOpen}
+          title="Belum ada enrollment"
+          description="Kamu belum terdaftar di enrollment manapun."
+        />
       ) : (
         <div className="space-y-4">
           <div className={`rounded-2xl border ${theme.border} ${theme.card} px-5 py-4 flex items-center justify-between`}>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-blue-100">
-                <ShoppingCart size={18} className="text-brand-blue-600" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-100">
+                <ShoppingCart size={18} className="text-primary-600" />
               </div>
               <div>
                 <p className={`text-sm font-bold ${theme.text}`}>Sisa Pertemuan</p>
                 <p className={`text-xs ${theme.textMuted}`}>Total pertemuan yang tersisa</p>
               </div>
             </div>
-            <span className="text-2xl font-extrabold text-brand-blue-600">{totalMeetLeft}</span>
+            <span className="text-2xl font-extrabold text-primary-600">{totalMeetLeft}</span>
           </div>
 
           {classes.map((cls) => {
@@ -84,7 +85,7 @@ export default function EnrollmentTab({ theme, classes, enrollments, schedules, 
                       <div>
                         <h2 className={`text-lg font-extrabold ${theme.text}`}>{cls.name}</h2>
                         <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                          <span className="inline-flex items-center rounded-full bg-brand-blue-100 px-2.5 py-0.5 text-[10px] font-semibold text-brand-blue-700">
+                          <span className="inline-flex items-center rounded-full bg-primary-100 px-2.5 py-0.5 text-[10px] font-semibold text-primary-700">
                             {cls.category?.label ?? "-"}
                           </span>
                           <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-[10px] font-semibold text-purple-700">
@@ -105,18 +106,18 @@ export default function EnrollmentTab({ theme, classes, enrollments, schedules, 
                     </div>
                     <div className={`rounded-xl p-3 ${theme.dark ? "bg-slate-800" : "bg-slate-50"}`}>
                       <div className="flex items-center gap-1.5 text-xs font-semibold mb-1">
-                        <Calendar size={13} className="text-brand-blue-600" />
+                        <Calendar size={13} className="text-primary-600" />
                         <span className={theme.textMuted}>Progress Kelas</span>
                       </div>
                       <div className={`h-2.5 w-full overflow-hidden rounded-full ${theme.dark ? "bg-slate-700" : "bg-slate-200"}`}>
                         <div
-                          className="h-full rounded-full bg-brand-blue-600 transition-all"
+                          className="h-full rounded-full bg-primary-600 transition-all"
                           style={{
                             width: `${totalTopics > 0 ? Math.min(100, (historyMeetings / totalTopics) * 100) : 0}%`,
                           }}
                         />
                       </div>
-                      <p className="mt-1 text-[10px] font-semibold text-brand-blue-600">
+                      <p className="mt-1 text-[10px] font-semibold text-primary-600">
                         sudah berjalan {historyMeetings} dari {totalTopics} topics yang ada
                       </p>
                     </div>
@@ -159,7 +160,7 @@ export default function EnrollmentTab({ theme, classes, enrollments, schedules, 
 
                   {cls.tutors && cls.tutors.length > 0 && (
                     <div className={`mt-4 pt-4 border-t ${theme.border} flex items-center gap-3`}>
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-blue-100 text-xs font-bold text-brand-blue-700">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700">
                         {cls.tutors[0].fullName?.charAt(0) ?? "T"}
                       </div>
                       <div>
@@ -266,28 +267,18 @@ function ClassDetailModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4 pt-10 overflow-y-auto">
-      <div className={`relative w-full max-w-2xl rounded-3xl border ${theme.border} ${theme.card} p-6 shadow-xl mb-10`}>
-        <div className="flex items-center justify-between mb-5">
-          <div>
-            <h2 className={`text-xl font-extrabold ${theme.text}`}>{cls.name}</h2>
-            <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-              <span className="inline-flex items-center rounded-full bg-brand-blue-100 px-2.5 py-0.5 text-[10px] font-semibold text-brand-blue-700">
+    <Modal open onClose={onClose} title={<>{cls.name}</>} size="lg" closeOnBackdrop={false} description={<><div className="flex items-center gap-1.5 mt-1 flex-wrap">
+              <span className="inline-flex items-center rounded-full bg-primary-100 px-2.5 py-0.5 text-[10px] font-semibold text-primary-700">
                 {cls.category?.label ?? "-"}
               </span>
               <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-[10px] font-semibold text-purple-700">
                 {TYPE_LABELS[cls.type] ?? cls.type}
               </span>
-            </div>
-          </div>
-          <button onClick={onClose} className={`rounded-xl p-1.5 ${theme.dark ? "hover:bg-slate-700" : "hover:bg-slate-200"} transition`}>
-            <X size={20} className={theme.text} />
-          </button>
-        </div>
+            </div></>}>
 
         <div className="grid grid-cols-3 gap-3 mb-6">
-              <div className={`rounded-xl p-3 text-center ${theme.dark ? "bg-slate-800" : "bg-brand-blue-50"}`}>
-                <p className={`text-lg font-extrabold text-brand-blue-600`}>{purchased}</p>
+              <div className={`rounded-xl p-3 text-center ${theme.dark ? "bg-slate-800" : "bg-primary-50"}`}>
+                <p className={`text-lg font-extrabold text-primary-600`}>{purchased}</p>
                 <p className={`text-[10px] font-semibold ${theme.textMuted}`}>Dibeli</p>
               </div>
               <div className={`rounded-xl p-3 text-center ${theme.dark ? "bg-slate-800" : "bg-emerald-50"}`}>
@@ -329,7 +320,7 @@ function ClassDetailModal({
                             <Check size={10} /> Selesai
                           </span>
                         ) : paid ? (
-                          <span className="shrink-0 inline-flex items-center gap-1 rounded-full bg-brand-blue-100 px-2.5 py-0.5 text-[10px] font-bold text-brand-blue-700">
+                          <span className="shrink-0 inline-flex items-center gap-1 rounded-full bg-primary-100 px-2.5 py-0.5 text-[10px] font-bold text-primary-700">
                             <Check size={10} /> Sudah Dibayar
                           </span>
                         ) : (
@@ -346,7 +337,7 @@ function ClassDetailModal({
 
             {cls.tutors && cls.tutors.length > 0 && (
               <div className={`mt-5 pt-5 border-t ${theme.border} flex items-center gap-3`}>
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-blue-100 text-sm font-bold text-brand-blue-700">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-100 text-sm font-bold text-primary-700">
                   {cls.tutors[0].fullName?.charAt(0) ?? "T"}
                 </div>
                 <div>
@@ -355,7 +346,6 @@ function ClassDetailModal({
                 </div>
               </div>
             )}
-          </div>
-      </div>
+    </Modal>
   );
 }

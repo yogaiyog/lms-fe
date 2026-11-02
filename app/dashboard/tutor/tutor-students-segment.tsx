@@ -1,11 +1,11 @@
 "use client";
 
+import { Button, EmptyState } from "@/components/ui";
 import { useState } from "react";
-import { ChevronLeft, FileText, Camera } from "lucide-react";
+import { ChevronLeft, FileText, Camera, Users } from "lucide-react";
 import type { StudentProfile, StudentBadge, SavedReport } from "@/lib/api";
 import { api } from "@/lib/api";
 import type { Theme, ClassWithEnrollments, AttendanceWithDetails, AssessmentSummary, GeneratedReport } from "./_student_segment_component/types";
-import { Card } from "./_student_segment_component/components";
 import StudentListCard from "./_student_segment_component/student-list-card";
 import StudentProfileCard from "./_student_segment_component/student-profile-card";
 import ClassListSection from "./_student_segment_component/class-list-section";
@@ -244,11 +244,11 @@ export default function TutorStudentsSegment({
   if (view === "list") {
     if (tutorStudents.length === 0) {
       return (
-        <Card theme={theme} className="p-12 flex flex-col items-center text-center border-dashed">
-          <span className="text-5xl mb-4">👤</span>
-          <h2 className={`font-bold ${theme.text}`}>Belum ada siswa</h2>
-          <p className={`text-sm mt-1 max-w-sm ${theme.textMuted}`}>Kelas kamu belum memiliki siswa terdaftar</p>
-        </Card>
+        <EmptyState
+          icon={Users}
+          title="Belum ada siswa"
+          description="Kelas kamu belum memiliki siswa terdaftar"
+        />
       );
     }
     return (
@@ -278,7 +278,7 @@ export default function TutorStudentsSegment({
 
           {loadingDetail ? (
             <div className="flex items-center justify-center py-12">
-              <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+              <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent" />
             </div>
           ) : (
             <div className="space-y-5">
@@ -294,9 +294,9 @@ export default function TutorStudentsSegment({
               )}
 
               <div className="flex gap-3">
-                <button onClick={() => setShowReportModal(true)} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-blue-700 transition">
+                <Button type="submit" onClick={() => setShowReportModal(true)}>
                   <FileText size={18} /> Laporan
-                </button>
+                </Button>
                 <button onClick={() => setShowGalleryView(true)}
                   className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-emerald-700 transition">
                   <Camera size={18} /> Gallery

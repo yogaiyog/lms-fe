@@ -1,8 +1,9 @@
 "use client";
 
+import { Button, Modal } from "@/components/ui";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, Download, Printer, X } from "lucide-react";
+import { CheckCircle2, Download, Printer } from "lucide-react";
 import { api, type Enrollment, type Certificate } from "@/lib/api";
 import {
   isNativePlatform,
@@ -184,32 +185,24 @@ export default function CertificatePreviewModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
-      <div className="flex h-full max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-3xl bg-slate-100 shadow-2xl">
-        <div className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
-          <h2 className="text-base font-extrabold tracking-tight text-slate-900">Pratinjau Sertifikat</h2>
-          <button onClick={onClose} className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
-            <X size={20} />
-          </button>
-        </div>
+    <Modal open onClose={onClose} title="Pratinjau Sertifikat" size="lg" closeOnBackdrop={false} bodyClassName="p-0">
 
         <div className="flex-1 min-h-0 p-4">
           {error ? (
             <div className="flex h-full items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white/70">
               <div className="flex flex-col items-center gap-3 text-center">
                 <p className="text-sm font-semibold text-red-500">{error}</p>
-                <button
+                <Button type="submit"
                   onClick={onClose}
-                  className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
                 >
                   Kembali
-                </button>
+                </Button>
               </div>
             </div>
           ) : loading && !pdfUrl && !pdfBlob ? (
             <div className="flex h-full items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white/70">
               <div className="flex flex-col items-center gap-3 text-center">
-                <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+                <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent" />
                 <p className="text-sm font-semibold text-slate-600">Sedang membuat PDF sertifikat...</p>
               </div>
             </div>
@@ -220,13 +213,12 @@ export default function CertificatePreviewModal({
                   ? "Pratinjau PDF terbuka di penampil native."
                   : "Pratinjau PDF siap dibuka."}
               </p>
-              <button
+              <Button type="submit"
                 onClick={handleOpenNativeViewer}
                 disabled={!pdfBlob}
-                className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700 disabled:opacity-50"
               >
                 {viewerOpen ? "Buka Lagi" : "Buka Pratinjau PDF"}
-              </button>
+              </Button>
             </div>
           ) : (
             <iframe
@@ -248,7 +240,7 @@ export default function CertificatePreviewModal({
         {!native && (
           <button
             onClick={handlePrint}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-sm font-bold text-blue-600 shadow-sm ring-1 ring-blue-600/30 transition hover:bg-blue-50"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-sm font-bold text-primary-600 shadow-sm ring-1 ring-primary-600/30 transition hover:bg-primary-50"
           >
             <Printer size={15} />
             Cetak
@@ -260,14 +252,13 @@ export default function CertificatePreviewModal({
         >
           Buka di Halaman
         </button>
-        <button
+        <Button type="submit"
           onClick={handleDownload}
           disabled={!pdfBlob}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700 disabled:opacity-50"
           >
             <Download size={15} />
             Download PDF
-          </button>
+          </Button>
           {mode === "admin" && !sent && (
             <button
               onClick={handleSendToDashboard}
@@ -287,7 +278,6 @@ export default function CertificatePreviewModal({
             </span>
           )}
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }

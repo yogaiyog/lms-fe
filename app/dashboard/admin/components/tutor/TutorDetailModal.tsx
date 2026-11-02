@@ -1,7 +1,8 @@
 "use client";
 
+import { Button, Input, Modal, Textarea } from "@/components/ui";
 import { useEffect, useState } from "react";
-import { X, Save, Loader2 } from "lucide-react";
+import { Save, Loader2 } from "lucide-react";
 import { api, type TutorSlot } from "@/lib/api";
 
 type TutorItem = {
@@ -95,45 +96,33 @@ export default function TutorDetailModal({ tutor, onClose, onSaved }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-4 pt-6 overflow-y-auto">
-      <div className="relative w-full max-w-4xl rounded-3xl border border-slate-200 bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-          <h2 className="text-lg font-extrabold tracking-tight text-slate-900">Detail Tutor</h2>
-          <button onClick={onClose} className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
-            <X size={20} />
-          </button>
-        </div>
+    <Modal open onClose={onClose} title="Detail Tutor" size="xl" closeOnBackdrop={false} bodyClassName="p-0">
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
           {/* Left: Edit Form */}
           <form onSubmit={handleSave} className="space-y-4">
             <h3 className="text-sm font-bold text-slate-700">Informasi Tutor</h3>
             <div>
-              <label className="mb-1 block text-sm font-semibold text-slate-700">Nama Lengkap</label>
-              <input value={fullName} onChange={(e) => setFullName(e.target.value)} required
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Nama Lengkap</label>
+              <Input value={fullName} onChange={(e) => setFullName(e.target.value)} required />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-semibold text-slate-700">Email</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
+              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-semibold text-slate-700">No. HP</label>
-              <input value={phone} onChange={(e) => setPhone(e.target.value)} required
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">No. HP</label>
+              <Input value={phone} onChange={(e) => setPhone(e.target.value)} required />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-semibold text-slate-700">Bio</label>
-              <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 resize-none" />
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Bio</label>
+              <Textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3} className="resize-none" />
             </div>
             {error && <div className="rounded-2xl bg-red-50 p-3 text-sm font-semibold text-red-700">{error}</div>}
-            <button type="submit" disabled={saving}
-              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50 transition">
+            <Button type="submit" disabled={saving}>
               {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
               Simpan
-            </button>
+            </Button>
           </form>
 
           {/* Right: Slot Grid */}
@@ -174,7 +163,7 @@ export default function TutorDetailModal({ tutor, onClose, onSaved }: Props) {
                           if (!inRange) { bg = "bg-slate-100"; text = "text-slate-300"; label = "\u2014"; }
                           else if (dayOff) { bg = "bg-red-50"; text = "text-red-400"; label = "Off"; }
                           else if (slot) {
-                            if (slot.isFilled) { bg = "bg-blue-100"; text = "text-blue-700 font-semibold"; label = "Terisi"; cursor = "cursor-not-allowed"; }
+                            if (slot.isFilled) { bg = "bg-primary-100"; text = "text-primary-700 font-semibold"; label = "Terisi"; cursor = "cursor-not-allowed"; }
                             else { bg = "bg-emerald-100"; text = "text-emerald-700"; label = "Aktif"; cursor = "cursor-pointer hover:bg-emerald-200"; }
                           } else { bg = "bg-white border border-dashed border-slate-200"; text = "text-slate-400"; label = "+"; cursor = "cursor-pointer hover:bg-slate-100"; }
 
@@ -194,7 +183,6 @@ export default function TutorDetailModal({ tutor, onClose, onSaved }: Props) {
             )}
           </div>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }

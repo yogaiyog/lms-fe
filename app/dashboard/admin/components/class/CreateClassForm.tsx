@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, Input, Select } from "@/components/ui";
 import { type FormEvent } from "react";
 import { type Curriculum, type TutorSlot } from "@/lib/api";
 import { X } from "lucide-react";
@@ -70,13 +71,12 @@ export default function CreateClassForm({
   );
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-6 sm:p-7">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 sm:p-7">
       <h2 className="mb-6 text-lg font-extrabold tracking-tight text-slate-900">Buat Kelas Baru</h2>
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Kategori <span className="text-red-500">*</span></label>
-          <select value={createCategory} onChange={(e) => { onCreateCategoryChange(e.target.value); onCreateCurriculumIdChange(""); }}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+          <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Kategori <span className="text-red-500">*</span></label>
+          <Select value={createCategory} onChange={(e) => { onCreateCategoryChange(e.target.value); onCreateCurriculumIdChange(""); }}
           >
             <option value="Kelas 1">Kelas 1 SD</option>
             <option value="Kelas 2">Kelas 2 SD</option>
@@ -87,10 +87,10 @@ export default function CreateClassForm({
             <option value="Kelas 7">Kelas 7 SMP</option>
             <option value="Kelas 8">Kelas 8 SMP</option>
             <option value="Kelas 9">Kelas 9 SMP</option>
-          </select>
+          </Select>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Tipe Kelas</label>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Tipe Kelas</label>
           <div className="flex gap-2">
             {(["BATCH810", "BATCH35", "PRIVATE", "MAKEUP", "TRIAL"] as const).map((t) => (
               <button key={t} type="button"
@@ -101,7 +101,7 @@ export default function CreateClassForm({
                 }}
                 className={`flex-1 rounded-xl border-2 px-3 py-2.5 text-sm font-bold transition-colors ${
                   createType === t
-                    ? "border-blue-500 bg-blue-50 text-blue-700"
+                    ? "border-primary-500 bg-primary-50 text-primary-700"
                     : "border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300"
                 }`}
               >
@@ -111,12 +111,12 @@ export default function CreateClassForm({
           </div>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Metode</label>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Metode</label>
           <div className="flex gap-2">
             <button type="button" onClick={() => onCreateIsOnlineChange(true)}
               className={`flex-1 rounded-xl border-2 px-3 py-2.5 text-sm font-bold transition-colors ${
                 createIsOnline
-                  ? "border-blue-500 bg-blue-50 text-blue-700"
+                  ? "border-primary-500 bg-primary-50 text-primary-700"
                   : "border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300"
               }`}
             >
@@ -125,7 +125,7 @@ export default function CreateClassForm({
             <button type="button" onClick={() => onCreateIsOnlineChange(false)}
               className={`flex-1 rounded-xl border-2 px-3 py-2.5 text-sm font-bold transition-colors ${
                 !createIsOnline
-                  ? "border-blue-500 bg-blue-50 text-blue-700"
+                  ? "border-primary-500 bg-primary-50 text-primary-700"
                   : "border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300"
               }`}
             >
@@ -135,36 +135,33 @@ export default function CreateClassForm({
         </div>
         {!createIsOnline && (
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-slate-700">Lokasi <span className="text-red-500">*</span></label>
-            <input type="text" value={createLocation} onChange={(e) => onCreateLocationChange(e.target.value)}
-              placeholder="Masukkan alamat / lokasi kelas"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" required
+            <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Lokasi <span className="text-red-500">*</span></label>
+            <Input type="text" value={createLocation} onChange={(e) => onCreateLocationChange(e.target.value)}
+              placeholder="Masukkan alamat / lokasi kelas" required
             />
           </div>
         )}
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Kurikulum <span className="text-red-500">*</span></label>
-          <select value={createCurriculumId} onChange={(e) => onCreateCurriculumIdChange(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" required
+          <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Kurikulum <span className="text-red-500">*</span></label>
+          <Select value={createCurriculumId} onChange={(e) => onCreateCurriculumIdChange(e.target.value)} required
           >
             <option value="">-- Pilih kurikulum --</option>
             {filteredCurriculums.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
-          </select>
+          </Select>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Nama Kelas <span className="text-red-500">*</span></label>
-          <input type="text" value={createName} onChange={(e) => onCreateNameChange(e.target.value)}
-            placeholder="Nama kelas akan otomatis terisi"
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" required
+          <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Nama Kelas <span className="text-red-500">*</span></label>
+          <Input type="text" value={createName} onChange={(e) => onCreateNameChange(e.target.value)}
+            placeholder="Nama kelas akan otomatis terisi" required
           />
           {(createType === "BATCH810" || createType === "BATCH35") && (
             <p className="mt-1 text-[10px] text-slate-400">Batch: {createBatchPreview !== null ? createBatchPreview : "..."}</p>
           )}
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+          <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
             Tutor <span className="text-red-500">*</span> {createTutorIds.length > 0 && <span className="font-normal text-slate-400">({createTutorIds.length})</span>}
           </label>
           {createTutorIds.length > 0 && (
@@ -183,19 +180,18 @@ export default function CreateClassForm({
               })}
             </div>
           )}
-          <select value="" onChange={(e) => {
+          <Select value="" onChange={(e) => {
             const id = e.target.value;
             if (id && !createTutorIds.includes(id)) {
               onCreateTutorIdsChange([...createTutorIds, id]);
             }
           }}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
           >
             <option value="">-- Tambah tutor --</option>
             {tutors.filter((t) => !createTutorIds.includes(t.id)).map((t) => (
               <option key={t.id} value={t.id}>{t.fullName}</option>
             ))}
-          </select>
+          </Select>
         </div>
 
         {createTutorIds.length > 0 && (
@@ -209,7 +205,7 @@ export default function CreateClassForm({
                 {createTutorIds.map((tid) => {
                   const t = tutors.find((x) => x.id === tid);
                   return (
-                    <span key={tid} className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+                    <span key={tid} className="inline-flex items-center gap-1 rounded-full bg-primary-100 px-2 py-0.5 text-[10px] font-semibold text-primary-700">
                       {t?.fullName ?? tid}
                     </span>
                   );
@@ -226,7 +222,7 @@ export default function CreateClassForm({
             )}
             {slotsLoading ? (
               <div className="flex items-center justify-center py-8">
-                <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+                <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-primary-600 border-t-transparent" />
               </div>
             ) : (
               <div className="overflow-x-auto rounded-xl border border-slate-200">
@@ -265,7 +261,7 @@ export default function CreateClassForm({
                           }
 
                           const cellBg = isSelected
-                            ? "bg-blue-200 text-blue-800 font-semibold"
+                            ? "bg-primary-200 text-primary-800 font-semibold"
                             : isFilled && allowMultiClass
                               ? "bg-amber-100 text-amber-700 hover:bg-amber-200"
                               : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100";
@@ -299,11 +295,10 @@ export default function CreateClassForm({
         )}
         {selectedSlots.length > 0 && (
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+            <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Tanggal Mulai Kelas <span className="text-red-500">*</span>
             </label>
-            <input type="date" value={createStartDate} onChange={(e) => onCreateStartDateChange(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" required
+            <Input type="date" value={createStartDate} onChange={(e) => onCreateStartDateChange(e.target.value)} required
             />
             {selectedCurriculum && (
               <p className="mt-1 text-[10px] text-slate-400">
@@ -315,7 +310,7 @@ export default function CreateClassForm({
 
         {selectedSlots.length > 0 && createType !== "MAKEUP" && (
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+            <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Daftar Siswa {createSelectedStudentIds.length > 0 && <span className="font-normal text-slate-400">({createSelectedStudentIds.length}{createType === "PRIVATE" ? "/1" : ""} dipilih)</span>}
             </label>
             {createSelectedStudentIds.length > 0 && (
@@ -342,7 +337,7 @@ export default function CreateClassForm({
                   onSelectedStudentIdsChange([...createSelectedStudentIds.slice(-(max - 1)), id].slice(0, max));
                 }
               }}
-                className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
               >
                 <option value="">-- Tambah siswa --</option>
                 {availableToAdd.map((s) => (
@@ -360,11 +355,10 @@ export default function CreateClassForm({
         )}
 
         {createError && <div className="rounded-2xl bg-red-50 p-3 text-sm font-semibold text-red-700">{createError}</div>}
-        <button type="submit" disabled={creating}
-          className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 disabled:opacity-50 transition-colors"
-        >
+        <Button type="submit" disabled={creating}
+         className="w-full">
           {creating ? <span className="inline-flex items-center gap-2"><span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> Membuat...</span> : "Buat Kelas"}
-        </button>
+        </Button>
       </form>
     </div>
   );

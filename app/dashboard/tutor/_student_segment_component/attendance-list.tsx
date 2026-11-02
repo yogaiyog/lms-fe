@@ -39,7 +39,7 @@ export default function AttendanceList({
                   <span className={`text-xs font-bold ${theme.text}`}>
                     {new Date(att.date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
                   </span>
-                  <button onClick={() => handleSave(att.id)} className="text-xs font-semibold text-blue-600 flex items-center gap-1">
+                  <button onClick={() => handleSave(att.id)} className="text-xs font-semibold text-primary-600 flex items-center gap-1">
                     <Save size={12} /> Simpan
                   </button>
                 </div>
@@ -76,14 +76,14 @@ export default function AttendanceList({
                 </div>
                 <button
                   onClick={() => { setEditingId(att.id); setForm({ status: att.status, notes: att.notes || "" }); }}
-                  className="text-xs text-blue-600 flex items-center gap-1"
+                  className="text-xs text-primary-600 flex items-center gap-1"
                 >
                   <Edit2 size={12} /> Edit
                 </button>
               </div>
               {att.schedule?.topic && (
                 <div className="ml-2 mt-1">
-                  <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-[9px] font-semibold text-blue-700">
+                  <span className="inline-flex items-center rounded-full bg-primary-100 px-2 py-0.5 text-[9px] font-semibold text-primary-700">
                     {att.schedule.topic}
                   </span>
                 </div>

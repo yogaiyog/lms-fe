@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, EmptyState } from "@/components/ui";
 import { useState, useMemo } from "react";
 import { BookOpen, Calendar, Clock, User, Video, ChevronRight, Trash2 } from "lucide-react";
 import { api, type Schedule, type Topic, type Announcement } from "@/lib/api";
@@ -42,7 +43,7 @@ type ClassWithDetails = {
 
 function Card({ children, className = "", theme }: { children: React.ReactNode; className?: string; theme: Theme }) {
   return (
-    <div className={`rounded-3xl border ${theme.border} ${theme.card} shadow-sm ${className}`}>
+    <div className={`rounded-2xl border ${theme.border} ${theme.card} shadow-sm ${className}`}>
       {children}
     </div>
   );
@@ -86,11 +87,11 @@ export default function TutorClassesSegment({
 
   if (activeClasses.length === 0) {
     return (
-      <Card theme={theme} className="p-12 flex flex-col items-center text-center border-dashed">
-        <span className="text-5xl mb-4">📚</span>
-        <h2 className={`font-bold ${theme.text}`}>Belum ada kelas</h2>
-        <p className={`text-sm mt-1 max-w-sm ${theme.textMuted}`}>Kamu belum mengajar kelas apapun</p>
-      </Card>
+      <EmptyState
+        icon={BookOpen}
+        title="Belum ada kelas"
+        description="Kamu belum mengajar kelas apa pun. Kelas baru dari admin akan muncul di sini."
+      />
     );
   }
 
@@ -100,12 +101,12 @@ export default function TutorClassesSegment({
         <Card key={cls.id} theme={theme} className="p-6 sm:p-7">
           <div className="flex items-start justify-between flex-wrap gap-3 mb-5">
             <div className="flex items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-lg">
-                <BookOpen size={20} className="text-blue-600" />
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-50 text-lg">
+                <BookOpen size={20} className="text-primary-600" />
               </span>
               <div>
                 <h2 className={`text-lg font-extrabold ${theme.text}`}>{cls.name}</h2>
-                <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
+                <span className="inline-flex items-center gap-1 rounded-full bg-primary-100 px-2.5 py-0.5 text-xs font-semibold text-primary-700">
                   {cls.category?.label ?? "-"}
                 </span>
               </div>
@@ -119,10 +120,9 @@ export default function TutorClassesSegment({
               <div className={`border-t ${theme.border} pt-5 mb-5`}>
             <div className="flex items-center justify-between mb-4">
               <h2 className={`font-bold ${theme.text}`}>Pengumuman</h2>
-              <button onClick={() => onOpenAnnounceForm(cls.id)}
-                className="inline-flex items-center gap-1.5 rounded-2xl bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-700 transition-colors">
+              <Button type="submit" onClick={() => onOpenAnnounceForm(cls.id)}>
                 + Pengumuman
-              </button>
+              </Button>
             </div>
             {(() => {
               const clsAnnouncements = localAnnouncements[cls.id] ?? cls.announcements;
@@ -161,8 +161,8 @@ export default function TutorClassesSegment({
                     <div key={schedule.id} onClick={() => isPast && onOpenScheduleDetail(schedule)}
                       className={`flex items-center justify-between rounded-xl px-3 py-2.5 ${isPast ? "opacity-50 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" : ""} ${theme.dark ? "bg-slate-800" : "bg-slate-50"}`}>
                       <div className="flex items-center gap-3">
-                        <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${isPast ? "bg-slate-200" : "bg-blue-100"}`}>
-                          <Calendar size={18} className={isPast ? "text-slate-400" : "text-blue-600"} />
+                        <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${isPast ? "bg-slate-200" : "bg-primary-100"}`}>
+                          <Calendar size={18} className={isPast ? "text-slate-400" : "text-primary-600"} />
                         </div>
                         <div>
                           <p className={`text-sm font-semibold ${isPast ? theme.textMuted : theme.text}`}>
@@ -173,7 +173,7 @@ export default function TutorClassesSegment({
                             {schedule.date ? " · " : ""}{schedule.startTime}–{schedule.endTime}
                           </p>
                           {schedule.topic && (
-                            <p className={`text-xs font-semibold ${isPast ? "text-slate-400" : "text-blue-600"}`}>{schedule.topic}</p>
+                            <p className={`text-xs font-semibold ${isPast ? "text-slate-400" : "text-primary-600"}`}>{schedule.topic}</p>
                           )}
                           {isPast && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-semibold text-slate-500 mt-1">
@@ -185,14 +185,14 @@ export default function TutorClassesSegment({
                       <div className="flex items-center gap-2">
                         {schedule.meetLink && !isPast && cls.isOnline !== false && (
                           <a href={schedule.meetLink} target="_blank" rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 rounded-xl bg-blue-100 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-200 transition-colors">
+                            className="inline-flex items-center gap-1.5 rounded-xl bg-primary-100 px-3 py-2 text-xs font-semibold text-primary-700 hover:bg-primary-200 transition-colors">
                             <Video size={14} /> Meet
                           </a>
                         )}
                         <button
                           onClick={(e) => { e.stopPropagation(); if (!isPast) onStartEditSchedule(schedule, cls.id); }}
                           disabled={isPast}
-                          className={`rounded-xl border p-2 transition-colors ${isPast ? "border-slate-200 text-slate-300 cursor-not-allowed" : "border-slate-200 text-slate-500 hover:bg-blue-50 hover:text-blue-600"}`}>
+                          className={`rounded-xl border p-2 transition-colors ${isPast ? "border-slate-200 text-slate-300 cursor-not-allowed" : "border-slate-200 text-slate-500 hover:bg-primary-50 hover:text-primary-600"}`}>
                           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                           </svg>
@@ -217,19 +217,18 @@ export default function TutorClassesSegment({
                 {/* <h3 className={`font-bold ${theme.text}`}>Kurikulum</h3> */}
                   <div className="flex items-center gap-2">
                 <span className={`text-sm font-bold ${theme.text}`}>{cls.curriculum.name}</span>
-                <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+                <span className="inline-flex items-center rounded-full bg-primary-100 px-2 py-0.5 text-[10px] font-semibold text-primary-700">
                   {cls.curriculum.topics.length} topik
                 </span>
               </div>
-                <button
+                <Button
                   type="button"
                   onClick={() => {
                     if (cls.curriculum) onOpenRoadmap?.(cls.curriculum.id);
                   }}
-                  className="inline-flex items-center gap-1.5 rounded-2xl bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-700 transition-colors"
                 >
                   Lihat Roadmap  <ChevronRight size={14} />
-                </button>
+                </Button>
               </div>
             
             </div>

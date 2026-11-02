@@ -16,9 +16,20 @@ import {
   type Curriculum,
 } from "@/lib/api";
 import type { Theme, Segment } from "../student/_component/types";
-import { Home, BookOpen, X, ShoppingCart, Check, Users, Calendar } from "lucide-react";
-import Sidebar from "../student/_component/Sidebar";
-import Topbar from "../student/_component/Topbar";
+import { Home, BookOpen, ShoppingCart, Check, Users, Calendar } from "lucide-react";
+import { DashboardShell, type ShellNavSection } from "@/components/dashboard/DashboardShell";
+import { useDarkMode } from "@/components/dashboard/use-dark-mode";
+import { Button, EmptyState, Input, Modal, PageLoader, Select } from "@/components/ui";
+import { UserPlus } from "lucide-react";
+
+const PARENT_NAV: ShellNavSection[] = [
+  {
+    items: [
+      { key: "overview", label: "Beranda", icon: Home },
+      { key: "enrollment", label: "Enrollment", icon: BookOpen },
+    ],
+  },
+];
 
 const DAY_LABELS: Record<string, string> = {
   MONDAY: "Senin", TUESDAY: "Selasa", WEDNESDAY: "Rabu",
@@ -36,7 +47,7 @@ export default function ParentDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [dark, setDark] = useState(false);
+  const { dark, toggle: toggleDark } = useDarkMode();
   const [segment, setSegment] = useState<Segment>("overview");
 
   const [students, setStudents] = useState<StudentProfile[]>([]);
@@ -206,42 +217,35 @@ export default function ParentDashboard() {
   const weekSchedules = getThisWeekSchedules();
 
   if (loading) {
-    return (
-      <div className={`flex min-h-screen items-center justify-center ${theme.bg}`}>
-        <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   return (
-    <div className={`min-h-screen w-full ${theme.bg} font-sans`}>
-      <div className="flex">
-        <Sidebar theme={theme} segment={segment} onNavigate={go} title={`Parent ${user?.parentProfile?.fullName ?? ""}`} navItems={[
-          { key: "overview", label: "Home", icon: Home },
-          { key: "enrollment", label: "Enrollment", icon: BookOpen },
-        ]} user={{
-          studentProfile: selectedStudent ? { fullName: selectedStudent.fullName } : null,
-        }} />
-
-        <div className="flex-1 md:ml-64 min-w-0">
-          <Topbar theme={theme} segment={segment} onToggleDark={() => setDark((v) => !v)} onLogout={logout} onMenuClick={() => {}} />
-
-          <main className="px-4 sm:px-8 py-6 pb-10 max-w-6xl">
+    <DashboardShell
+      roleLabel="Orang Tua"
+      sections={PARENT_NAV}
+      activeKey={segment}
+      onNavigate={(key) => go(key as Segment)}
+      title={segment === "overview" ? "Beranda" : "Enrollment"}
+      subtitle={selectedStudent ? `Memantau ${selectedStudent.fullName}` : undefined}
+      user={{ name: user?.parentProfile?.fullName, email: user?.email }}
+      onLogout={logout}
+      dark={dark}
+      onToggleDark={toggleDark}
+      mobileNav={["overview", "enrollment"]}
+      contentClassName="max-w-6xl"
+    >
             {students.length === 0 ? (
-              <div className={`rounded-3xl p-8 text-center ${theme.card}`}>
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-                  <svg className="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                  </svg>
-                </div>
-                <h2 className={`text-lg font-bold ${theme.text}`}>Belum ada anak terdaftar</h2>
-                <p className={`mt-1 text-sm ${theme.textMuted}`}>Daftarkan anak untuk mulai belajar</p>
-                <button onClick={() => { setShowAdd(true); setError(""); }}
-                  className="mt-5 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
-                >
-                  + Daftarkan Anak
-                </button>
-              </div>
+              <EmptyState
+                icon={UserPlus}
+                title="Belum ada anak terdaftar"
+                description="Daftarkan anak untuk mulai belajar dan memantau jadwal serta progresnya."
+                action={
+                  <Button icon={<UserPlus size={16} />} onClick={() => { setShowAdd(true); setError(""); }}>
+                    Daftarkan Anak
+                  </Button>
+                }
+              />
             ) : segment === "overview" ? (
               <OverviewView
                 theme={theme}
@@ -260,9 +264,6 @@ export default function ParentDashboard() {
                 onSelectClass={setSelectedDetailClass}
               />
             )}
-          </main>
-        </div>
-      </div>
 
       <AddStudentModal
         show={showAdd}
@@ -285,7 +286,7 @@ export default function ParentDashboard() {
           onClose={() => setSelectedDetailClass(null)}
         />
       )}
-    </div>
+    </DashboardShell>
   );
 }
 
@@ -308,8 +309,8 @@ function OverviewView({ theme, students, selectedStudentId, setSelectedStudentId
             <button key={s.id} onClick={() => setSelectedStudentId(s.id)}
               className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
                 selectedStudentId === s.id
-                  ? "bg-blue-600 text-white shadow-sm shadow-blue-600/30"
-                  : `${theme.card} ${theme.text} border ${theme.border} hover:bg-blue-50 hover:text-blue-700`
+                  ? "bg-primary-600 text-white shadow-sm shadow-primary-600/30"
+                  : `${theme.card} ${theme.text} border ${theme.border} hover:bg-primary-50 hover:text-primary-700`
               }`}
             >
               {s.nickname}
@@ -317,7 +318,7 @@ function OverviewView({ theme, students, selectedStudentId, setSelectedStudentId
             </button>
           ))}
           <button onClick={onShowAdd}
-            className="rounded-xl border border-dashed border-slate-300 px-4 py-2 text-sm font-semibold text-slate-400 transition hover:border-blue-400 hover:text-blue-600"
+            className="rounded-xl border border-dashed border-slate-300 px-4 py-2 text-sm font-semibold text-slate-400 transition hover:border-primary-400 hover:text-primary-600"
           >
             + Tambah
           </button>
@@ -325,9 +326,9 @@ function OverviewView({ theme, students, selectedStudentId, setSelectedStudentId
       </div>
 
       {selectedStudent && (
-        <div className={`mb-6 rounded-3xl p-5 ${theme.card}`}>
+        <div className={`mb-6 rounded-2xl p-5 ${theme.card}`}>
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 text-xl font-extrabold text-blue-700">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-100 text-xl font-extrabold text-primary-700">
               {selectedStudent.nickname.charAt(0)}
             </div>
             <div>
@@ -359,15 +360,15 @@ function OverviewView({ theme, students, selectedStudentId, setSelectedStudentId
       <div className="space-y-4">
         <h3 className={`text-lg font-bold ${theme.text}`}>Jadwal Minggu Ini</h3>
         {weekSchedules.length === 0 ? (
-          <div className={`rounded-3xl p-6 text-center ${theme.card}`}>
+          <div className={`rounded-2xl p-6 text-center ${theme.card}`}>
             <p className={`text-sm ${theme.textMuted}`}>Tidak ada jadwal minggu ini</p>
           </div>
         ) : (
           weekSchedules.map((s) => (
-            <div key={s.id} className={`rounded-3xl p-4 ${theme.card}`}>
+            <div key={s.id} className={`rounded-2xl p-4 ${theme.card}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-100 text-primary-700">
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                     </svg>
@@ -469,7 +470,7 @@ function EnrollmentView({ theme, students, onSelectClass }: {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+        <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-primary-600 border-t-transparent" />
       </div>
     );
   }
@@ -485,7 +486,7 @@ function EnrollmentView({ theme, students, onSelectClass }: {
           <div key={student.id}>
             <div className="mb-4 flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-sm font-extrabold text-blue-700">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-100 text-sm font-extrabold text-primary-700">
                   {student.nickname.charAt(0)}
                 </div>
                 <div>
@@ -493,10 +494,9 @@ function EnrollmentView({ theme, students, onSelectClass }: {
                   <p className={`text-xs ${theme.textMuted}`}>{student.fullName}</p>
                 </div>
               </div>
-              <button onClick={() => { setShowEnroll(student.id); setEnrollForm({ curriculumId: "", classId: "" }); setEnrollError(""); }}
-                className="shrink-0 rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700">
+              <Button type="submit" onClick={() => { setShowEnroll(student.id); setEnrollForm({ curriculumId: "", classId: "" }); setEnrollError(""); }} className="shrink-0">
                 + Enroll
-              </button>
+              </Button>
             </div>
 
             {!hasEnrollments && (
@@ -525,7 +525,7 @@ function EnrollmentView({ theme, students, onSelectClass }: {
                             <div>
                               <h3 className={`text-lg font-extrabold ${theme.text}`}>{cls.name}</h3>
                               <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                                <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-semibold text-blue-700">
+                                <span className="inline-flex items-center rounded-full bg-primary-100 px-2.5 py-0.5 text-[10px] font-semibold text-primary-700">
                                   {cls.category?.label ?? "-"}
                                 </span>
                                 <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-[10px] font-semibold text-purple-700">
@@ -546,14 +546,14 @@ function EnrollmentView({ theme, students, onSelectClass }: {
                           </div>
                           <div className={`rounded-xl p-3 ${theme.dark ? "bg-slate-800" : "bg-slate-50"}`}>
                             <div className="flex items-center gap-1.5 text-xs font-semibold mb-1">
-                              <Calendar size={13} className="text-blue-600" />
+                              <Calendar size={13} className="text-primary-600" />
                               <span className={theme.textMuted}>Progress Kelas</span>
                             </div>
                             <div className={`h-2.5 w-full overflow-hidden rounded-full ${theme.dark ? "bg-slate-700" : "bg-slate-200"}`}>
-                              <div className="h-full rounded-full bg-blue-600 transition-all"
+                              <div className="h-full rounded-full bg-primary-600 transition-all"
                                 style={{ width: `${totalTopics > 0 ? Math.min(100, (historyMeetings / totalTopics) * 100) : 0}%` }} />
                             </div>
-                            <p className="mt-1 text-[10px] font-semibold text-blue-600">
+                            <p className="mt-1 text-[10px] font-semibold text-primary-600">
                               sudah berjalan {historyMeetings} dari {totalTopics} topics
                             </p>
                           </div>
@@ -588,7 +588,7 @@ function EnrollmentView({ theme, students, onSelectClass }: {
 
                         {cls.tutors && cls.tutors.length > 0 && (
                           <div className={`mt-4 pt-4 border-t ${theme.border} flex items-center gap-3`}>
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700">
                               {cls.tutors[0].fullName?.charAt(0) ?? "T"}
                             </div>
                             <div>
@@ -634,61 +634,48 @@ function EnrollmentView({ theme, students, onSelectClass }: {
       })}
 
       {showEnroll && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-          <div className="fixed inset-0 bg-black/40" onClick={() => setShowEnroll(null)} />
-          <div className="relative w-full max-w-md rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-slate-800">Enroll Siswa</h2>
-              <button onClick={() => setShowEnroll(null)} className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600">
-                <X size={20} />
-              </button>
-            </div>
+        <Modal open onClose={() => setShowEnroll(null)} title="Enroll Siswa" size="md">
 
             <form onSubmit={handleEnroll}>
               <div className="mb-3">
                 <label className="mb-1 block text-sm font-medium text-slate-700">Siswa</label>
-                <select value={showEnroll} onChange={(e) => setShowEnroll(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                <Select value={showEnroll} onChange={(e) => setShowEnroll(e.target.value)}
                 >
                   {students.map((s) => (
                     <option key={s.id} value={s.id}>{s.nickname} ({s.fullName})</option>
                   ))}
-                </select>
+                </Select>
               </div>
               <div className="mb-3">
                 <label className="mb-1 block text-sm font-medium text-slate-700">Kurikulum</label>
-                <select value={enrollForm.curriculumId} onChange={(e) => setEnrollForm((f) => ({ ...f, curriculumId: e.target.value, classId: "" }))} required
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                <Select value={enrollForm.curriculumId} onChange={(e) => setEnrollForm((f) => ({ ...f, curriculumId: e.target.value, classId: "" }))} required
                 >
                   <option value="">-- Pilih Kurikulum --</option>
                   {curriculums.map((c) => (
                     <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
-                </select>
+                </Select>
               </div>
               <div className="mb-3">
                 <label className="mb-1 block text-sm font-medium text-slate-700">Kelas <span className="text-xs font-normal text-slate-400">(opsional)</span></label>
-                <select value={enrollForm.classId} onChange={(e) => setEnrollForm((f) => ({ ...f, classId: e.target.value }))}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                <Select value={enrollForm.classId} onChange={(e) => setEnrollForm((f) => ({ ...f, classId: e.target.value }))}
                 >
                   <option value="">-- Tanpa kelas --</option>
                   {(selectedCurriculum as Curriculum & { classes?: Class[] })?.classes?.map((cls) => (
                     <option key={cls.id} value={cls.id}>{cls.name}</option>
                   ))}
-                </select>
+                </Select>
                 {!(selectedCurriculum as Curriculum & { classes?: Class[] })?.classes && <p className="mt-1 text-xs text-slate-400">Pilih kurikulum untuk melihat kelas</p>}
               </div>
 
               {enrollError && <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-700">{enrollError}</div>}
 
-              <button type="submit" disabled={enrolling}
-                className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50"
-              >
+              <Button type="submit" disabled={enrolling}
+               className="w-full">
                 {enrolling ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Simpan"}
-              </button>
+              </Button>
             </form>
-          </div>
-        </div>
+        </Modal>
       )}
     </div>
   );
@@ -709,26 +696,16 @@ function AddStudentModal({ show, onClose, onAdd, form, setForm, emailStatus, set
 }) {
   if (!show) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-      <div className="fixed inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative w-full max-w-md rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-slate-800">Daftarkan Anak</h2>
-          <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600">
-            <X size={20} />
-          </button>
-        </div>
+    <Modal open onClose={onClose} title="Daftarkan Anak" size="md">
 
         <form onSubmit={onAdd}>
           <div className="mb-3">
             <label className="mb-1 block text-sm font-medium text-slate-700">Nama Lengkap</label>
-            <input value={form.fullName} onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))} placeholder="Nama lengkap anak" required
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+            <Input value={form.fullName} onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))} placeholder="Nama lengkap anak" required />
           </div>
           <div className="mb-3">
             <label className="mb-1 block text-sm font-medium text-slate-700">Nama Panggilan</label>
-            <input value={form.nickname} onChange={(e) => setForm((f) => ({ ...f, nickname: e.target.value }))} placeholder="Nama panggilan" required
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+            <Input value={form.nickname} onChange={(e) => setForm((f) => ({ ...f, nickname: e.target.value }))} placeholder="Nama panggilan" required />
           </div>
           <div className="mb-3">
             <label className="mb-1 block text-sm font-medium text-slate-700">Email</label>
@@ -747,7 +724,7 @@ function AddStudentModal({ show, onClose, onAdd, form, setForm, emailStatus, set
               }}
               placeholder="email@contoh.com" required
               className={`w-full rounded-xl border bg-slate-50 px-4 py-3 text-sm outline-none transition focus:ring-2 ${
-                emailStatus === "taken" ? "border-red-400 focus:border-red-400 focus:ring-red-100" : emailStatus === "available" ? "border-green-400 focus:border-green-400 focus:ring-green-100" : "border-slate-200 focus:border-blue-400 focus:ring-blue-100"
+                emailStatus === "taken" ? "border-red-400 focus:border-red-400 focus:ring-red-100" : emailStatus === "available" ? "border-green-400 focus:border-green-400 focus:ring-green-100" : "border-slate-200 focus:border-primary-400 focus:ring-primary-100"
               }`} />
             {emailStatus === "checking" && <p className="mt-1 text-xs text-slate-400">Memeriksa email...</p>}
             {emailStatus === "available" && <p className="mt-1 text-xs text-green-600">Email tersedia</p>}
@@ -756,36 +733,31 @@ function AddStudentModal({ show, onClose, onAdd, form, setForm, emailStatus, set
           </div>
           <div className="mb-3">
             <label className="mb-1 block text-sm font-medium text-slate-700">Password</label>
-            <input type="password" value={form.password} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, password: e.target.value }))} placeholder="Minimal 8 karakter" required
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+            <Input type="password" value={form.password} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, password: e.target.value }))} placeholder="Minimal 8 karakter" required />
           </div>
           <div className="mb-3">
             <label className="mb-1 block text-sm font-medium text-slate-700">Tanggal Lahir</label>
-            <input type="date" value={form.birthDate} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, birthDate: e.target.value }))} required
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+            <Input type="date" value={form.birthDate} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, birthDate: e.target.value }))} required />
           </div>
           <div className="mb-4">
             <label className="mb-1 block text-sm font-medium text-slate-700">Kategori</label>
-            <select value={form.categoryId} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+            <Select value={form.categoryId} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
             >
               <option value="">-- Pilih Kategori --</option>
               {categories.map((cat: Category) => (
                 <option key={cat.id} value={cat.id}>{cat.label}</option>
               ))}
-            </select>
+            </Select>
           </div>
 
           {error && <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-700">{error}</div>}
 
-          <button type="submit" disabled={saving || emailStatus === "taken" || emailStatus === "checking"}
-            className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50"
-          >
+          <Button type="submit" disabled={saving || emailStatus === "taken" || emailStatus === "checking"}
+           className="w-full">
             {saving ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> : "Daftarkan"}
-          </button>
+          </Button>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 }
 
@@ -796,24 +768,14 @@ function ClassDetailModal({ theme, cls, onClose }: {
 }) {
   const topics = [...(cls.curriculum?.topics ?? [])].sort((a, b) => a.order - b.order);
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4 pt-10 overflow-y-auto">
-      <div className={`relative w-full max-w-2xl rounded-3xl border ${theme.border} ${theme.card} p-6 shadow-xl mb-10`}>
-        <div className="flex items-center justify-between mb-5">
-          <div>
-            <h2 className={`text-xl font-extrabold ${theme.text}`}>{cls.name}</h2>
-            <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-              <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-semibold text-blue-700">
+    <Modal open onClose={onClose} title={<>{cls.name}</>} size="lg" closeOnBackdrop={false} description={<><div className="flex items-center gap-1.5 mt-1 flex-wrap">
+              <span className="inline-flex items-center rounded-full bg-primary-100 px-2.5 py-0.5 text-[10px] font-semibold text-primary-700">
                 {cls.category?.label ?? "-"}
               </span>
               <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-[10px] font-semibold text-purple-700">
                 {TYPE_LABELS[cls.type] ?? cls.type}
               </span>
-            </div>
-          </div>
-          <button onClick={onClose} className={`rounded-xl p-1.5 ${theme.dark ? "hover:bg-slate-700" : "hover:bg-slate-200"} transition`}>
-            <X size={20} className={theme.text} />
-          </button>
-        </div>
+            </div></>}>
 
         {topics.length > 0 && (
           <div className={`border-t ${theme.border} pt-5`}>
@@ -835,7 +797,7 @@ function ClassDetailModal({ theme, cls, onClose }: {
 
         {cls.tutors && cls.tutors.length > 0 && (
           <div className={`mt-5 pt-5 border-t ${theme.border} flex items-center gap-3`}>
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-100 text-sm font-bold text-primary-700">
               {cls.tutors[0].fullName?.charAt(0) ?? "T"}
             </div>
             <div>
@@ -844,7 +806,6 @@ function ClassDetailModal({ theme, cls, onClose }: {
             </div>
           </div>
         )}
-      </div>
-    </div>
+    </Modal>
   );
 }

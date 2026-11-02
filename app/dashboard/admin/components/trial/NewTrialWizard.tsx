@@ -1,7 +1,8 @@
 "use client";
 
+import { Button, Input, Modal, Select } from "@/components/ui";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { X, ChevronLeft, ChevronRight, UserPlus, BookOpen, Clock, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, UserPlus, BookOpen, Clock, CheckCircle2 } from "lucide-react";
 import { api, checkEmail, type Category, type Curriculum, type ParentProfile, type TutorSlot } from "@/lib/api";
 
 type TutorOption = { id: string; fullName: string };
@@ -218,17 +219,7 @@ export default function NewTrialWizard({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4 pt-10 overflow-y-auto">
-      <div className="w-full max-w-2xl rounded-3xl border border-slate-200 bg-white p-6 shadow-xl mb-10">
-        <div className="mb-6 flex items-start justify-between">
-          <div>
-            <h2 className="text-lg font-extrabold tracking-tight text-slate-900">Buat Akun Trial</h2>
-            <p className="mt-0.5 text-xs text-slate-500">Parent → Siswa → Enrollment trial → Kelas & Jadwal</p>
-          </div>
-          <button onClick={onClose} className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
-            <X size={20} />
-          </button>
-        </div>
+    <Modal open onClose={onClose} title="Buat Akun Trial" size="lg" closeOnBackdrop={false} description={<><p className="mt-0.5 text-xs text-slate-500">Parent → Siswa → Enrollment trial → Kelas & Jadwal</p></>}>
 
         <div className="mb-6 flex items-center gap-2">
           {STEPS.map((label, i) => {
@@ -240,12 +231,12 @@ export default function NewTrialWizard({
                 <div className="flex flex-col items-center gap-1 flex-1">
                   <span className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${
                     done ? "bg-emerald-100 text-emerald-600"
-                      : active ? "bg-blue-600 text-white"
+                      : active ? "bg-primary-600 text-white"
                         : "bg-slate-100 text-slate-400"
                   }`}>
                     {done ? <CheckCircle2 size={14} /> : n}
                   </span>
-                  <span className={`text-[10px] font-semibold ${active ? "text-blue-700" : "text-slate-400"}`}>{label}</span>
+                  <span className={`text-[10px] font-semibold ${active ? "text-primary-700" : "text-slate-400"}`}>{label}</span>
                 </div>
                 {n < STEPS.length && <div className={`h-0.5 flex-1 rounded-full ${step > n ? "bg-emerald-200" : "bg-slate-100"}`} />}
               </div>
@@ -259,20 +250,19 @@ export default function NewTrialWizard({
               <div className="flex gap-2">
                 <button type="button" onClick={() => setParentMode("select")}
                   className={`flex-1 rounded-xl border-2 px-3 py-2.5 text-sm font-bold transition-colors ${
-                    parentMode === "select" ? "border-blue-500 bg-blue-50 text-blue-700" : "border-slate-200 bg-slate-50 text-slate-500"
+                    parentMode === "select" ? "border-primary-500 bg-primary-50 text-primary-700" : "border-slate-200 bg-slate-50 text-slate-500"
                   }`}>Pilih Orang Tua</button>
                 <button type="button" onClick={() => setParentMode("create")}
                   className={`flex-1 rounded-xl border-2 px-3 py-2.5 text-sm font-bold transition-colors ${
-                    parentMode === "create" ? "border-blue-500 bg-blue-50 text-blue-700" : "border-slate-200 bg-slate-50 text-slate-500"
+                    parentMode === "create" ? "border-primary-500 bg-primary-50 text-primary-700" : "border-slate-200 bg-slate-50 text-slate-500"
                   }`}>Buat Baru</button>
               </div>
 
               {parentMode === "select" ? (
                 <div>
-                  <label className="mb-1.5 block text-sm font-semibold text-slate-700">Cari Orang Tua</label>
-                  <input value={parentSearch} onChange={(e) => setParentSearch(e.target.value)}
-                    placeholder="Cari nama orang tua..."
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Cari Orang Tua</label>
+                  <Input value={parentSearch} onChange={(e) => setParentSearch(e.target.value)}
+                    placeholder="Cari nama orang tua..." />
                   {parentSearch && (
                     <div className="mt-2 max-h-48 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-sm">
                       {filteredParents.length === 0 ? (
@@ -280,8 +270,8 @@ export default function NewTrialWizard({
                       ) : (
                         filteredParents.map((p) => (
                           <button key={p.id} onClick={() => setSelectedParentId(p.id)}
-                            className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm hover:bg-blue-50">
-                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-100 text-[10px] font-bold text-blue-700">
+                            className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm hover:bg-primary-50">
+                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary-100 text-[10px] font-bold text-primary-700">
                               {p.fullName.charAt(0)}
                             </div>
                             <div>
@@ -298,8 +288,7 @@ export default function NewTrialWizard({
                 <div className="space-y-3">
                   <div>
                     <label className="mb-1 block text-xs font-semibold text-slate-600">Nama Lengkap</label>
-                    <input value={parentName} onChange={(e) => setParentName(e.target.value)} required
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                    <Input value={parentName} onChange={(e) => setParentName(e.target.value)} required />
                   </div>
                   <div>
                     <label className="mb-1 block text-xs font-semibold text-slate-600">Email</label>
@@ -307,20 +296,18 @@ export default function NewTrialWizard({
                       className={`w-full rounded-xl border bg-slate-50 px-4 py-3 text-sm outline-none focus:ring-2 ${
                         parentEmailStatus === "taken" ? "border-red-400 focus:border-red-400 focus:ring-red-100"
                           : parentEmailStatus === "available" ? "border-green-400 focus:border-green-400 focus:ring-green-100"
-                            : "border-slate-200 focus:border-blue-400 focus:ring-blue-100"
+                            : "border-slate-200 focus:border-primary-400 focus:ring-primary-100"
                       }`} />
                     {parentEmailStatus === "available" && <p className="mt-1 text-xs text-green-600">Email tersedia</p>}
                     {parentEmailStatus === "taken" && <p className="mt-1 text-xs text-red-600">Email sudah digunakan</p>}
                   </div>
                   <div>
                     <label className="mb-1 block text-xs font-semibold text-slate-600">No. HP</label>
-                    <input value={parentPhone} onChange={(e) => setParentPhone(e.target.value)} required
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                    <Input value={parentPhone} onChange={(e) => setParentPhone(e.target.value)} required />
                   </div>
                   <div>
                     <label className="mb-1 block text-xs font-semibold text-slate-600">Password</label>
-                    <input type="password" value={parentPassword} onChange={(e) => setParentPassword(e.target.value)} required minLength={8}
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                    <Input type="password" value={parentPassword} onChange={(e) => setParentPassword(e.target.value)} required minLength={8} />
                   </div>
                 </div>
               )}
@@ -331,41 +318,37 @@ export default function NewTrialWizard({
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-semibold text-slate-700">Nama Lengkap <span className="text-red-500">*</span></label>
-                  <input value={fullName} onChange={(e) => setFullName(e.target.value)} required
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Nama Lengkap <span className="text-red-500">*</span></label>
+                  <Input value={fullName} onChange={(e) => setFullName(e.target.value)} required />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-semibold text-slate-700">Nama Panggilan <span className="text-red-500">*</span></label>
-                  <input value={nickname} onChange={(e) => setNickname(e.target.value)} required
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Nama Panggilan <span className="text-red-500">*</span></label>
+                  <Input value={nickname} onChange={(e) => setNickname(e.target.value)} required />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-semibold text-slate-700">Tanggal Lahir <span className="text-red-500">*</span></label>
-                  <input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} required
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Tanggal Lahir <span className="text-red-500">*</span></label>
+                  <Input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} required />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-semibold text-slate-700">Kategori <span className="text-red-500">*</span></label>
-                  <select value={categoryId} onChange={(e) => { setCategoryId(e.target.value); setSelectedCurriculumId(""); }} required
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Kategori <span className="text-red-500">*</span></label>
+                  <Select value={categoryId} onChange={(e) => { setCategoryId(e.target.value); setSelectedCurriculumId(""); }} required>
                     <option value="">-- Pilih Kategori --</option>
                     {categories.map((cat) => (
                       <option key={cat.id} value={cat.id}>{cat.label}</option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-semibold text-slate-700">Email</label>
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                   placeholder={suggestedEmail || "email@contoh.com"}
                   className={`w-full rounded-xl border bg-slate-50 px-4 py-3 text-sm outline-none focus:ring-2 ${
                     studentEmailStatus === "taken" ? "border-red-400 focus:border-red-400 focus:ring-red-100"
                       : studentEmailStatus === "available" ? "border-green-400 focus:border-green-400 focus:ring-green-100"
-                        : "border-slate-200 focus:border-blue-400 focus:ring-blue-100"
+                        : "border-slate-200 focus:border-primary-400 focus:ring-primary-100"
                   }`} />
                 {!email && suggestedEmail && <p className="mt-1 text-xs text-slate-400">Kosongkan untuk pakai {suggestedEmail}</p>}
                 {studentEmailStatus === "available" && <p className="mt-1 text-xs text-green-600">Email tersedia</p>}
@@ -373,14 +356,12 @@ export default function NewTrialWizard({
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-semibold text-slate-700">Password <span className="text-red-500">*</span></label>
-                  <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Password <span className="text-red-500">*</span></label>
+                  <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-semibold text-slate-700">Sekolah (opsional)</label>
-                  <input value={school} onChange={(e) => setSchool(e.target.value)} placeholder="Nama sekolah"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Sekolah (opsional)</label>
+                  <Input value={school} onChange={(e) => setSchool(e.target.value)} placeholder="Nama sekolah" />
                 </div>
               </div>
             </div>
@@ -388,7 +369,7 @@ export default function NewTrialWizard({
 
           {step === 3 && (
             <div className="space-y-3">
-              <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4 text-xs text-blue-700">
+              <div className="rounded-2xl border border-primary-100 bg-primary-50 p-4 text-xs text-primary-700">
                 Kurikulum trial yang tersedia untuk <strong>{categoryLabel || "kategori terpilih"}</strong>. Siswa akan mendapat
                 <strong> 1 pertemuan gratis</strong> (totalMeetPurchased = 1).
               </div>
@@ -400,16 +381,16 @@ export default function NewTrialWizard({
                 trialCurriculums.map((c) => (
                   <button key={c.id} onClick={() => setSelectedCurriculumId(c.id)}
                     className={`flex w-full items-center gap-3 rounded-2xl border-2 px-4 py-3.5 text-left transition-colors ${
-                      selectedCurriculumId === c.id ? "border-blue-500 bg-blue-50" : "border-slate-200 bg-slate-50 hover:border-slate-300"
+                      selectedCurriculumId === c.id ? "border-primary-500 bg-primary-50" : "border-slate-200 bg-slate-50 hover:border-slate-300"
                     }`}>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100">
-                      <BookOpen size={18} className="text-blue-600" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-100">
+                      <BookOpen size={18} className="text-primary-600" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-bold text-slate-900">{c.name}</p>
                       <p className="text-[11px] text-slate-500">{c.topics?.length ?? 0} topik · 1 pertemuan trial</p>
                     </div>
-                    {selectedCurriculumId === c.id && <CheckCircle2 size={20} className="shrink-0 text-blue-600" />}
+                    {selectedCurriculumId === c.id && <CheckCircle2 size={20} className="shrink-0 text-primary-600" />}
                   </button>
                 ))
               )}
@@ -419,33 +400,31 @@ export default function NewTrialWizard({
           {step === 4 && (
             <div className="space-y-4">
               <div>
-                <label className="mb-1.5 block text-sm font-semibold text-slate-700">Nama Kelas</label>
-                <input value={selectedCurriculum ? `${selectedCurriculum.name} - Trial` : ""} readOnly
-                  className="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-600" />
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Nama Kelas</label>
+                <Input value={selectedCurriculum ? `${selectedCurriculum.name} - Trial` : ""} readOnly className="bg-slate-100" />
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm font-semibold text-slate-700">Tutor <span className="text-red-500">*</span></label>
-                <select value={selectedTutorId} onChange={(e) => {
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Tutor <span className="text-red-500">*</span></label>
+                <Select value={selectedTutorId} onChange={(e) => {
                   setSelectedTutorId(e.target.value);
                   setSelectedSlot(null);
                   if (e.target.value) setSlotsLoading(true);
                   else setTutorSlots([]);
-                }}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                }}>
                   <option value="">-- Pilih tutor --</option>
                   {tutors.map((t) => (
                     <option key={t.id} value={t.id}>{t.fullName}</option>
                   ))}
-                </select>
+                </Select>
               </div>
 
               {selectedTutorId && (
                 <div>
-                  <label className="mb-1.5 block text-sm font-semibold text-slate-700">Jam Kelas <span className="text-red-500">*</span></label>
+                  <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Jam Kelas <span className="text-red-500">*</span></label>
                   {slotsLoading ? (
                     <div className="flex items-center justify-center py-8">
-                      <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+                      <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-primary-600 border-t-transparent" />
                     </div>
                   ) : (
                     <div className="max-h-64 space-y-2 overflow-y-auto rounded-xl border border-slate-200 p-3">
@@ -465,7 +444,7 @@ export default function NewTrialWizard({
                                   <button key={start} type="button"
                                     onClick={() => setSelectedSlot({ dayOfWeek: day, startTime: start, endTime: slot.endTime })}
                                     className={`rounded-lg px-2.5 py-1.5 text-[11px] font-semibold transition-colors ${
-                                      isSel ? "bg-blue-600 text-white" : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                                      isSel ? "bg-primary-600 text-white" : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
                                     }`}>
                                     {start}
                                   </button>
@@ -484,9 +463,8 @@ export default function NewTrialWizard({
               )}
 
               <div>
-                <label className="mb-1.5 block text-sm font-semibold text-slate-700">Tanggal Mulai <span className="text-red-500">*</span></label>
-                <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Tanggal Mulai <span className="text-red-500">*</span></label>
+                <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
               </div>
 
               {selectedCurriculum && (
@@ -516,13 +494,11 @@ export default function NewTrialWizard({
           </button>
 
           {step < 4 ? (
-            <button type="button" onClick={goNext} disabled={!canNext}
-              className="inline-flex items-center gap-1 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-40 transition-colors">
+            <Button type="button" onClick={goNext} disabled={!canNext}>
               Lanjut <ChevronRight size={16} />
-            </button>
+            </Button>
           ) : (
-            <button type="button" onClick={handleSubmit} disabled={!step4Valid || submitting}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-40 transition-colors">
+            <Button type="button" onClick={handleSubmit} disabled={!step4Valid || submitting}>
               {submitting ? (
                 <>
                   <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -533,10 +509,9 @@ export default function NewTrialWizard({
                   <UserPlus size={16} /> Buat Trial
                 </>
               )}
-            </button>
+            </Button>
           )}
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }

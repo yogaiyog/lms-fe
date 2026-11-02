@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, Input } from "@/components/ui";
 import { type Table, flexRender } from "@tanstack/react-table";
 import { type RequestClass } from "@/lib/api";
 import { DAY_LABELS, STATUS_LABELS } from "../../constants";
@@ -13,11 +14,10 @@ type Props = {
 
 export default function RequestsTable({ table, globalFilter, onGlobalFilterChange, onProcess }: Props) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white shadow-sm">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="px-4 pt-4">
-        <input value={globalFilter} onChange={(e) => onGlobalFilterChange(e.target.value)}
+        <Input value={globalFilter} onChange={(e) => onGlobalFilterChange(e.target.value)}
           placeholder="Cari request..."
-          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
         />
       </div>
       {table.getRowModel().rows.length === 0 ? (
@@ -58,10 +58,9 @@ export default function RequestsTable({ table, globalFilter, onGlobalFilterChang
                   </td>
                   <td className="px-3 py-3">
                     {row.original.status === "PENDING" ? (
-                      <button onClick={() => onProcess(row.original)}
-                        className="rounded-2xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 transition-colors">
+                      <Button type="submit" onClick={() => onProcess(row.original)}>
                         Proses
-                      </button>
+                      </Button>
                     ) : (
                       <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
                         row.original.status === "APPROVED" ? "bg-emerald-100 text-emerald-700" :

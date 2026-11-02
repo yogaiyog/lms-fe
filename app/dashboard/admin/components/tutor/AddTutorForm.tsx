@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, Input, Select, Textarea } from "@/components/ui";
 import { useState, type FormEvent } from "react";
 
 const DAY_LABELS = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
@@ -37,62 +38,53 @@ export default function AddTutorForm({ registering, registerError, onSubmit }: P
   }
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-6 sm:p-7">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 sm:p-7">
       <h2 className="mb-6 text-lg font-extrabold tracking-tight text-slate-900">Tambah Tutor Baru</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Nama Lengkap <span className="text-red-500">*</span></label>
-          <input value={fullName} onChange={(e) => setFullName(e.target.value)} required
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+          <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Nama Lengkap <span className="text-red-500">*</span></label>
+          <Input value={fullName} onChange={(e) => setFullName(e.target.value)} required />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Email <span className="text-red-500">*</span></label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+          <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Email <span className="text-red-500">*</span></label>
+          <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Password <span className="text-red-500">*</span></label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+          <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Password <span className="text-red-500">*</span></label>
+          <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">No. HP <span className="text-red-500">*</span></label>
-          <input value={phone} onChange={(e) => setPhone(e.target.value)} required
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+          <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">No. HP <span className="text-red-500">*</span></label>
+          <Input value={phone} onChange={(e) => setPhone(e.target.value)} required />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Link Meet Default</label>
-          <input type="url" value={meetLink} onChange={(e) => setMeetLink(e.target.value)} placeholder="https://meet.google.com/..."
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+          <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Link Meet Default</label>
+          <Input type="url" value={meetLink} onChange={(e) => setMeetLink(e.target.value)} placeholder="https://meet.google.com/..." />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Hari Libur 1</label>
-          <select value={dayoff1} onChange={(e) => setDayoff1(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+          <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Hari Libur 1</label>
+          <Select value={dayoff1} onChange={(e) => setDayoff1(e.target.value)}
           >
             <option value="">-- Tidak ada --</option>
             {DAY_LABELS.map((label, i) => <option key={i} value={i}>{label}</option>)}
-          </select>
+          </Select>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Hari Libur 2</label>
-          <select value={dayoff2} onChange={(e) => setDayoff2(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+          <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Hari Libur 2</label>
+          <Select value={dayoff2} onChange={(e) => setDayoff2(e.target.value)}
           >
             <option value="">-- Tidak ada --</option>
             {DAY_LABELS.map((label, i) => <option key={i} value={i}>{label}</option>)}
-          </select>
+          </Select>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Bio</label>
-          <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3}
-            className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+          <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Bio</label>
+          <Textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3} className="resize-none" />
         </div>
         {registerError && <div className="rounded-2xl bg-red-50 p-3 text-sm font-semibold text-red-700">{registerError}</div>}
-        <button type="submit" disabled={registering}
-          className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 disabled:opacity-50 transition-colors">
+        <Button type="submit" disabled={registering} className="w-full">
           {registering ? <span className="inline-flex items-center gap-2"><span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> Mendaftarkan...</span> : "Tambah Tutor"}
-        </button>
+        </Button>
       </form>
     </div>
   );

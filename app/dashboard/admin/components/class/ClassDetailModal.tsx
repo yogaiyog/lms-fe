@@ -1,5 +1,6 @@
 "use client";
 
+import { Alert, Button, Input, Modal } from "@/components/ui";
 import { useState, useMemo } from "react";
 import { api, type Class, type StudentProfile, type Schedule } from "@/lib/api";
 import { CATEGORY_LABELS, CLASS_TYPE_LABELS, DAY_LABELS } from "../../constants";
@@ -129,23 +130,30 @@ export default function ClassDetailModal({
     });
   }, [shiftConfirmId, detailClass.schedules]);
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-      <div className="fixed inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl border border-slate-200">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-extrabold tracking-tight text-slate-900">Detail Kelas</h2>
-          <button onClick={onClose} className="rounded-xl p-1.5 text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-            <X size={20} />
-          </button>
-        </div>
-
-        <div className="mb-4 grid grid-cols-4 gap-3 text-xs text-slate-500">
+    <>
+      <Modal
+        open
+        onClose={onClose}
+        title="Detail Kelas"
+        description={detailClass.name}
+        size="2xl"
+        closeOnBackdrop={false}
+        footer={
+          <>
+            <Button variant="secondary" onClick={onClose} disabled={detailSaving}>Tutup</Button>
+            <Button onClick={onSave} loading={detailSaving}>
+              {detailSaving ? "Menyimpan…" : "Simpan Perubahan"}
+            </Button>
+          </>
+        }
+      >
+        <div className="mb-4 grid grid-cols-2 gap-3 text-xs text-slate-500 sm:grid-cols-4">
           <div className="rounded-xl bg-slate-50 p-3">
             <span className="block font-semibold text-slate-700">Tipe</span>
             <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-bold ${
               detailClass.type === "PRIVATE" ? "bg-purple-100 text-purple-700"
               : detailClass.type === "MAKEUP" ? "bg-amber-100 text-amber-700"
-              : "bg-blue-100 text-blue-700"
+              : "bg-primary-100 text-primary-700"
             }`}>
               {CLASS_TYPE_LABELS[detailClass.type] ?? detailClass.type}
             </span>
@@ -165,13 +173,12 @@ export default function ClassDetailModal({
         </div>
 
         <div className="mb-3">
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Nama Kelas</label>
-          <input value={detailClassName} onChange={(e) => onDetailClassNameChange(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+          <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Nama Kelas</label>
+          <Input value={detailClassName} onChange={(e) => onDetailClassNameChange(e.target.value)} />
         </div>
 
         <div className="mb-4">
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+          <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
             Tutor {detailTutorIds.length > 0 && <span className="font-normal text-slate-400">({detailTutorIds.length})</span>}
           </label>
           {detailTutorIds.length > 0 && (
@@ -192,18 +199,17 @@ export default function ClassDetailModal({
           )}
           <div className="flex gap-2">
             <select value={detailAddingTutorId} onChange={(e) => setDetailAddingTutorId(e.target.value)}
-              className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
             >
               <option value="">-- Tambah tutor --</option>
               {tutors.filter((t) => !detailTutorIds.includes(t.id)).map((t) => (
                 <option key={t.id} value={t.id}>{t.fullName}</option>
               ))}
             </select>
-            <button onClick={handleAddTutor} disabled={!detailAddingTutorId || detailSaving}
-              className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            <Button type="submit" onClick={handleAddTutor} disabled={!detailAddingTutorId || detailSaving}
             >
               {detailSaving ? "..." : "+"}
-            </button>
+            </Button>
           </div>
           {tutorToast && (
             <div className="mt-2 whitespace-pre-wrap rounded-xl bg-red-50 p-3 text-xs font-semibold text-red-700">
@@ -254,7 +260,7 @@ export default function ClassDetailModal({
 
         {detailClass.type !== "MAKEUP" && (
           <div className="mb-4">
-            <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+            <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
               Tambah Siswa
               {detailClass.type === "PRIVATE" && (detailClass.enrollments ?? []).length >= 1 && (
                 <span className="ml-1 text-xs font-normal text-purple-600">(Private — maks 1)</span>
@@ -265,18 +271,17 @@ export default function ClassDetailModal({
             ) : (<>
               <div className="flex gap-2">
                 <select value={detailAddingStudentId} onChange={(e) => onDetailAddingStudentIdChange(e.target.value)}
-                  className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                  className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
                 >
                   <option value="">-- Pilih siswa --</option>
                   {detailStudents.filter((s) => s.isActive !== false).map((s) => (
                     <option key={s.id} value={s.id}>{s.fullName} ({s.user?.email ?? "-"})</option>
                   ))}
                 </select>
-                <button onClick={onAddStudent} disabled={!detailAddingStudentId || detailSaving}
-                  className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                <Button type="submit" onClick={onAddStudent} disabled={!detailAddingStudentId || detailSaving}
                 >
                   {detailSaving ? "..." : "+"}
-                </button>
+                </Button>
               </div>
               {detailStudents.length === 0 && (detailClass.schedules ?? []).length > 0 && (
                 <p className="mt-1 text-[10px] text-slate-400">Semua siswa kategori ini sudah memiliki jadwal bentrok atau sudah terdaftar</p>
@@ -329,14 +334,14 @@ export default function ClassDetailModal({
                                 onBlur={(e) => {
                                   if (e.target.value !== s.startTime) onUpdateScheduleTime(s.id, e.target.value, s.endTime);
                                 }}
-                                className="w-20 rounded border border-slate-200 px-2 py-0.5 text-[10px] outline-none focus:border-blue-400"
+                                className="w-20 rounded border border-slate-200 px-2 py-0.5 text-[10px] outline-none focus:border-primary-400"
                               />
                               <span>–</span>
                               <input type="time" defaultValue={s.endTime}
                                 onBlur={(e) => {
                                   if (e.target.value !== s.endTime) onUpdateScheduleTime(s.id, s.startTime, e.target.value);
                                 }}
-                                className="w-20 rounded border border-slate-200 px-2 py-0.5 text-[10px] outline-none focus:border-blue-400"
+                                className="w-20 rounded border border-slate-200 px-2 py-0.5 text-[10px] outline-none focus:border-primary-400"
                               />
                             </span>
                           )}
@@ -347,7 +352,7 @@ export default function ClassDetailModal({
                       <div className="flex items-center gap-1">
                         <input type="date" value={sDate}
                           onChange={(e) => onReschedule(s.id, e.target.value)}
-                          className={`w-32 rounded-lg border px-2 py-1 text-xs outline-none transition focus:border-blue-400 ${
+                          className={`w-32 rounded-lg border px-2 py-1 text-xs outline-none transition focus:border-primary-400 ${
                             s.isDone
                               ? "border-emerald-200 bg-emerald-50 text-emerald-600"
                               : "border-slate-200 bg-slate-50"
@@ -371,19 +376,27 @@ export default function ClassDetailModal({
           </div>
         </div>
 
-        {detailError && <div className="mb-4 rounded-2xl bg-red-50 p-3 text-sm font-semibold text-red-700">{detailError}</div>}
-        <button onClick={onSave} disabled={detailSaving}
-          className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 disabled:opacity-50 transition-colors"
-        >
-          {detailSaving ? <span className="inline-flex items-center gap-2"><span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> Menyimpan...</span> : "Simpan Perubahan"}
-        </button>
-      </div>
+        {detailError && <Alert>{detailError}</Alert>}
+      </Modal>
 
       {shiftConfirmId && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center">
-          <div className="fixed inset-0 bg-black/50" onClick={() => setShiftConfirmId(null)} />
-          <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-slate-200">
-            <h3 className="mb-3 text-base font-extrabold text-slate-900">Konfirmasi Geser Jadwal</h3>
+        <Modal
+          open
+          onClose={() => setShiftConfirmId(null)}
+          title="Konfirmasi Geser Jadwal"
+          size="md"
+          footer={
+            <>
+              <Button variant="secondary" onClick={() => setShiftConfirmId(null)}>Batal</Button>
+              <Button
+                className="bg-amber-500 hover:bg-amber-600"
+                onClick={() => { onShiftSchedule(shiftConfirmId); setShiftConfirmId(null); }}
+              >
+                Ya, Geser
+              </Button>
+            </>
+          }
+        >
             <p className="mb-3 text-sm text-slate-600">
               Semua jadwal berikut akan digeser <strong>+7 hari</strong>:
             </p>
@@ -399,21 +412,8 @@ export default function ClassDetailModal({
                 </div>
               ))}
             </div>
-            <div className="flex gap-2">
-              <button onClick={() => setShiftConfirmId(null)}
-                className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
-              >
-                Batal
-              </button>
-              <button onClick={() => { onShiftSchedule(shiftConfirmId); setShiftConfirmId(null); }}
-                className="flex-1 rounded-xl bg-amber-500 px-4 py-2.5 text-sm font-bold text-white shadow-sm shadow-amber-500/30 transition hover:bg-amber-600"
-              >
-                Ya, Geser
-              </button>
-            </div>
-          </div>
-        </div>
+        </Modal>
       )}
-    </div>
+    </>
   );
 }

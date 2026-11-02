@@ -1,8 +1,8 @@
 "use client";
 
+import { EmptyState } from "@/components/ui";
 import { useState } from "react";
 import { FileText, Camera } from "lucide-react";
-import Card from "./Card";
 import type { Theme } from "./types";
 import type { Gallery, SavedReport } from "@/lib/api";
 import { isNativePlatform, downloadFileCapacitor, downloadFileWeb } from "@/lib/capacitor-download";
@@ -31,11 +31,11 @@ export default function ReportTab({ theme, studentId, savedReports: reports, gal
       </div>
 
       {reports.length === 0 ? (
-        <Card theme={theme} className="p-12 flex flex-col items-center text-center border-dashed">
-          <span className="text-5xl mb-4">📄</span>
-          <h2 className={`font-bold ${theme.text}`}>Belum ada laporan</h2>
-          <p className={`text-sm mt-1 max-w-sm ${theme.textMuted}`}>Tutor akan membuat laporan hasil belajarmu di sini.</p>
-        </Card>
+        <EmptyState
+          icon={FileText}
+          title="Belum ada laporan"
+          description="Tutor akan membuat laporan hasil belajarmu di sini."
+        />
       ) : (
         <div className="space-y-2 mb-8">
           {reports.map((report) => (
@@ -54,7 +54,7 @@ export default function ReportTab({ theme, studentId, savedReports: reports, gal
               </div>
               <button
                 onClick={() => setViewing(report)}
-                className="shrink-0 rounded-xl bg-brand-blue-100 px-3 py-2 text-xs font-semibold text-brand-blue-700 hover:bg-brand-blue-200 transition-colors">
+                className="shrink-0 rounded-xl bg-primary-100 px-3 py-2 text-xs font-semibold text-primary-700 hover:bg-primary-200 transition-colors">
                 Lihat
               </button>
             </div>
@@ -95,7 +95,7 @@ export default function ReportTab({ theme, studentId, savedReports: reports, gal
       {previewImage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
           onClick={() => setPreviewImage(null)}>
-          <div className={`relative max-w-3xl w-full rounded-3xl overflow-hidden ${theme.card} shadow-2xl`}
+          <div className={`relative max-w-3xl w-full rounded-2xl overflow-hidden ${theme.card} shadow-2xl`}
             onClick={(e) => e.stopPropagation()}>
             <button onClick={() => setPreviewImage(null)}
               className="absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition">

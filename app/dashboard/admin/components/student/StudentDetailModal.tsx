@@ -1,7 +1,8 @@
 "use client";
 
+import { Button, Input, Modal, Select } from "@/components/ui";
 import { useEffect, useState, useRef, type FormEvent } from "react";
-import { X, User, Mail, GraduationCap, BookOpen, Calendar, ArrowRight, Plus, Pencil, Loader2, FileText, FileCheck, Save, Trash2 } from "lucide-react";
+import { User, Mail, GraduationCap, BookOpen, Calendar, ArrowRight, Plus, Pencil, Loader2, FileText, FileCheck, Save, Trash2 } from "lucide-react";
 import { api, checkEmail, type StudentProfile, type Enrollment, type Curriculum, type Class, type Certificate, type ParentProfile, type Category } from "@/lib/api";
 import CertificatePreviewModal from "../../../shared/CertificatePreviewModal";
 
@@ -171,34 +172,40 @@ export default function StudentDetailModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-3xl rounded-3xl border border-slate-200 bg-white shadow-xl max-h-[90vh] flex flex-col">
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 shrink-0">
-          <h2 className="text-lg font-extrabold tracking-tight text-slate-900">Detail Siswa</h2>
-          <div className="flex items-center gap-2">
-            {!editing && (
-              <button onClick={startEditing}
-                className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-bold text-blue-600 hover:bg-blue-50 transition-colors">
-                <Pencil size={13} />
-                Edit
-              </button>
-            )}
-            <button onClick={onClose} className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
-              <X size={20} />
-            </button>
-          </div>
-        </div>
-
-        <div className="space-y-5 px-6 py-5 overflow-y-auto flex-1">
+    <>
+      <Modal
+        open
+        onClose={onClose}
+        title="Detail Siswa"
+        description={student.fullName}
+        size="xl"
+        closeOnBackdrop={false}
+        bodyClassName="p-0"
+        headerActions={
+          !editing && (
+            <Button variant="subtle" size="sm" icon={<Pencil size={14} />} onClick={startEditing}>
+              Edit
+            </Button>
+          )
+        }
+        footer={
+          <>
+            <Button variant="secondary" onClick={onClose}>Tutup</Button>
+            <Button icon={<ArrowRight size={16} />} onClick={() => onImpersonate(student.id)}>
+              Impersonate
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-5 px-5 py-5 sm:px-6">
           {editing ? (
             <form onSubmit={handleSaveEdit} className="space-y-4">
-              <div className="rounded-2xl bg-blue-50 border border-blue-200 p-4 space-y-4">
+              <div className="rounded-2xl bg-primary-50 border border-primary-200 p-4 space-y-4">
                 <h3 className="text-sm font-bold text-slate-700">Edit Data Siswa</h3>
 
                 <div>
                   <label className="mb-1 block text-xs font-semibold text-slate-600">Nama Lengkap</label>
-                  <input value={editName} onChange={(e) => setEditName(e.target.value)} required
-                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                  <Input value={editName} onChange={(e) => setEditName(e.target.value)} required />
                 </div>
 
                 <div>
@@ -208,7 +215,7 @@ export default function StudentDetailModal({
                     className={`w-full rounded-xl border bg-white px-3 py-2.5 text-sm outline-none focus:ring-2 ${
                       emailStatus === "taken" ? "border-red-400 focus:border-red-400 focus:ring-red-100" :
                       emailStatus === "available" && editEmail !== student.user?.email ? "border-green-400 focus:border-green-400 focus:ring-green-100" :
-                      "border-slate-200 focus:border-blue-400 focus:ring-blue-100"
+                      "border-slate-200 focus:border-primary-400 focus:ring-primary-100"
                     }`} />
                   {emailStatus === "checking" && <p className="mt-1 text-xs text-slate-400">Memeriksa email...</p>}
                   {emailStatus === "available" && editEmail !== student.user?.email && <p className="mt-1 text-xs text-green-600">Email tersedia</p>}
@@ -217,37 +224,33 @@ export default function StudentDetailModal({
 
                 <div>
                   <label className="mb-1 block text-xs font-semibold text-slate-600">Tanggal Lahir</label>
-                  <input type="date" value={editBirthDate} onChange={(e) => setEditBirthDate(e.target.value)} required
-                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                  <Input type="date" value={editBirthDate} onChange={(e) => setEditBirthDate(e.target.value)} required />
                 </div>
 
                 <div>
                   <label className="mb-1 block text-xs font-semibold text-slate-600">Orang Tua</label>
-                  <select value={editParentId} onChange={(e) => setEditParentId(e.target.value)} required
-                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                  <Select value={editParentId} onChange={(e) => setEditParentId(e.target.value)} required>
                     <option value="">-- Pilih Orang Tua --</option>
                     {parents.map((p) => (
                       <option key={p.id} value={p.id}>{p.fullName} ({p.user?.email ?? "—"})</option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
 
                 <div>
                   <label className="mb-1 block text-xs font-semibold text-slate-600">Kategori</label>
-                  <select value={editCategoryId} onChange={(e) => setEditCategoryId(e.target.value)} required
-                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                  <Select value={editCategoryId} onChange={(e) => setEditCategoryId(e.target.value)} required>
                     <option value="">-- Pilih Kategori --</option>
                     {categories.map((cat) => (
                       <option key={cat.id} value={cat.id}>{cat.label}</option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
 
                 <div>
                   <label className="mb-1 block text-xs font-semibold text-slate-600">Sekolah (opsional)</label>
-                  <input value={editSchool} onChange={(e) => setEditSchool(e.target.value)}
-                    placeholder="Nama sekolah"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                  <Input value={editSchool} onChange={(e) => setEditSchool(e.target.value)}
+                    placeholder="Nama sekolah" />
                 </div>
 
                 {editError && (
@@ -259,26 +262,25 @@ export default function StudentDetailModal({
                     className="rounded-xl px-3 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-200/60 transition">
                     Batal
                   </button>
-                  <button type="submit" disabled={editSaving || emailStatus === "taken" || emailStatus === "checking"}
-                    className="inline-flex items-center gap-1 rounded-xl bg-blue-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50 transition">
+                  <Button type="submit" disabled={editSaving || emailStatus === "taken" || emailStatus === "checking"}>
                     {editSaving && <Loader2 size={13} className="animate-spin" />}
                     <Save size={13} />
                     Simpan
-                  </button>
+                  </Button>
                 </div>
               </div>
             </form>
           ) : (
             <>
               <div className="flex items-start gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-50">
-                  <User size={24} className="text-blue-600" />
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary-50">
+                  <User size={24} className="text-primary-600" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-lg font-bold text-slate-900">{student.fullName}</p>
                   <p className="text-sm text-slate-500">@{student.nickname}</p>
                   <div className="mt-2 flex flex-wrap gap-3">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-100 px-2.5 py-1 text-xs font-semibold text-primary-700">
                       <GraduationCap size={12} />
                       {student.category?.label ?? "-"}
                     </span>
@@ -321,20 +323,19 @@ export default function StudentDetailModal({
                 <BookOpen size={15} />
                 Enrollment ({enrollments.length})
               </h3>
-              <button onClick={openAddForm}
-                className="inline-flex items-center gap-1 rounded-lg bg-blue-600 px-2.5 py-1 text-xs font-bold text-white transition hover:bg-blue-700">
+              <Button type="submit" onClick={openAddForm}>
                 <Plus size={13} />
                 Tambah
-              </button>
+              </Button>
             </div>
 
             {showForm && (
-              <form onSubmit={handleSubmit} className="mb-3 rounded-2xl border border-blue-200 bg-blue-50 p-4 space-y-3">
+              <form onSubmit={handleSubmit} className="mb-3 rounded-2xl border border-primary-200 bg-primary-50 p-4 space-y-3">
                 {!isEdit && (
                   <div>
                     <label className="mb-1 block text-xs font-bold text-slate-600">Kurikulum</label>
                     <select value={formCurriculumId} onChange={(e) => { setFormCurriculumId(e.target.value); }}
-                      required className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400">
+                      required className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-primary-400">
                       <option value="">Pilih Kurikulum</option>
                       {curriculums.map((c) => (
                         <option key={c.id} value={c.id}>{c.name}</option>
@@ -347,7 +348,7 @@ export default function StudentDetailModal({
                     <label className="mb-1 block text-xs font-bold text-slate-600">Total Pertemuan Dibeli</label>
                     <input type="number" min="0" value={formTotalMeetPurchased}
                       onChange={(e) => setFormTotalMeetPurchased(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-400" />
+                      className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-primary-400" />
                     <p className="mt-1 text-[10px] font-semibold text-amber-600">
                       Hanya untuk koreksi kegagalan sistem pembayaran. Normalnya diupdate otomatis saat invoice dibayar.
                     </p>
@@ -358,18 +359,17 @@ export default function StudentDetailModal({
                     className="rounded-xl px-3 py-1.5 text-xs font-bold text-slate-500 transition hover:bg-slate-200/60">
                     Batal
                   </button>
-                  <button type="submit" disabled={formSubmitting || (!isEdit && !formCurriculumId)}
-                    className="inline-flex items-center gap-1 rounded-xl bg-blue-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50">
+                  <Button type="submit" disabled={formSubmitting || (!isEdit && !formCurriculumId)}>
                     {formSubmitting && <Loader2 size={13} className="animate-spin" />}
                     {isEdit ? "Simpan" : "Tambah"}
-                  </button>
+                  </Button>
                 </div>
               </form>
             )}
 
             {!showForm && (loading ? (
               <div className="flex items-center justify-center py-4">
-                <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+                <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-primary-600 border-t-transparent" />
               </div>
             ) : enrollments.length === 0 ? (
               <p className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-400">Belum ada enrollment</p>
@@ -398,7 +398,7 @@ export default function StudentDetailModal({
                                 DRAFT: "bg-slate-100 text-slate-600",
                                 UNPAID: "bg-amber-100 text-amber-700",
                                 PAID: "bg-green-100 text-green-700",
-                                PARTIAL: "bg-blue-100 text-blue-700",
+                                PARTIAL: "bg-primary-100 text-primary-700",
                                 REFUNDED: "bg-rose-100 text-rose-700",
                                 CANCELLED: "bg-gray-100 text-gray-500",
                               };
@@ -432,7 +432,7 @@ export default function StudentDetailModal({
                           </button>
                         )}
                         <button onClick={() => openEditForm(enr)}
-                          className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-blue-600">
+                          className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-primary-600">
                           <Pencil size={14} />
                         </button>
                         {enr.totalMeetPurchased === 0 && (
@@ -458,18 +458,7 @@ export default function StudentDetailModal({
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4 shrink-0">
-          <button onClick={onClose}
-            className="rounded-xl px-4 py-2 text-sm font-bold text-slate-600 transition hover:bg-slate-100">
-            Tutup
-          </button>
-          <button onClick={() => onImpersonate(student.id)}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700">
-            <ArrowRight size={15} />
-            Impersonate
-          </button>
-        </div>
-      </div>
+      </Modal>
       <CertificatePreviewModal
         open={!!previewEnrollment}
         enrollment={previewEnrollment}
@@ -484,6 +473,6 @@ export default function StudentDetailModal({
         }}
         onClose={() => setPreviewEnrollment(null)}
       />
-    </div>
+    </>
   );
 }

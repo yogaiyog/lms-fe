@@ -3,10 +3,10 @@
 import { useEffect, useState, useCallback, type FormEvent } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  Home, BookOpen, Clock, Moon, Sun,
-  LogOut, X, Menu, User, Route,
-} from "lucide-react";
+import { Home, BookOpen, Clock, Users, Route, ClipboardCheck } from "lucide-react";
+import { DashboardShell, type ShellNavSection } from "@/components/dashboard/DashboardShell";
+import { useDarkMode } from "@/components/dashboard/use-dark-mode";
+import { Button, Input, Modal, PageLoader, Select, Textarea } from "@/components/ui";
 import {
   api,
   clearSession,
@@ -18,7 +18,6 @@ import {
   type AssessmentAspect,
 } from "@/lib/api";
 import { useTutorDashboard } from "@/hooks/useTutorDashboard";
-import Link from "next/link";
 import TutorHomeSegment from "./tutor-home-segment";
 import TutorClassesSegment from "./tutor-classes-segment";
 import TutorStudentsSegment from "./tutor-students-segment";
@@ -26,15 +25,34 @@ import TutorAttendanceSegment from "./tutor-attendance-segment";
 import TutorRoadmapSegment from "./tutor-roadmap-segment";
 import TutorScheduleDetailModal from "./tutor-schedule-detail-modal";
 
-const NAV_ITEMS = [
-  { key: "home", label: "Beranda", icon: Home },
-  { key: "classes", label: "Kelas", icon: BookOpen },
-  { key: "roadmap", label: "Roadmap", icon: Route },
-  { key: "students", label: "Siswa", icon: User },
-  { key: "attendance", label: "Absensi", icon: BookOpen },
-] as const;
+type TutorSegmentKey = "home" | "classes" | "students" | "attendance" | "roadmap";
 
-const MOBILE_NAV = ["home", "classes", "roadmap", "students", "attendance"] as const;
+const NAV_ITEMS: { key: TutorSegmentKey; label: string }[] = [
+  { key: "home", label: "Beranda" },
+  { key: "classes", label: "Kelas" },
+  { key: "roadmap", label: "Roadmap" },
+  { key: "students", label: "Siswa" },
+  { key: "attendance", label: "Absensi" },
+];
+
+const TUTOR_NAV: ShellNavSection[] = [
+  {
+    title: "Mengajar",
+    items: [
+      { key: "home", label: "Beranda", icon: Home },
+      { key: "classes", label: "Kelas", icon: BookOpen },
+      { key: "attendance", label: "Absensi", icon: ClipboardCheck },
+      { key: "roadmap", label: "Roadmap", icon: Route },
+      { key: "students", label: "Siswa", icon: Users },
+    ],
+  },
+  {
+    title: "Pengaturan",
+    items: [{ key: "slot", label: "Slot Mengajar", icon: Clock, href: "/dashboard/tutor/jadwal-slot" }],
+  },
+];
+
+const MOBILE_NAV = ["home", "classes", "attendance", "roadmap", "students"];
 
 export default function TutorDashboard() {
   const router = useRouter();
@@ -43,8 +61,7 @@ export default function TutorDashboard() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [segment, setSegment] = useState<"home" | "classes" | "students" | "attendance" | "roadmap">("home");
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [dark, setDark] = useState(false);
+  const { dark, toggle: toggleDark } = useDarkMode();
   const [countdowns, setCountdowns] = useState<Record<string, { days: number; hours: number; minutes: number; seconds: number }>>({});
   const [attendanceForm, setAttendanceForm] = useState<{ scheduleId: string; studentId: string; status: string }[]>([]);
   const [submittingAttendance, setSubmittingAttendance] = useState(false);
@@ -60,7 +77,7 @@ export default function TutorDashboard() {
     textMuted: dark ? "text-slate-400" : "text-slate-500",
   };
 
-  const go = useCallback((p: "home" | "classes" | "students" | "attendance" | "roadmap") => { setSegment(p); setDrawerOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); }, []);
+  const go = useCallback((p: "home" | "classes" | "students" | "attendance" | "roadmap") => { setSegment(p); window.scrollTo({ top: 0, behavior: "smooth" }); }, []);
 
   // Restore state from URL params on mount
   useEffect(() => {
@@ -151,7 +168,6 @@ export default function TutorDashboard() {
     setPendingRoadmapCurriculum(curriculumId);
     setPendingRoadmapTopic(schedule.topicId);
     setSegment("roadmap");
-    setDrawerOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [classes]);
 
@@ -159,7 +175,6 @@ export default function TutorDashboard() {
     setPendingRoadmapCurriculum(curriculumId);
     setPendingRoadmapTopic(null);
     setSegment("roadmap");
-    setDrawerOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
@@ -433,108 +448,25 @@ export default function TutorDashboard() {
   }
 
   if (loading || dataLoading) {
-    return (
-      <div className={`flex min-h-screen items-center justify-center ${theme.bg}`}>
-        <span className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   return (
-    <div className={`min-h-screen w-full ${theme.bg} font-sans`}>
-      <div className="flex">
-        {/* Sidebar (desktop) */}
-        <aside className={`hidden md:flex md:w-64 md:flex-col fixed inset-y-0 left-0 border-r ${theme.border} ${theme.card} px-4 py-6`}>
-          <div className="flex items-center gap-2 px-2 mb-8">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-600 text-white font-extrabold">T</div>
-            <div>
-              <p className={`font-extrabold leading-tight ${theme.text}`}>{user?.tutorProfile?.fullName ?? user?.tutorProfile?.fullName}</p>
-              <p className={`text-xs leading-tight ${theme.textMuted}`}>Dashboard</p>
-            </div>
-          </div>
-          <nav className="flex-1 space-y-1">
-            {NAV_ITEMS.map((item) => {
-              const Icon = item.icon;
-              const active = segment === item.key;
-              return (
-                <button key={item.key} onClick={() => go(item.key)}
-                  className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition-colors ${active ? "bg-blue-600 text-white shadow-sm shadow-blue-600/30" : `${theme.text} hover:bg-blue-50 hover:text-blue-700`}`}>
-                  <Icon size={18} /> {item.label}
-                </button>
-              );
-            })}
-          </nav>
-          <div className="space-y-1 mt-2">
-            <Link href="/dashboard/tutor/jadwal-slot"
-              className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold ${theme.text} hover:bg-blue-50 hover:text-blue-700 transition-colors`}>
-              <Clock size={18} /> Slot
-            </Link>
-          </div>
-          <div className={`mt-6 rounded-2xl p-4 ${dark ? "bg-slate-800" : "bg-blue-50"}`}>
-            <p className={`text-xs font-bold ${theme.text}`}>{user?.tutorProfile?.fullName ?? user?.email}</p>
-            <p className={`text-xs mt-1 ${theme.textMuted}`}>Tutor Dashboard</p>
-          </div>
-        </aside>
-
-        {/* Mobile drawer */}
-        {drawerOpen && (
-          <div className="fixed inset-0 z-40 md:hidden">
-            <div className="absolute inset-0 bg-black/40" onClick={() => setDrawerOpen(false)} />
-            <div className={`absolute left-0 top-0 bottom-0 w-72 ${theme.card} p-5`}>
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-2">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white font-extrabold text-sm">T</div>
-                  <p className={`font-extrabold ${theme.text}`}>{user?.tutorProfile?.fullName || "Tutor"} </p>
-                </div>
-                <button onClick={() => setDrawerOpen(false)} className={theme.textMuted}><X size={20} /></button>
-              </div>
-              <nav className="space-y-1">
-                {[{ key: "home", label: "Beranda", icon: Home }, { key: "classes", label: "Kelas", icon: BookOpen }, { key: "students", label: "Siswa", icon: User }, ...[{ key: "slot", label: "Slot", icon: Clock, href: "/dashboard/tutor/jadwal-slot" as const }]].map((item) => {
-                  const Icon = item.icon;
-                  const active = segment === item.key;
-                  if (item.href) {
-                    return (
-                      <Link key={item.key} href={item.href}
-                        className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold ${theme.text} hover:bg-blue-50 hover:text-blue-700`}>
-                        <Icon size={18} /> {item.label}
-                      </Link>
-                    );
-                  }
-                  return (
-                    <button key={item.key} onClick={() => go(item.key as "home" | "classes" | "students" | "attendance" | "roadmap")}
-                      className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold ${active ? "bg-blue-600 text-white" : `${theme.text} hover:bg-blue-50 hover:text-blue-700`}`}>
-                      <Icon size={18} /> {item.label}
-                    </button>
-                  );
-                })}
-              </nav>
-            </div>
-          </div>
-        )}
-
-        {/* Main column */}
-        <div className="flex-1 md:ml-64 min-w-0">
-          <header className={`sticky top-0 z-30 flex items-center justify-between gap-3 border-b ${theme.border} ${theme.card}/90 backdrop-blur px-4 sm:px-8 py-3.5`}>
-            <div className="flex items-center gap-3">
-              <button onClick={() => setDrawerOpen(true)} className={`md:hidden ${theme.text}`}>
-                <Menu size={22} />
-              </button>
-              <p className={`font-extrabold hidden sm:block ${theme.text}`}>
-                {NAV_ITEMS.find((n) => n.key === segment)?.label || "Dashboard"}
-              </p>
-            </div>
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <button onClick={() => setDark((v) => !v)}
-                className={`flex h-9 w-9 items-center justify-center rounded-full ${theme.textMuted} hover:bg-blue-50 hover:text-blue-600 transition-colors`}>
-                {dark ? <Sun size={18} /> : <Moon size={18} />}
-              </button>
-              <button onClick={logout} className={`flex h-9 w-9 items-center justify-center rounded-full ${theme.textMuted} hover:bg-red-50 hover:text-red-600 transition-colors`} title="Logout">
-                <LogOut size={18} />
-              </button>
-            </div>
-          </header>
-
-          <main className="px-4 sm:px-8 py-6 pb-24 md:pb-10 max-w-6xl">
+    <DashboardShell
+      roleLabel="Tutor"
+      sections={TUTOR_NAV}
+      activeKey={segment}
+      onNavigate={(key) => go(key as TutorSegmentKey)}
+      title={NAV_ITEMS.find((n) => n.key === segment)?.label ?? "Dashboard"}
+      subtitle={segment === "home" ? `Selamat datang, ${user?.tutorProfile?.fullName ?? "Tutor"}` : undefined}
+      user={{ name: user?.tutorProfile?.fullName, email: user?.email, avatarUrl: user?.tutorProfile?.avatarUrl }}
+      onLogout={logout}
+      dark={dark}
+      onToggleDark={toggleDark}
+      mobileNav={MOBILE_NAV}
+      contentClassName="max-w-6xl"
+    >
+          <div>
             {segment === "classes" && (
               <TutorClassesSegment
                 theme={theme}
@@ -585,57 +517,24 @@ export default function TutorDashboard() {
                 attendanceFilledIds={attendanceFilledIds}
               />
             )}
-          </main>
-        </div>
-      </div>
-
-      {/* Mobile bottom nav */}
-      <nav className={`md:hidden fixed bottom-0 inset-x-0 z-30 border-t ${theme.border} ${theme.card} px-2 py-2 flex items-center justify-between`}>
-        {MOBILE_NAV.map((key) => {
-          const item = NAV_ITEMS.find((n) => n.key === key);
-          if (!item) return null;
-          const Icon = item.icon;
-          const active = segment === key;
-          return (
-            <button key={key} onClick={() => go(key)}
-              className={`flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-semibold ${active ? "text-blue-600" : theme.textMuted}`}>
-              <Icon size={19} />
-              {item.label.split(" ")[0]}
-            </button>
-          );
-        })}
-        <Link href="/dashboard/tutor/jadwal-slot"
-          className={`flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-semibold ${theme.textMuted}`}>
-          <Clock size={19} /> Slot
-        </Link>
-      </nav>
+          </div>
 
       {/* Modal Edit Schedule */}
       {editingSchedule && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-          <div className="fixed inset-0 bg-black/40" onClick={() => setEditingSchedule(null)} />
-          <div className={`relative w-full max-w-md rounded-t-3xl ${theme.card} p-6 shadow-2xl sm:rounded-3xl`}>
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className={`text-lg font-extrabold ${theme.text}`}>Edit Jadwal</h2>
-              <button onClick={() => setEditingSchedule(null)} className={`rounded-xl p-1.5 ${theme.textMuted} hover:bg-blue-50 hover:text-blue-600 transition-colors`}>
-                <X size={20} />
-              </button>
-            </div>
+        <Modal open onClose={() => setEditingSchedule(null)} title="Edit Jadwal" size="md">
             <form onSubmit={saveSchedule}>
               <div className="mb-3">
-                <label className="mb-1.5 block text-sm font-semibold text-slate-700">Topic (dari Kurikulum)</label>
-                <select value={editTopicId} onChange={(e) => { setEditTopicId(e.target.value); }}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100">
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Topic (dari Kurikulum)</label>
+                <Select value={editTopicId} onChange={(e) => { setEditTopicId(e.target.value); }}>
                   <option value="">-- Pilih topic --</option>
                   {getClassTopics(editScheduleClassId).map((t) => (
                     <option key={t.id} value={t.id}>{t.title}</option>
                   ))}
-                </select>
+                </Select>
               </div>
               <div className="mb-4">
-                <label className="mb-1.5 block text-sm font-semibold text-slate-700">Meet Link</label>
-                <input value={editMeetLink} onChange={(e) => setEditMeetLink(e.target.value)} placeholder="https://meet.google.com/xxx"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Meet Link</label>
+                <Input value={editMeetLink} onChange={(e) => setEditMeetLink(e.target.value)} placeholder="https://meet.google.com/xxx" />
               </div>
               <label className="mb-4 flex items-center gap-3 cursor-pointer">
                 <div onClick={(e) => { e.preventDefault(); setForceOngoing((v) => !v); }}
@@ -645,45 +544,31 @@ export default function TutorDashboard() {
                 <span className="text-sm font-semibold text-slate-700">Force Ongoing (aktifkan absensi)</span>
               </label>
               {scheduleError && <div className="mb-4 rounded-2xl bg-red-50 p-3 text-sm font-semibold text-red-700">{scheduleError}</div>}
-              <button type="submit" disabled={savingSchedule}
-                className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 disabled:opacity-50 transition-colors">
+              <Button type="submit" disabled={savingSchedule} className="w-full">
                 {savingSchedule ? <span className="inline-flex items-center gap-2"><span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> Menyimpan...</span> : "Simpan"}
-              </button>
+              </Button>
             </form>
-          </div>
-        </div>
+        </Modal>
       )}
 
       {/* Modal Create Announcement */}
       {announceClass && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-          <div className="fixed inset-0 bg-black/40" onClick={() => setAnnounceClass(null)} />
-          <div className={`relative w-full max-w-md rounded-t-3xl ${theme.card} p-6 shadow-2xl sm:rounded-3xl`}>
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className={`text-lg font-extrabold ${theme.text}`}>Buat Pengumuman</h2>
-              <button onClick={() => setAnnounceClass(null)} className={`rounded-xl p-1.5 ${theme.textMuted} hover:bg-blue-50 hover:text-blue-600 transition-colors`}>
-                <X size={20} />
-              </button>
-            </div>
+        <Modal open onClose={() => setAnnounceClass(null)} title="Buat Pengumuman" size="md">
             <form onSubmit={createAnnouncement}>
               <div className="mb-3">
-                <label className="mb-1.5 block text-sm font-semibold text-slate-700">Judul</label>
-                <input value={announceTitle} onChange={(e) => setAnnounceTitle(e.target.value)} placeholder="Judul pengumuman"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" required />
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Judul</label>
+                <Input value={announceTitle} onChange={(e) => setAnnounceTitle(e.target.value)} placeholder="Judul pengumuman" required />
               </div>
               <div className="mb-4">
-                <label className="mb-1.5 block text-sm font-semibold text-slate-700">Isi Pengumuman</label>
-                <textarea value={announceContent} onChange={(e) => setAnnounceContent(e.target.value)} placeholder="Tulis isi pengumuman..." rows={4}
-                  className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100" required />
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Isi Pengumuman</label>
+                <Textarea value={announceContent} onChange={(e) => setAnnounceContent(e.target.value)} placeholder="Tulis isi pengumuman..." rows={4} className="resize-none" required />
               </div>
               {announceError && <div className="mb-4 rounded-2xl bg-red-50 p-3 text-sm font-semibold text-red-700">{announceError}</div>}
-              <button type="submit" disabled={announceSaving}
-                className="w-full rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/30 hover:bg-blue-700 disabled:opacity-50 transition-colors">
+              <Button type="submit" disabled={announceSaving} className="w-full">
                 {announceSaving ? <span className="inline-flex items-center gap-2"><span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" /> Mengirim...</span> : "Kirim Pengumuman"}
-              </button>
+              </Button>
             </form>
-          </div>
-        </div>
+        </Modal>
       )}
 
       {/* Schedule Detail Modal */}
@@ -728,6 +613,6 @@ export default function TutorDashboard() {
           }}
         />
       )}
-    </div>
+    </DashboardShell>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, Input, Modal, Select, Textarea } from "@/components/ui";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Banknote, Check, CreditCard, Landmark, Plus, QrCode, Search, User, Wallet, X } from "lucide-react";
 import { api, type Curriculum, type Enrollment, type Invoice, type MidtransBank } from "@/lib/api";
@@ -246,17 +247,10 @@ export default function InvoiceFormModal({ editing, initialStep = 1, saving, err
   const requireMethod = isPaymentOnly || (isEdit && buildPayload().subtotal !== (Number(editing?.subtotal) || 0) && (editing?.payments ?? []).some((p) => p.status === "PENDING"));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-3xl rounded-3xl border border-slate-200 bg-white shadow-xl max-h-[90vh] flex flex-col">
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 shrink-0">
-          <div>
-            <h2 className="text-lg font-extrabold text-slate-900">
-              {isEdit ? `Edit Invoice ${editing?.number}` : "Buat Invoice Baru"}
-            </h2>
-            <div className="mt-1 flex items-center gap-1.5">
+    <Modal open onClose={onClose} title={<>{isEdit ? `Edit Invoice ${editing?.number}` : "Buat Invoice Baru"}</>} size="xl" closeOnBackdrop={false} bodyClassName="p-0" description={<><div className="mt-1 flex items-center gap-1.5">
               {[1, 2, 3].map((s) => (
                 <span key={s} className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold ${
-                  step === s ? "bg-blue-600 text-white" : step > s ? "bg-emerald-500 text-white" : "bg-slate-200 text-slate-500"
+                  step === s ? "bg-primary-600 text-white" : step > s ? "bg-emerald-500 text-white" : "bg-slate-200 text-slate-500"
                 }`}>
                   {step > s ? <Check size={11} /> : s}
                 </span>
@@ -264,12 +258,7 @@ export default function InvoiceFormModal({ editing, initialStep = 1, saving, err
               <span className="text-[10px] font-semibold text-slate-400">
                 {step === 1 ? "Detail Invoice" : step === 2 ? "Metode Pembayaran" : "Ringkasan"}
               </span>
-            </div>
-          </div>
-          <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
-            <X size={20} />
-          </button>
-        </div>
+            </div></>}>
 
         <div className="overflow-y-auto flex-1 px-6 py-5 space-y-4">
           {error && <div className="rounded-2xl bg-red-50 p-3 text-sm font-semibold text-red-700">{error}</div>}
@@ -337,9 +326,8 @@ export default function InvoiceFormModal({ editing, initialStep = 1, saving, err
               {method === "manual" && (
                 <div>
                   <label className="mb-1 block text-xs font-bold text-slate-600">Nama Bank (opsional)</label>
-                  <input value={manualBank} onChange={(e) => setManualBank(e.target.value)}
-                    placeholder="mis. BCA"
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-400" />
+                  <Input value={manualBank} onChange={(e) => setManualBank(e.target.value)}
+                    placeholder="mis. BCA" />
                 </div>
               )}
 
@@ -350,7 +338,7 @@ export default function InvoiceFormModal({ editing, initialStep = 1, saving, err
                     {BANKS.map((b) => (
                       <button key={b.value} type="button" onClick={() => setBank(b.value)}
                         className={`rounded-xl px-3 py-2 text-xs font-bold transition ${
-                          bank === b.value ? "bg-blue-600 text-white shadow-sm" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                          bank === b.value ? "bg-primary-600 text-white shadow-sm" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                         }`}>
                         {b.label}
                       </button>
@@ -366,7 +354,7 @@ export default function InvoiceFormModal({ editing, initialStep = 1, saving, err
                     {WALLETS.map((w) => (
                       <button key={w.value} type="button" onClick={() => setWallet(w.value)}
                         className={`rounded-xl px-3 py-2 text-xs font-bold transition ${
-                          wallet === w.value ? "bg-blue-600 text-white shadow-sm" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                          wallet === w.value ? "bg-primary-600 text-white shadow-sm" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                         }`}>
                         {w.label}
                       </button>
@@ -387,10 +375,9 @@ export default function InvoiceFormModal({ editing, initialStep = 1, saving, err
                       Lewati
                     </button>
                   )}
-                  <button type="button" onClick={() => setStep(3)} disabled={!methodReady()}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50">
+                  <Button type="button" onClick={() => setStep(3)} disabled={!methodReady()}>
                     Lanjut <ArrowRight size={15} />
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -427,16 +414,14 @@ export default function InvoiceFormModal({ editing, initialStep = 1, saving, err
                   className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-100">
                   <ArrowLeft size={15} /> Kembali
                 </button>
-                <button type="button" onClick={handleSubmit} disabled={saving}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50">
+                <Button type="button" onClick={handleSubmit} disabled={saving}>
                   {saving ? "Menyimpan..." : isEdit ? (method === "" ? "Simpan" : "Simpan & Perbarui Metode") : "Simpan Invoice"} <ArrowRight size={15} />
-                </button>
+                </Button>
               </div>
             </div>
           )}
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }
 
@@ -515,9 +500,9 @@ function StepOne({
           onSelect={(s) => { setSelectedStudent(s); onSelectEnrollment(null); loadEnrollments(s.id); }}
         />
       ) : (
-        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-3 flex items-center justify-between">
+        <div className="rounded-2xl border border-primary-200 bg-primary-50 p-3 flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-xs font-bold text-blue-700">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary-100 text-xs font-bold text-primary-700">
               {selectedStudent.fullName.charAt(0)}
             </div>
             <div className="min-w-0">
@@ -584,10 +569,9 @@ function StepOne({
       <div className="flex items-center justify-end gap-2 pt-1">
         <button type="button" onClick={onClose}
           className="rounded-xl px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-100">Batal</button>
-        <button type="button" onClick={onNext} disabled={!canGoNext}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50">
+        <Button type="button" onClick={onNext} disabled={!canGoNext}>
           Lanjut <ArrowRight size={15} />
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -607,9 +591,9 @@ function StudentPickerSection({
     <div>
       <label className="mb-1 block text-xs font-bold text-slate-600">Pilih Siswa</label>
       {selected ? (
-        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-3 flex items-center justify-between">
+        <div className="rounded-2xl border border-primary-200 bg-primary-50 p-3 flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-xs font-bold text-blue-700">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary-100 text-xs font-bold text-primary-700">
               {selected.fullName.charAt(0)}
             </div>
             <div className="min-w-0">
@@ -626,9 +610,8 @@ function StudentPickerSection({
         <>
           <div className="relative mb-2">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input value={search} onChange={(e) => setSearch(e.target.value)}
-              placeholder="Cari nama siswa..."
-              className="w-full rounded-xl border border-slate-200 bg-white pl-9 pr-4 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+            <Input value={search} onChange={(e) => setSearch(e.target.value)}
+              placeholder="Cari nama siswa..." className="pl-9 pr-4" />
           </div>
           {search && (
             <div className="max-h-44 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -637,8 +620,8 @@ function StudentPickerSection({
               ) : (
                 filteredStudents.map((s) => (
                   <button key={s.id} onClick={() => onSelect(s)}
-                    className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm hover:bg-blue-50">
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-100 text-[10px] font-bold text-blue-700">
+                    className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm hover:bg-primary-50">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary-100 text-[10px] font-bold text-primary-700">
                       {s.fullName.charAt(0)}
                     </div>
                     <div className="min-w-0">
@@ -683,10 +666,9 @@ function EnrollmentListSection({
           </p>
           <p className="mt-1 text-xs text-slate-400">Buat enrollment baru terlebih dahulu.</p>
         </div>
-        <button onClick={onCreateNew}
-          className="mt-2 w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-blue-700">
+        <Button type="submit" onClick={onCreateNew} className="mt-2 w-full">
           <Plus size={14} /> Buat Enrollment Baru
-        </button>
+        </Button>
       </div>
     );
   }
@@ -700,7 +682,7 @@ function EnrollmentListSection({
           const remaining = Math.max(0, topics - (enr.totalMeetPurchased ?? 0));
           return (
             <button key={enr.id} onClick={() => onSelect(enr)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-left hover:border-blue-300 hover:bg-blue-50/40 transition">
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-left hover:border-primary-300 hover:bg-primary-50/40 transition">
               <div className="flex items-center justify-between">
                 <div className="min-w-0">
                   <p className="text-sm font-bold text-slate-800">{enr.curriculum?.name ?? "—"}</p>
@@ -715,7 +697,7 @@ function EnrollmentListSection({
         })}
       </div>
       <button onClick={onCreateNew}
-        className="mt-2 w-full inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:border-blue-300 hover:text-blue-600">
+        className="mt-2 w-full inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:border-primary-300 hover:text-primary-600">
         <Plus size={14} /> Buat Enrollment Baru
       </button>
     </div>
@@ -736,23 +718,23 @@ function InlineEnrollmentCreator({
   const selectedCurriculum = curriculums.find((c) => c.id === curriculumId);
 
   return (
-    <div className="rounded-2xl border border-blue-300 bg-blue-50 p-4 space-y-3">
+    <div className="rounded-2xl border border-primary-300 bg-primary-50 p-4 space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-bold text-blue-800">Buat Enrollment Baru</h3>
-        <button onClick={onCancel} className="rounded-lg p-1 text-blue-400 hover:bg-blue-100">
+        <h3 className="text-sm font-bold text-primary-800">Buat Enrollment Baru</h3>
+        <button onClick={onCancel} className="rounded-lg p-1 text-primary-400 hover:bg-primary-100">
           <X size={16} />
         </button>
       </div>
 
       <div>
         <label className="mb-1 block text-xs font-bold text-slate-600">Kurikulum</label>
-        <select value={curriculumId} onChange={(e) => { setCurriculumId(e.target.value); }}
-          required className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-400">
+        <Select value={curriculumId} onChange={(e) => { setCurriculumId(e.target.value); }}
+          required>
           <option value="">Pilih Kurikulum</option>
           {curriculums.map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
-        </select>
+        </Select>
         {selectedCurriculum && (
           <p className="mt-1 text-[11px] text-slate-400">{selectedCurriculum.topics.length} topik tersedia</p>
         )}
@@ -763,11 +745,10 @@ function InlineEnrollmentCreator({
           className="rounded-xl px-3 py-1.5 text-xs font-bold text-slate-500 hover:bg-white">
           Batal
         </button>
-        <button type="button" onClick={onSubmit}
-          disabled={!curriculumId || saving}
-          className="inline-flex items-center gap-1 rounded-xl bg-blue-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50">
+        <Button type="button" onClick={onSubmit}
+          disabled={!curriculumId || saving}>
           {saving ? "Menyimpan..." : "Buat Enrollment"}
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -807,7 +788,7 @@ function DetailTagihanSection({
 }) {
   return (
     <>
-      <div className="rounded-2xl border border-blue-200 bg-blue-50 p-3 text-xs space-y-1">
+      <div className="rounded-2xl border border-primary-200 bg-primary-50 p-3 text-xs space-y-1">
         <div className="flex justify-between">
           <span className="text-slate-500">Kurikulum</span>
           <span className="font-bold text-slate-700">{enrollment.curriculum?.name ?? "—"}</span>
@@ -841,12 +822,12 @@ function DetailTagihanSection({
                   onClick={() => onSelectClassType(t.type)}
                   className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition shadow-sm ${
                     active
-                      ? "bg-blue-600 text-white shadow-blue-500/20 ring-2 ring-blue-300"
-                      : "border border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50/50"
+                      ? "bg-primary-600 text-white shadow-primary-500/20 ring-2 ring-primary-300"
+                      : "border border-slate-200 bg-white text-slate-700 hover:border-primary-300 hover:bg-primary-50/50"
                   }`}
                 >
                   <span>{t.label}</span>
-                  <span className={`rounded-lg px-1.5 py-0.5 text-[10px] font-extrabold ${active ? "bg-blue-700 text-white" : "bg-slate-100 text-slate-700"}`}>
+                  <span className={`rounded-lg px-1.5 py-0.5 text-[10px] font-extrabold ${active ? "bg-primary-700 text-white" : "bg-slate-100 text-slate-700"}`}>
                     {formatIDR(t.price)}
                   </span>
                 </button>
@@ -858,16 +839,14 @@ function DetailTagihanSection({
 
       <div>
         <label className="mb-1 block text-xs font-bold text-slate-600">Deskripsi</label>
-        <input value={description} onChange={(e) => setDescription(e.target.value)}
-          placeholder={enrollment?.curriculum?.name ? `${meetCount ? meetCount : "?"} sesi ${enrollment.curriculum.name}` : ""}
-          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100" />
+        <Input value={description} onChange={(e) => setDescription(e.target.value)}
+          placeholder={enrollment?.curriculum?.name ? `${meetCount ? meetCount : "?"} sesi ${enrollment.curriculum.name}` : ""} />
       </div>
 
       <div className="grid grid-cols-3 gap-3">
         <div>
           <label className="mb-1 block text-xs font-bold text-slate-600">Pertemuan</label>
-          <input type="number" min="1" value={meetCount} onChange={(e) => setMeetCount(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-400" />
+          <Input type="number" min="1" value={meetCount} onChange={(e) => setMeetCount(e.target.value)} />
           {remainingQuota > 0 && (
             <p className="mt-0.5 text-[10px] text-slate-400">Maks {remainingQuota}</p>
           )}
@@ -876,21 +855,18 @@ function DetailTagihanSection({
           <div className="flex items-center justify-between mb-1">
             <label className="block text-xs font-bold text-slate-600">Harga/pertemuan</label>
           </div>
-          <input type="number" min="0" value={pricePerMeeting} onChange={(e) => setPricePerMeeting(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-400" />
+          <Input type="number" min="0" value={pricePerMeeting} onChange={(e) => setPricePerMeeting(e.target.value)} />
         </div>
         <div>
           <label className="mb-1 block text-xs font-bold text-slate-600">Biaya Daftar</label>
-          <input type="number" value={registrationFee} onChange={(e) => setRegistrationFee(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-400" />
+          <Input type="number" value={registrationFee} onChange={(e) => setRegistrationFee(e.target.value)} />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="mb-1 block text-xs font-bold text-slate-600">Pajak (%)</label>
-          <input type="number" min="0" max="100" step="0.01" value={taxPercent} onChange={(e) => setTaxPercent(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-400" />
+          <Input type="number" min="0" max="100" step="0.01" value={taxPercent} onChange={(e) => setTaxPercent(e.target.value)} />
         </div>
       </div>
 
@@ -910,8 +886,7 @@ function DetailTagihanSection({
 
       <div>
         <label className="mb-1 block text-xs font-bold text-slate-600">Catatan</label>
-        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2}
-          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-400" />
+        <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
       </div>
     </>
   );
@@ -921,9 +896,9 @@ function MethodCard({ active, onClick, icon, title, desc }: { active: boolean; o
   return (
     <button type="button" onClick={onClick}
       className={`rounded-2xl border p-3 text-left transition ${
-        active ? "border-blue-500 bg-blue-50 ring-2 ring-blue-100" : "border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50/40"
+        active ? "border-primary-500 bg-primary-50 ring-2 ring-primary-100" : "border-slate-200 bg-white hover:border-primary-300 hover:bg-primary-50/40"
       }`}>
-      <span className={`inline-flex h-9 w-9 items-center justify-center rounded-xl ${active ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"}`}>
+      <span className={`inline-flex h-9 w-9 items-center justify-center rounded-xl ${active ? "bg-primary-600 text-white" : "bg-slate-100 text-slate-600"}`}>
         {icon}
       </span>
       <p className="mt-2 text-sm font-bold text-slate-800">{title}</p>

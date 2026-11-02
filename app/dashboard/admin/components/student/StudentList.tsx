@@ -56,11 +56,11 @@ export default function StudentList({ students, onSelect, onArchive, onRestore, 
   }, [displayed, sortDir]);
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white shadow-sm">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="flex items-center gap-4 px-4 pt-4">
         <input value={filter} onChange={(e) => setFilter(e.target.value)}
           placeholder="Cari siswa..."
-          className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+          className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none transition focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
         />
         <div className="flex shrink-0 gap-1 rounded-xl bg-slate-100 p-1">
           <button onClick={() => setTab("active")}
@@ -87,7 +87,7 @@ export default function StudentList({ students, onSelect, onArchive, onRestore, 
                 <th className="border-b border-slate-200 px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Orang Tua</th>
                 <th className="border-b border-slate-200 px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Sekolah</th>
                 <th onClick={() => setSortDir((d) => d === "desc" ? "asc" : "desc")}
-                  className="cursor-pointer border-b border-slate-200 px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 hover:text-blue-600 select-none">
+                  className="cursor-pointer border-b border-slate-200 px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 hover:text-primary-600 select-none">
                   Tgl Dibuat {sortDir === "desc" ? "▼" : "▲"}
                 </th>
                 <th className="border-b border-slate-200 px-3 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">Aksi</th>
@@ -96,13 +96,13 @@ export default function StudentList({ students, onSelect, onArchive, onRestore, 
             <tbody>
               {sorted.map((s) => (
                 <tr key={s.id} onClick={() => onSelect(s)}
-                  className="cursor-pointer border-b border-slate-100 last:border-0 hover:bg-blue-50"
+                  className="cursor-pointer border-b border-slate-100 last:border-0 hover:bg-primary-50"
                 >
                   <td className="px-3 py-3 font-semibold text-slate-900">{s.fullName}</td>
                   <td className="px-3 py-3 text-slate-600">{s.nickname}</td>
                   <td className="px-3 py-3 text-slate-600">{s.email ?? "—"}</td>
                   <td className="px-3 py-3">
-                    <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">
+                    <span className="inline-flex items-center rounded-full bg-primary-100 px-2 py-0.5 text-xs font-semibold text-primary-700">
                       {s.category?.label ?? "-"}
                     </span>
                   </td>

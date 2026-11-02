@@ -1,7 +1,7 @@
 "use client";
 
-import { Calendar, Clock, Video, Users, BookOpen, CheckCircle2, AlertTriangle, Bed, FileX } from "lucide-react";
-import Card from "./Card";
+import { EmptyState } from "@/components/ui";
+import { Calendar, Clock, Video, Users, BookOpen, CheckCircle2, AlertTriangle, Bed, FileX, CalendarX2 } from "lucide-react";
 import { DAY_LABELS } from "./types";
 import type { Theme } from "./types";
 import type { Schedule, Class, Attendance } from "@/lib/api";
@@ -56,10 +56,10 @@ export default function ScheduleTab({ theme, schedules, classes, attendances }: 
       </div>
 
       {schedules.length === 0 ? (
-        <Card theme={theme} className="p-12 flex flex-col items-center text-center border-dashed">
-          <span className="text-5xl mb-4">📅</span>
-          <h2 className={`font-bold ${theme.text}`}>Belum ada jadwal</h2>
-        </Card>
+        <EmptyState
+          icon={CalendarX2}
+          title="Belum ada jadwal"
+        />
       ) : (
         <div className="space-y-8">
           {Object.entries(grouped).map(([classId, classSchedules]) => {
@@ -83,8 +83,8 @@ export default function ScheduleTab({ theme, schedules, classes, attendances }: 
                       <div key={schedule.id}
                         className={`rounded-2xl border ${theme.border} ${theme.card} px-4 py-3 flex items-center justify-between gap-3 ${isPast ? "opacity-50" : ""}`}>
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${isPast ? "bg-slate-200" : "bg-brand-blue-100"}`}>
-                            <Calendar size={18} className={isPast ? "text-slate-400" : "text-brand-blue-600"} />
+                          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${isPast ? "bg-slate-200" : "bg-primary-100"}`}>
+                            <Calendar size={18} className={isPast ? "text-slate-400" : "text-primary-600"} />
                           </div>
                           <div className="min-w-0">
                             <p className={`text-sm font-semibold ${isPast ? theme.textMuted : theme.text}`}>
@@ -95,7 +95,7 @@ export default function ScheduleTab({ theme, schedules, classes, attendances }: 
                               {schedule.date ? " · " : ""}{schedule.startTime}–{schedule.endTime}
                             </p>
                             {schedule.topic && (
-                              <p className={`text-xs font-semibold mt-0.5 ${isPast ? "text-slate-400" : "text-brand-blue-600"}`}>{schedule.topic}</p>
+                              <p className={`text-xs font-semibold mt-0.5 ${isPast ? "text-slate-400" : "text-primary-600"}`}>{schedule.topic}</p>
                             )}
                             <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                               {isPast && (() => {
@@ -116,7 +116,7 @@ export default function ScheduleTab({ theme, schedules, classes, attendances }: 
                         </div>
                         {schedule.meetLink && !isPast && (
                           <a href={schedule.meetLink} target="_blank" rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 rounded-xl bg-brand-blue-100 px-3 py-2 text-xs font-semibold text-brand-blue-700 hover:bg-brand-blue-200 transition-colors shrink-0">
+                            className="inline-flex items-center gap-1.5 rounded-xl bg-primary-100 px-3 py-2 text-xs font-semibold text-primary-700 hover:bg-primary-200 transition-colors shrink-0">
                             <Video size={14} /> Meet
                           </a>
                         )}

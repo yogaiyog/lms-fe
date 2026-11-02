@@ -16,16 +16,16 @@ export default function StudentListCard({
   return (
     <div
       onClick={onClick}
-      className={`rounded-3xl border ${theme.border} ${theme.card} shadow-sm p-4 sm:p-5 cursor-pointer hover:shadow-md transition-all`}
+      className={`rounded-2xl border ${theme.border} ${theme.card} shadow-sm p-4 sm:p-5 cursor-pointer hover:shadow-md transition-all`}
     >
       <div className="flex items-center gap-4">
-        <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${theme.dark ? "bg-slate-800" : "bg-blue-50"}`}>
-          <User size={22} className="text-blue-600" />
+        <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${theme.dark ? "bg-slate-800" : "bg-primary-50"}`}>
+          <User size={22} className="text-primary-600" />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className={`font-extrabold ${theme.text}`}>{student.nickname || student.fullName}</h3>
-            <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+            <span className="inline-flex items-center rounded-full bg-primary-100 px-2 py-0.5 text-[10px] font-semibold text-primary-700">
               {student.category?.label ?? "-"}
             </span>
           </div>

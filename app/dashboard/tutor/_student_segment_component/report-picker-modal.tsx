@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, Modal } from "@/components/ui";
 import { useEffect } from "react";
 import { api, type SavedReport } from "@/lib/api";
 import { X, FileText, CheckSquare } from "lucide-react";
@@ -26,16 +27,7 @@ export default function ReportPickerModal({
 }) {
   useEffect(() => { onFetchSavedReports(); }, []);
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4 pt-10 overflow-y-auto">
-      <div className={`relative w-full max-w-2xl rounded-3xl border ${theme.border} ${theme.card} p-6 shadow-xl mb-10`}>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className={`text-sm font-bold flex items-center gap-1.5 ${theme.text}`}>
-            <FileText size={14} /> Laporan Siswa
-          </h3>
-          <button onClick={onClose} className={`rounded-xl p-1.5 ${theme.dark ? "hover:bg-slate-700" : "hover:bg-slate-200"} transition`}>
-            <X size={18} className={theme.text} />
-          </button>
-        </div>
+    <Modal open onClose={onClose} title={<><FileText size={14} /> Laporan Siswa</>} size="lg" closeOnBackdrop={false}>
 
         <div className="mb-4">
           <p className={`text-xs ${theme.textMuted} mb-3`}>
@@ -50,9 +42,9 @@ export default function ReportPickerModal({
                 return (
                   <label
                     key={att.id}
-                    className={`flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-3 transition ${checked ? "border-blue-300 bg-blue-50" : `${theme.border} ${theme.dark ? "bg-slate-800" : "bg-slate-50"}`}`}
+                    className={`flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-3 transition ${checked ? "border-primary-300 bg-primary-50" : `${theme.border} ${theme.dark ? "bg-slate-800" : "bg-slate-50"}`}`}
                   >
-                    <input type="checkbox" checked={checked} onChange={() => onToggleAttendance(att.id)} className="mt-1 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                    <input type="checkbox" checked={checked} onChange={() => onToggleAttendance(att.id)} className="mt-1 h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500" />
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className={`text-sm font-bold ${theme.text}`}>
@@ -64,7 +56,7 @@ export default function ReportPickerModal({
                       </div>
                       <p className={`text-xs ${theme.textMuted}`}>{att.schedule?.class?.name ?? "Kelas"}</p>
                       {att.schedule?.topic && (
-                        <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700 mt-1">
+                        <span className="inline-flex items-center rounded-full bg-primary-100 px-2 py-0.5 text-[10px] font-semibold text-primary-700 mt-1">
                           {att.schedule.topic}
                         </span>
                       )}
@@ -76,13 +68,12 @@ export default function ReportPickerModal({
                 );
               })}
           </div>
-          <button
+          <Button type="submit"
             onClick={onGenerateReport}
             disabled={selectedAttendanceIds.length === 0}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
+           className="w-full">
             <CheckSquare size={16} /> Buat Laporan
-          </button>
+          </Button>
         </div>
 
         <button
@@ -113,7 +104,6 @@ export default function ReportPickerModal({
         {showSavedReports && savedReports.length === 0 && (
           <p className={`text-xs ${theme.textMuted} py-3 text-center`}>Belum ada laporan tersimpan</p>
         )}
-      </div>
-    </div>
+    </Modal>
   );
 }

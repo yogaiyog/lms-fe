@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui";
 import { useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import { ChevronLeft, X, ThumbsUp, Save, CalendarCheck2, Trophy, Percent, Award, CheckCircle2, AlertTriangle, BookOpen, Brain, Code2, Lightbulb, Puzzle, Clock, MessageCircle, FolderCheck, Users, Presentation, TrendingUp, Quote, Star, Palette, PenLine, Ruler, Calculator, Heart, Zap, Target, Eye, Feather, Sparkles, Flame, Droplet, Sun, Moon, Shield, Gem, Key, Search, Compass, Crown, Link, Lock, Map, Settings, Download } from "lucide-react";
@@ -46,7 +47,7 @@ type ReportData = {
 
 function getGradeBadge(pct: number) {
   if (pct >= 90) return { label: "Excellent", bg: "bg-emerald-100 text-emerald-700" };
-  if (pct >= 75) return { label: "Good", bg: "bg-blue-100 text-blue-700" };
+  if (pct >= 75) return { label: "Good", bg: "bg-primary-100 text-primary-700" };
   if (pct >= 60) return { label: "Cukup", bg: "bg-amber-100 text-amber-700" };
   return { label: "Perlu Bimbingan", bg: "bg-red-100 text-red-700" };
 }
@@ -150,7 +151,7 @@ export default function ReportViewerModal({
       }
     `}</style>
     <div data-report-modal className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 p-4 pt-10">
-      <div className={`relative w-full max-w-2xl rounded-3xl border ${theme.border} ${theme.card} shadow-xl mb-10`}>
+      <div className={`relative w-full max-w-2xl rounded-2xl border ${theme.border} ${theme.card} shadow-xl mb-10`}>
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
           {onBack ? (
@@ -162,7 +163,7 @@ export default function ReportViewerModal({
             <button
               onClick={handleDownloadPdf}
               disabled={downloading}
-              className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 transition disabled:opacity-50`}
+              className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold text-white bg-primary-600 hover:bg-primary-700 transition disabled:opacity-50`}
             >
               <Download size={14} />
               {downloading ? "Mengunduh..." : "PDF"}
@@ -180,7 +181,7 @@ export default function ReportViewerModal({
           <div className={`${cardCls} p-5`}>
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-blue-400 text-base font-bold text-white shadow-sm shadow-blue-500/30">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 to-primary-400 text-base font-bold text-white shadow-sm shadow-primary-500/30">
                   {initials(data.student.fullName)}
                 </div>
                 <div>
@@ -250,7 +251,7 @@ export default function ReportViewerModal({
               </h3>
               <div className="flex flex-wrap gap-1.5">
                 {data.topics.map((t, i) => (
-                  <span key={i} className="inline-flex items-center rounded-lg bg-blue-100 px-2.5 py-1 text-[11px] font-semibold text-blue-700">
+                  <span key={i} className="inline-flex items-center rounded-lg bg-primary-100 px-2.5 py-1 text-[11px] font-semibold text-primary-700">
                     {t}
                   </span>
                 ))}
@@ -269,7 +270,7 @@ export default function ReportViewerModal({
                 </h3>
                 <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${
                   data.scorePercentage >= 80 ? "bg-emerald-100 text-emerald-700" :
-                  data.scorePercentage >= 60 ? "bg-blue-100 text-blue-700" :
+                  data.scorePercentage >= 60 ? "bg-primary-100 text-primary-700" :
                   "bg-amber-100 text-amber-700"
                 }`}>
                   Rata-rata {Math.round(data.scorePercentage)}%
@@ -375,7 +376,7 @@ export default function ReportViewerModal({
                       &quot;{n.comment}&quot;
                     </p>
                     <div className="mt-3 flex items-center gap-2.5">
-                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold text-white">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary-500 text-[10px] font-bold text-white">
                         {initials(n.tutorName)}
                       </div>
                       <div>
@@ -401,15 +402,15 @@ export default function ReportViewerModal({
               <div className="space-y-2">
                 {data.projectLinks.map((p, i) => (
                   <div key={i} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100">
-                      <Presentation size={15} className="text-blue-600" />
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary-100">
+                      <Presentation size={15} className="text-primary-600" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <a
                         href={p.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="block truncate text-xs font-semibold text-blue-600 underline-offset-2 hover:underline"
+                        className="block truncate text-xs font-semibold text-primary-600 underline-offset-2 hover:underline"
                       >
                         {p.url}
                       </a>
@@ -435,17 +436,16 @@ export default function ReportViewerModal({
                   value={saveTitle}
                   onChange={(e) => setSaveTitle(e.target.value)}
                   placeholder="Nama laporan..."
-                  className={`flex-1 rounded-xl border px-3 py-2 text-sm outline-none transition focus:border-blue-400 ${
+                  className={`flex-1 rounded-xl border px-3 py-2 text-sm outline-none transition focus:border-primary-400 ${
                     theme.dark ? "border-slate-600 bg-slate-800 text-white" : "border-slate-200 bg-white text-slate-900"
                   }`}
                 />
-                <button
+                <Button type="submit"
                   onClick={async () => { if (saveTitle.trim()) { await onSave(saveTitle.trim()); onClose(); } }}
                   disabled={!saveTitle.trim() || saving}
-                  className="shrink-0 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700 disabled:opacity-50"
-                >
+                 className="shrink-0">
                   {saving ? "Menyimpan..." : "Simpan"}
-                </button>
+                </Button>
               </div>
             </div>
           )}
