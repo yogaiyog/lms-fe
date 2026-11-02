@@ -1011,8 +1011,9 @@ export const api = {
       return authenticatedRequest<Enrollment[]>(`/api/v1/academic/enrollments/student/${studentId}`);
     },
     async listByClass(classId: string) {
-      const all = await this.list();
-      return all.filter((e) => e.classId === classId);
+      return authenticatedRequest<Enrollment[]>(
+        `/api/v1/academic/enrollments?classId=${encodeURIComponent(classId)}`,
+      );
     },
     async listUnassignedByCurriculum(curriculumId: string) {
       return authenticatedRequest<Enrollment[]>(`/api/v1/academic/enrollments/unassigned/${curriculumId}`);
@@ -1112,13 +1113,16 @@ export const api = {
     async list() {
       return authenticatedRequest<Attendance[]>("/api/v1/academic/attendances");
     },
+    // Difilter di server: parent/student hanya boleh membaca absensi anaknya/dirinya.
     async listByStudent(studentId: string) {
-      const all = await this.list();
-      return all.filter((a) => a.studentId === studentId);
+      return authenticatedRequest<Attendance[]>(
+        `/api/v1/academic/attendances?studentId=${encodeURIComponent(studentId)}`,
+      );
     },
     async listBySchedule(scheduleId: string) {
-      const all = await this.list();
-      return all.filter((a) => a.scheduleId === scheduleId);
+      return authenticatedRequest<Attendance[]>(
+        `/api/v1/academic/attendances?scheduleId=${encodeURIComponent(scheduleId)}`,
+      );
     },
     async create(payload: { scheduleId: string; studentId: string; date: string; status?: string; notes?: string | null; teachedBy?: string | null }) {
       return authenticatedRequest<Attendance>("/api/v1/academic/attendances", {
