@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { api, getStoredSession, type QuizData } from "@/lib/api";
+import { api, type QuizAnswerResult, type QuizData, type QuizSubmitResult } from "@/lib/api";
 import Blocks3Renderer from "@/components/Blocks3Renderer";
 import { parseMixedContent } from "@/lib/parseMixedContent";
 
@@ -38,6 +38,12 @@ export default function QuizPage() {
   const [submitted, setSubmitted] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [submittingProgress, setSubmittingProgress] = useState(false);
+  // Hasil penilaian dari server untuk soal saat ini (kunci jawaban tidak dikirim ke siswa).
+  const [answerResult, setAnswerResult] = useState<QuizAnswerResult | null>(null);
+  const [checking, setChecking] = useState(false);
+  const [answers, setAnswers] = useState<{ questionId: string; choiceIndex: number }[]>([]);
+  const [result, setResult] = useState<QuizSubmitResult | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -78,7 +84,14 @@ export default function QuizPage() {
           <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-8 text-center">
             <div className="text-5xl mb-4">🎉</div>
             <h2 className="text-xl font-bold text-emerald-800 mb-2">Quiz Selesai!</h2>
-            <p className="text-emerald-600 mb-6">Progress Anda telah tersimpan.</p>
+            {result && (
+              <p className="text-emerald-700 font-semibold mb-1">
+                Benar {result.correct} dari {result.total} soal (nilai {result.score})
+              </p>
+            )}
+            <p className="text-emerald-600 mb-6">
+              {result?.saved === false ? "Mode pratinjau — progress tidak disimpan." : "Progress Anda telah tersimpan."}
+            </p>
             <button
               onClick={() => window.close()}
               className="rounded-lg bg-slate-800 px-6 py-2 text-white transition-colors hover:bg-slate-700"
@@ -118,37 +131,46 @@ export default function QuizPage() {
     setSelectedChoiceIndex(index);
   };
 
-  const handleSubmit = () => {
-    setSubmitted(true);
+  const handleSubmit = async () => {
+    if (selectedChoiceIndex === null) return;
+    setChecking(true);
+    setActionError(null);
+    try {
+      const res = await api.quiz.answer(taskCode, question.id, selectedChoiceIndex);
+      setAnswerResult(res);
+      setAnswers((prev) => [
+        ...prev.filter((a) => a.questionId !== question.id),
+        { questionId: question.id, choiceIndex: selectedChoiceIndex },
+      ]);
+      setSubmitted(true);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "Gagal memeriksa jawaban");
+    } finally {
+      setChecking(false);
+    }
   };
 
   const handleNext = async () => {
     if (isLastQuestion) {
       setSubmittingProgress(true);
+      setActionError(null);
       try {
-        const session = getStoredSession();
-        const studentId = session?.user?.studentProfile?.id;
-        if (studentId) {
-          await api.roadmap.upsertProgress({
-            studentId,
-            topicTaskCode: taskCode,
-            status: "completed",
-          });
-        }
-      } catch {
-        // silent
+        setResult(await api.quiz.submit(taskCode, answers));
+        setCompleted(true);
+      } catch (err) {
+        setActionError(err instanceof Error ? err.message : "Gagal menyimpan hasil quiz");
+      } finally {
+        setSubmittingProgress(false);
       }
-      setCompleted(true);
       return;
     }
     setSubmitted(false);
+    setAnswerResult(null);
     setSelectedChoiceIndex(null);
     setCurrentQuestionIndex((prev) => prev + 1);
   };
 
-  const isCorrect = selectedChoiceIndex !== null
-    ? question.choices[selectedChoiceIndex].isCorrect
-    : false;
+  const isCorrect = answerResult?.isCorrect ?? false;
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -184,8 +206,9 @@ export default function QuizPage() {
           <div className="space-y-3">
             {question.choices.map((choice, index) => {
               const isSelected = selectedChoiceIndex === index;
-              const showCorrect = submitted && choice.isCorrect;
-              const showWrong = submitted && isSelected && !choice.isCorrect;
+              const choiceIsCorrect = answerResult?.correctIndexes.includes(index) ?? false;
+              const showCorrect = submitted && choiceIsCorrect;
+              const showWrong = submitted && isSelected && !choiceIsCorrect;
 
               return (
                 <button
@@ -236,18 +259,22 @@ export default function QuizPage() {
                   : "bg-red-100 text-red-800"
               }`}
             >
-              {question.choices[selectedChoiceIndex].feedback}
+              {answerResult?.feedback || (isCorrect ? "Benar!" : "Belum tepat.")}
             </div>
+          )}
+
+          {actionError && (
+            <div className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{actionError}</div>
           )}
 
           <div className="mt-6 flex justify-end">
             {!submitted ? (
               <button
                 onClick={handleSubmit}
-                disabled={selectedChoiceIndex === null}
+                disabled={selectedChoiceIndex === null || checking}
                 className="rounded-lg bg-slate-800 px-6 py-2 text-white transition-colors hover:bg-slate-700 disabled:opacity-50"
               >
-                Submit
+                {checking ? "Memeriksa..." : "Submit"}
               </button>
             ) : (
               <button

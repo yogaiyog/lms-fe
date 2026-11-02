@@ -319,11 +319,33 @@ export type Topic = {
   tasks?: TopicTask[];
 };
 
+/**
+ * Untuk ADMIN/TUTOR backend mengirim isCorrect & feedback.
+ * Untuk siswa keduanya TIDAK dikirim — jawaban dinilai lewat api.quiz.answer().
+ */
 export type QuizChoiceData = {
   content: string;
   isCorrect: boolean;
   feedback: string;
   imageUrl?: string;
+};
+
+export type QuizAnswerResult = {
+  isCorrect: boolean;
+  feedback: string;
+  correctIndexes: number[];
+};
+
+export type QuizSubmitResult = {
+  score: number;
+  correct: number;
+  total: number;
+  saved: boolean;
+};
+
+export type ProgressLaunchToken = {
+  token: string;
+  expiresIn: number;
 };
 
 export type QuizQuestionData = {
@@ -608,11 +630,19 @@ async function fetchPdfBlob(url: string, token: string): Promise<Blob> {
   return response.blob();
 }
 
-async function request<T>(
-  path: string,
-  options: RequestInit = {},
-  token?: string,
-): Promise<T> {
+/** Error dari API, membawa HTTP status supaya caller tidak perlu menebak dari teks pesan. */
+export class ApiRequestError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+    readonly code?: string,
+  ) {
+    super(message);
+    this.name = "ApiRequestError";
+  }
+}
+
+async function sendRequest<P>(path: string, options: RequestInit, token?: string): Promise<P> {
   const headers = new Headers(options.headers);
   headers.set("Content-Type", "application/json");
 
@@ -620,71 +650,111 @@ async function request<T>(
     headers.set("Authorization", `Bearer ${token}`);
   }
 
+  // `_t` cache-buster: dipertahankan untuk WebView Capacitor (lihat optimation.md P2).
   const separator = path.includes("?") ? "&" : "?";
-  const url = `${API_BASE_URL}${path}${separator}_t=${Date.now()}`;
-
-  const response = await fetch(url, {
+  const response = await fetch(`${API_BASE_URL}${path}${separator}_t=${Date.now()}`, {
     ...options,
     headers,
     cache: "no-store",
   });
 
-  const payload = (await response.json()) as ApiSuccess<T> | ApiError;
+  // Respons non-JSON (mis. 502 dari nginx) jangan sampai jadi SyntaxError yang membingungkan.
+  const payload = (await response.json().catch(() => null)) as P | ApiError | null;
 
   if (!response.ok) {
-    const errorPayload = payload as ApiError;
-    throw new Error(errorPayload.message ?? "Request failed");
+    const errorPayload = (payload ?? {}) as ApiError;
+    throw new ApiRequestError(
+      errorPayload.message ?? `Request failed (${response.status})`,
+      response.status,
+      errorPayload.code,
+    );
   }
 
-  return (payload as ApiSuccess<T>).data;
+  return payload as P;
 }
 
-async function refreshAccessToken() {
+async function request<T>(
+  path: string,
+  options: RequestInit = {},
+  token?: string,
+): Promise<T> {
+  const payload = await sendRequest<ApiSuccess<T>>(path, options, token);
+  return payload.data;
+}
+
+function isUnauthorized(error: unknown) {
+  return error instanceof ApiRequestError && error.status === 401;
+}
+
+/**
+ * Refresh access token — single-flight.
+ * Backend merotasi refresh token dan me-revoke seluruh sesi bila token lama dipakai ulang.
+ * Tanpa single-flight, beberapa request paralel yang sama-sama kena 401 akan me-refresh
+ * dengan token yang sama → sesi di-revoke → user ter-logout.
+ */
+let refreshInFlight: Promise<string> | null = null;
+
+async function refreshAccessToken(failedAccessToken?: string): Promise<string> {
   if (typeof window === "undefined") {
     throw new Error("Refresh only available in browser");
   }
 
-  const refreshToken =
-    window.localStorage.getItem(storageKeys.refreshToken) ??
-    window.sessionStorage.getItem(storageKeys.refreshToken);
-  if (!refreshToken) {
-    throw new Error("Refresh token not found");
+  // Tab/request lain sudah me-refresh sejak request ini gagal → pakai token baru itu.
+  const current = getStoredSession();
+  if (current && failedAccessToken && current.accessToken !== failedAccessToken) {
+    return current.accessToken;
   }
 
-  const session = await request<AuthSession>(
-    "/api/v1/auth/refresh",
-    {
-      method: "POST",
-      body: JSON.stringify({ refreshToken }),
-    },
-  );
+  if (!refreshInFlight) {
+    refreshInFlight = (async () => {
+      const refreshToken =
+        window.localStorage.getItem(storageKeys.refreshToken) ??
+        window.sessionStorage.getItem(storageKeys.refreshToken);
+      if (!refreshToken) {
+        throw new ApiRequestError("Sesi berakhir, silakan login lagi", 401);
+      }
 
-  saveSession(session);
-  return session.accessToken;
+      try {
+        const session = await request<AuthSession>("/api/v1/auth/refresh", {
+          method: "POST",
+          body: JSON.stringify({ refreshToken }),
+        });
+        saveSession(session);
+        return session.accessToken;
+      } catch (error) {
+        // Refresh token ditolak → sesi memang habis.
+        if (isUnauthorized(error)) clearSession();
+        throw error;
+      }
+    })().finally(() => {
+      refreshInFlight = null;
+    });
+  }
+
+  return refreshInFlight;
+}
+
+async function withAuthRetry<R>(send: (token: string) => Promise<R>): Promise<R> {
+  const session = getStoredSession();
+
+  if (!session) {
+    throw new ApiRequestError("Silakan login dulu", 401);
+  }
+
+  try {
+    return await send(session.accessToken);
+  } catch (error) {
+    if (!isUnauthorized(error)) throw error;
+    const nextAccessToken = await refreshAccessToken(session.accessToken);
+    return send(nextAccessToken);
+  }
 }
 
 async function authenticatedRequest<T>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const session = getStoredSession();
-
-  if (!session) {
-    throw new Error("Silakan login dulu");
-  }
-
-  try {
-    return await request<T>(path, options, session.accessToken);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Request failed";
-
-    if (message.toLowerCase().includes("token") || message.toLowerCase().includes("unauthorized")) {
-      const nextAccessToken = await refreshAccessToken();
-      return request<T>(path, options, nextAccessToken);
-    }
-
-    throw error;
-  }
+  return withAuthRetry((token) => request<T>(path, options, token));
 }
 
 type ApiSuccessWithMeta<T, M> = { success: true; data: T; meta?: M };
@@ -694,30 +764,7 @@ async function requestPaged<T>(
   options: RequestInit = {},
   token?: string,
 ): Promise<{ data: T; meta: PaginatedMeta }> {
-  const headers = new Headers(options.headers);
-  headers.set("Content-Type", "application/json");
-
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
-  }
-
-  const separator = path.includes("?") ? "&" : "?";
-  const url = `${API_BASE_URL}${path}${separator}_t=${Date.now()}`;
-
-  const response = await fetch(url, {
-    ...options,
-    headers,
-    cache: "no-store",
-  });
-
-  const payload = (await response.json()) as ApiSuccessWithMeta<T, PaginatedMeta> | ApiError;
-
-  if (!response.ok) {
-    const errorPayload = payload as ApiError;
-    throw new Error(errorPayload.message ?? "Request failed");
-  }
-
-  const ok = payload as ApiSuccessWithMeta<T, PaginatedMeta>;
+  const ok = await sendRequest<ApiSuccessWithMeta<T, PaginatedMeta>>(path, options, token);
   return { data: ok.data, meta: ok.meta ?? { take: 0, skip: 0, count: 0, total: 0 } };
 }
 
@@ -725,24 +772,7 @@ async function authenticatedRequestPaged<T>(
   path: string,
   options: RequestInit = {},
 ): Promise<{ data: T; meta: PaginatedMeta }> {
-  const session = getStoredSession();
-
-  if (!session) {
-    throw new Error("Silakan login dulu");
-  }
-
-  try {
-    return await requestPaged<T>(path, options, session.accessToken);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Request failed";
-
-    if (message.toLowerCase().includes("token") || message.toLowerCase().includes("unauthorized")) {
-      const nextAccessToken = await refreshAccessToken();
-      return requestPaged<T>(path, options, nextAccessToken);
-    }
-
-    throw error;
-  }
+  return withAuthRetry((token) => requestPaged<T>(path, options, token));
 }
 
 export async function uploadImage(
@@ -1543,6 +1573,13 @@ export const api = {
         `/api/v1/academic/student-topic-progress?studentId=${encodeURIComponent(studentId)}`
       );
     },
+    /** Token berumur pendek agar scratch-gui / editor Python boleh menyimpan progress 1 task. */
+    async getLaunchToken(studentId: string, taskCode: string) {
+      return authenticatedRequest<ProgressLaunchToken>(
+        "/api/v1/academic/student-topic-progress/launch-token",
+        { method: "POST", body: JSON.stringify({ studentId, taskCode }) },
+      );
+    },
     async upsertProgress(payload: {
       studentId: string;
       topicTaskCode?: string;
@@ -1559,6 +1596,20 @@ export const api = {
   quiz: {
     async fetchByTaskCode(taskCode: string) {
       return authenticatedRequest<QuizData>(`/api/v1/academic/quiz/${taskCode}`);
+    },
+    /** Nilai satu jawaban di server. */
+    async answer(taskCode: string, questionId: string, choiceIndex: number) {
+      return authenticatedRequest<QuizAnswerResult>(`/api/v1/academic/quiz/${taskCode}/answer`, {
+        method: "POST",
+        body: JSON.stringify({ questionId, choiceIndex }),
+      });
+    },
+    /** Kirim semua jawaban: server menghitung skor, menyimpan attempt, dan menandai task selesai. */
+    async submit(taskCode: string, answers: { questionId: string; choiceIndex: number }[]) {
+      return authenticatedRequest<QuizSubmitResult>(`/api/v1/academic/quiz/${taskCode}/submit`, {
+        method: "POST",
+        body: JSON.stringify({ answers }),
+      });
     },
     async createQuestion(taskCode: string, payload: { question: string; imageUrl?: string | null; choices: { content: string; isCorrect: boolean; feedback: string; imageUrl?: string }[] }) {
       return authenticatedRequest<QuizQuestionData>(`/api/v1/academic/quiz/${taskCode}/questions`, {

@@ -27,6 +27,28 @@ export function useProgressTracker(studentId: string) {
   const tutorialWindowRef = useRef<Window | null>(null);
   const activeLevelRef = useRef<{ levelId: string; url: string } | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Sesi editor yang sedang dibuka: config dikirim HANYA ke origin & window ini.
+  const launchRef = useRef<{
+    win: Window;
+    origin: string;
+    type: "SCRATCH" | "PYTHON";
+    payload: Record<string, unknown>;
+    token?: string;
+    sent: boolean;
+  } | null>(null);
+
+  const sendLaunchConfig = useCallback(() => {
+    const launch = launchRef.current;
+    if (!launch || launch.win.closed) return;
+    const payload = { ...launch.payload, ...(launch.token ? { progressToken: launch.token } : {}) };
+    launch.win.postMessage(
+      launch.type === "PYTHON"
+        ? { type: "python-editor:init", payload }
+        : { type: "scratch-integration-config", payload },
+      launch.origin,
+    );
+    launch.sent = true;
+  }, []);
 
   useEffect(() => {
     if (!studentId) {
@@ -108,6 +130,15 @@ export function useProgressTracker(studentId: string) {
     (event: MessageEvent) => {
       const { type, payload } = event.data ?? {};
 
+      // Editor selesai dimuat → kirim (ulang) config + progress token.
+      if (type === "scratch-integration-ready" || type === "python-editor:ready") {
+        const launch = launchRef.current;
+        if (launch && event.origin === launch.origin && event.source === launch.win) {
+          sendLaunchConfig();
+        }
+        return;
+      }
+
       if (type === "scratch-progress") {
         if (event.origin !== SCRATCH_GUI_ORIGIN) return;
 
@@ -134,10 +165,9 @@ export function useProgressTracker(studentId: string) {
       }
 
       if (type === "python-editor:progress" || type === "python-editor:done") {
-        if (activeLevelRef.current?.url) {
-          const expectedOrigin = new URL(activeLevelRef.current.url).origin;
-          if (event.origin !== expectedOrigin) return;
-        }
+        // Hanya terima dari editor yang sedang kita buka.
+        const launch = launchRef.current;
+        if (!launch || event.origin !== launch.origin || event.source !== launch.win) return;
 
         const { status, taskCode } = payload ?? {};
         if (!taskCode || !status) return;
@@ -147,7 +177,7 @@ export function useProgressTracker(studentId: string) {
         return;
       }
     },
-    [studentId, applyProgress, sendProgressToServer],
+    [studentId, applyProgress, sendProgressToServer, sendLaunchConfig],
   );
 
   useEffect(() => {
@@ -194,50 +224,65 @@ export function useProgressTracker(studentId: string) {
       tutorialWindowRef.current = tutorialWindow;
       activeLevelRef.current = { levelId, url };
 
+      if (pollRef.current) clearInterval(pollRef.current);
       pollRef.current = setInterval(() => {
         if (tutorialWindow.closed) {
           if (pollRef.current) clearInterval(pollRef.current);
           tutorialWindowRef.current = null;
           activeLevelRef.current = null;
+          if (launchRef.current?.win === tutorialWindow) launchRef.current = null;
         }
       }, 1000);
 
+      let origin: string;
+      try {
+        origin = new URL(url, window.location.href).origin;
+      } catch {
+        return;
+      }
+
+      const launchPayload: Record<string, unknown> =
+        options?.type === "PYTHON"
+          ? {
+              instructions: options.instructions ?? undefined,
+              defaultCode: options.defaultCode ?? undefined,
+              title: options.title ?? undefined,
+              studentId,
+              fallbackUrl,
+              taskCode: levelId,
+              projectId,
+            }
+          : { fallbackUrl, studentId, projectId, taskCode: levelId };
+
+      launchRef.current = {
+        win: tutorialWindow,
+        origin,
+        type: options?.type === "PYTHON" ? "PYTHON" : "SCRATCH",
+        payload: launchPayload,
+        sent: false,
+      };
+
+      // Progress token: izin bagi editor untuk menyimpan progress task ini saja.
+      api.roadmap
+        .getLaunchToken(studentId, levelId)
+        .then(({ token }) => {
+          const launch = launchRef.current;
+          if (!launch || launch.win !== tutorialWindow) return;
+          launch.token = token;
+          // Config tanpa token sudah terkirim → kirim ulang dengan token.
+          if (launch.sent) sendLaunchConfig();
+        })
+        .catch(() => {
+          // Backend lama / gagal: editor tetap jalan, progress tersimpan lewat postMessage ke tab ini.
+        });
+
+      // Fallback untuk editor versi lama yang belum mengirim pesan "ready".
       setTimeout(() => {
-        if (tutorialWindow && !tutorialWindow.closed) {
-          if (options?.type === "PYTHON") {
-            tutorialWindow.postMessage(
-              {
-                type: "python-editor:init",
-                payload: {
-                  instructions: options.instructions ?? undefined,
-                  defaultCode: options.defaultCode ?? undefined,
-                  title: options.title ?? undefined,
-                  studentId,
-                  fallbackUrl,
-                  taskCode: levelId,
-                  projectId,
-                },
-              },
-              "*",
-            );
-          } else {
-            tutorialWindow.postMessage(
-              {
-                type: "scratch-integration-config",
-                payload: {
-                  fallbackUrl,
-                  studentId,
-                  projectId,
-                  taskCode: levelId,
-                },
-              },
-              "*",
-            );
-          }
-        }
+        const launch = launchRef.current;
+        if (launch && launch.win === tutorialWindow && !launch.sent) sendLaunchConfig();
       }, 2000);
     },
-    [studentId],
+    [studentId, sendLaunchConfig],
   );
 
   const getTaskStatus = useCallback(
